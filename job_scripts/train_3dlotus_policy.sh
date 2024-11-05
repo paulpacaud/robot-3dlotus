@@ -18,7 +18,7 @@ set -e
 module purge
 pwd; hostname; date
 
-cd $HOME/codes/robot-3dlotus
+cd $HOME/Projects/robot-3dlotus
 
 . $HOME/miniconda3/etc/profile.d/conda.sh
 conda activate gembench
@@ -51,8 +51,8 @@ srun python genrobo3d/train/train_simple_policy.py \
     TRAIN_DATASET.xyz_norm False VAL_DATASET.xyz_norm False \
     TRAIN_DATASET.rot_type ${rot_type} VAL_DATASET.rot_type ${rot_type} \
     TRAIN_DATASET.taskvar_file assets/taskvars_train.json VAL_DATASET.taskvar_file assets/taskvars_train.json \
-    TRAIN_DATASET.data_dir data/gembench/train_dataset/keysteps_bbox_pcd/seed0/voxel1cm \
-    VAL_DATASET.data_dir data/gembench/val_dataset/keysteps_bbox_pcd/seed100/voxel1cm \
+    TRAIN_DATASET.data_dir data/gembench/train_dataset/keysteps_bbox_pcd/seed0/voxel0.5cm \
+    VAL_DATASET.data_dir data/gembench/val_dataset/keysteps_bbox_pcd/seed100/voxel0.5cm \
     TRAIN_DATASET.include_last_step False VAL_DATASET.include_last_step False \
     TRAIN_DATASET.use_height True VAL_DATASET.use_height True \
     TRAIN_DATASET.augment_pc True VAL_DATASET.augment_pc False \
@@ -60,7 +60,7 @@ srun python genrobo3d/train/train_simple_policy.py \
     TRAIN_DATASET.rm_pc_outliers False VAL_DATASET.rm_pc_outliers False \
     MODEL.ptv3_config.drop_path 0.0 MODEL.ptv3_config.attn_drop 0.1 MODEL.ptv3_config.proj_drop 0.1 \
     MODEL.action_config.dropout 0.2 \
-    MODEL.action_config.voxel_size 0.01 \
+    MODEL.action_config.voxel_size 0.005 \
     MODEL.action_config.reduce max \
     MODEL.action_config.dim_actions 7 MODEL.action_config.rot_pred_type ${rot_type} \
     MODEL.action_config.pos_heatmap_temp 0.1 \

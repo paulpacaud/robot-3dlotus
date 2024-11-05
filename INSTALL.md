@@ -15,6 +15,7 @@ export CUDA_HOME=$HOME/miniconda3/envs/gembench
 export CPATH=$CUDA_HOME/targets/x86_64-linux/include:$CPATH
 export LD_LIBRARY_PATH=$CUDA_HOME/targets/x86_64-linux/lib:$LD_LIBRARY_PATH
 export PATH=$CUDA_HOME/bin:$PATH
+export FORCE_CUDA=1
 
 pip install -r requirements.txt
 

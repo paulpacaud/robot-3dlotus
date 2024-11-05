@@ -22,17 +22,23 @@ Dataset structure is as follows:
     - gembench
         - train_dataset
             - microsteps: 567M, initial configurations for each episode
-            - keysteps_bbox: 160G, extracted keysteps data
+            - keysteps_bbox: 160G, extracted keysteps data, used to generate keysteps_bbox_pcd
             - keysteps_bbox_pcd: (used to train 3D-LOTUS)
-                - voxel1m: 10G, processed point clouds
+                - seed0
+                    - voxel1cm: 10G, processed point clouds
                 - instr_embeds_clip.npy: instructions encoded by CLIP text encoder
             - motion_keysteps_bbox_pcd: (used to train 3D-LOTUS++ motion planner)
-                - voxel1m: 2.8G, processed point clouds
+                - seed0
+                    - voxel1cm: 2.8G, processed point clouds
                 - action_embeds_clip.npy: action names encoded by CLIP text encoder
         - val_dataset
             - microsteps: 110M, initial configurations for each episode
             - keysteps_bbox_pcd:
-                - voxel1m: 941M, processed point clouds
+                - seed100
+                    - voxel1cm: 941M, processed point clouds
+            - motion_keysteps_bbox_pcd:
+                - seed100
+                    - voxel1cm: 278MB, processed point clouds
         - test_dataset
             - microsteps: 2.2G, initial configurations for each episode
 ```
@@ -92,6 +98,19 @@ See comments in the following scripts:
 # both validation and test splits
 sbatch job_scripts/eval_3dlotusplus_policy.sh
 ```
+
+We use the validation set to select the best checkpoint. The following script summarizes results on the validation split.
+```bash
+python scripts/summarize_val_results.py data/experiments/gembench/3dlotusplus/v1/preds-llm_gt-og_gt_coarse/seed100/results.jsonl
+```
+
+The following script summarizes results on the test splits of four generalization levels, for the three evaluation modes:
+```bash
+`python scripts/summarize_tst_results.py data/experiments/gembench/3dlotusplus/v1/preds-llm_gt-og_gt_coarse 140000`
+python scripts/summarize_tst_results.py data/experiments/gembench/3dlotusplus/v1/preds-llm_gt-runstep5 140000
+python scripts/summarize_tst_results.py data/experiments/gembench/3dlotusplus/v1/preds-runstep5 140000
+```
+
 
 ## Citation
 If you use our GemBench benchmark or find our code helpful, please kindly cite our work:

@@ -224,6 +224,53 @@ class GroundtruthRobotPipeline(object):
         load_checkpoint(motion_planner, mp_config.checkpoint)
         return motion_planner
 
+    def preprocess_obs(self, taskvar, highlevel_step_id_norelease, obs_state_dict, plan):
+        pcd_images = obs_state_dict['pc']
+        rgb_images = obs_state_dict['rgb']
+        sem_images = obs_state_dict['gt_mask']
+        arm_links_info = obs_state_dict['arm_links_info']
+        gripper_pose = copy.deepcopy(obs_state_dict['gripper'])
+
+        batch = self.vlm_pipeline(
+            taskvar, highlevel_step_id_norelease,
+            pcd_images, sem_images, gripper_pose, arm_links_info,
+            rgb_images=rgb_images
+        )
+
+        # motion planning
+        action_name = plan['action']
+        if self.instr_include_objects:
+            if 'object' in plan and plan['object'] is not None:
+                object_name = ''.join([x for x in plan['object'] if not x.isdigit()])
+                object_name = object_name.replace('_', ' ').strip()
+                action_name = f"{action_name} {object_name}"
+            if 'target' in plan and plan['target'] is not None and plan['target'] not in ['up', 'down', 'out', 'in']:
+                # TODO: should keep the target name is target is a variable
+                target_name = ''.join([x for x in plan['target'] if not x.isdigit()])
+                target_name = target_name.replace('_', ' ').strip()
+                action_name = f"{action_name} to {target_name}"
+        # print(action_name)
+        action_embeds = self.clip_model(
+            'text', action_name, use_prompt=False, output_hidden_states=True
+        )[0]  # shape=(txt_len, hidden_size)
+        batch.update({
+            'txt_embeds': action_embeds,
+            'txt_lens': [action_embeds.size(0)],
+        })
+
+        return batch
+
+    def predict_action(self, batch=None, model=None):
+        pred_actions = model(batch, compute_loss=False)[0] # (max_action_len, 8)
+        pred_actions[:, 7:] = torch.sigmoid(pred_actions[:, 7:])
+        pred_actions = pred_actions.data.cpu().numpy()
+
+        # rescale the predicted position
+        pred_actions[:, :3] = (pred_actions[:, :3] * batch['pc_radius']) + batch['pc_centroids']
+        pred_actions[:, 2] = np.maximum(pred_actions[:, 2], self.vlm_pipeline.TABLE_HEIGHT + 0.005)
+
+        return pred_actions
+
     @torch.no_grad()
     def predict(self, task_str, variation, step_id, obs_state_dict, episode_id, instructions, cache=None):
         print(f'### step_id={step_id}, task={task_str}, variation={variation}')
@@ -242,7 +289,6 @@ class GroundtruthRobotPipeline(object):
             else:
                 cache.episode_outdir = None
 
-        # print(f'taskvar={task_str}+{variation}, step={step_id}, #cache_actions={len(self.cache.valid_actions)}')
         if len(cache.valid_actions) > 0:
             cur_action = cache.valid_actions[0][:8]
             cache.valid_actions = cache.valid_actions[1:]
@@ -256,11 +302,6 @@ class GroundtruthRobotPipeline(object):
                     }
                 )
             return out
-        pcd_images = obs_state_dict['pc']
-        rgb_images = obs_state_dict['rgb']
-        sem_images = obs_state_dict['gt_mask']
-        arm_links_info = obs_state_dict['arm_links_info']
-        gripper_pose = copy.deepcopy(obs_state_dict['gripper'])
 
         # initialize: task planning
         if step_id == 0:
@@ -287,57 +328,32 @@ class GroundtruthRobotPipeline(object):
             return {'action': np.zeros((8, ))}
 
         if plan['action'] == 'release':
+            gripper_pose = copy.deepcopy(obs_state_dict['gripper'])
             action = gripper_pose
             action[7] = 1
             cache.highlevel_step_id += 1
             print(f'returning release action and cache')
             return {'action': action, 'cache': cache}
-        batch = self.vlm_pipeline(
-            taskvar, cache.highlevel_step_id_norelease, 
-            pcd_images, sem_images, gripper_pose, arm_links_info,
-            rgb_images=rgb_images
-        )
 
-        # motion planning
-        action_name = plan['action']
-        if self.instr_include_objects:
-            if 'object' in plan and plan['object'] is not None:
-                object_name = ''.join([x for x in plan['object'] if not x.isdigit()])
-                object_name = object_name.replace('_', ' ').strip()
-                action_name = f"{action_name} {object_name}"
-            if 'target' in plan and plan['target'] is not None and plan['target'] not in ['up', 'down', 'out', 'in']:
-                # TODO: should keep the target name is target is a variable
-                target_name = ''.join([x for x in plan['target'] if not x.isdigit()])
-                target_name = target_name.replace('_', ' ').strip()
-                action_name = f"{action_name} to {target_name}"
-        # print(action_name)
-        action_embeds = self.clip_model(
-            'text', action_name, use_prompt=False, output_hidden_states=True
-        )[0]    # shape=(txt_len, hidden_size)
-        batch.update({
-            'txt_embeds': action_embeds,
-            'txt_lens':  [action_embeds.size(0)],
-        })
-
-        pred_actions = self.motion_planner(batch, compute_loss=False)[0] # (max_action_len, 8)
-        pred_actions[:, 7:] = torch.sigmoid(pred_actions[:, 7:])
-        pred_actions = pred_actions.data.cpu().numpy()
-        # print(pred_actions)
-
-        # rescale the predicted position
-        pred_actions[:, :3] = (pred_actions[:, :3] * batch['pc_radius']) + batch['pc_centroids']
-        pred_actions[:, 2] = np.maximum(pred_actions[:, 2], self.vlm_pipeline.TABLE_HEIGHT + 0.005)
+        batch_coarse = self.preprocess_obs(taskvar, cache.highlevel_step_id_norelease, obs_state_dict, plan)
+        
+        pred_actions = self.predict_action(batch=batch_coarse, model=self.motion_planner)
 
         valid_actions = []
         for t, pred_action in enumerate(pred_actions):
             # if pred_action[8] >= 0.5 or self.config.pipeline.exceed_max_action:
             valid_actions.append(pred_action)
             if t + 1 >= self.config.motion_planner.run_action_step:
+                # exceeds the max nb of actions
                 break
             if pred_action[-1] > 0.5:
+                # stop prob is 1, so this action is the last of the trajectory and of the high-level plan step
                 break
 
         if pred_action[-1] > 0.5:
+            # only if the last action is the last of the trajectory and of the high-level plan step
+            # otherwise, we don't increment the high-level step id,
+            # and we will regenerate a novel trajectory at the end of this one to complete the high-level plan step
             cache.highlevel_step_id += 1
             cache.highlevel_step_id_norelease += 1
         

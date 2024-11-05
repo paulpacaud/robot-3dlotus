@@ -69,6 +69,9 @@ class ServerArguments(tap.Tap):
     no_gt_llm: bool = False
     llm_master_port: int = None
 
+    coarse_model_dir: str
+    ckpt_step_coarse: int
+
 
 def consumer_fn(args, pipeline_config, batch_queue, result_queues):
     print('consumer start')

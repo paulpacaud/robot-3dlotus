@@ -48,8 +48,12 @@ class Mover:
         self._step_id = 0
 
     def __call__(self, action: np.ndarray, verbose=True):
+        print(f'Mover called for step {self._step_id}, and action {action}')
         action = action.copy()
 
+        # change_gripper is a flag that indicates whether the gripper's open/close state is changing between actions
+        # we want to Separate Arm Movement from Gripper Actions: Move to the correct position before changing the gripper state.
+        # that's why we store the change flag and then we erase the gripper state by putting the last gripper state to not change it while moving the arm
         change_gripper = ((self._last_action[-1] > 0.5) & (action[-1] < 0.5)) or \
                          ((self._last_action[-1] < 0.5) & (action[-1] > 0.5))
 
@@ -64,11 +68,12 @@ class Mover:
         obs = None
         terminate = None
         reward = 0
-
+        print(f'change_gripper: {change_gripper}')
+        print(f'start of the loop to try for step {self._step_id}')
         for try_id in range(self._max_tries):
-            # print('task step', try_id)
+            print('task step', try_id)
+
             obs, reward, terminate = self._task.step(action)
-            # print('finish step')
 
             pos = obs.gripper_pose[:3]
             rot = obs.gripper_pose[3:7]
@@ -168,7 +173,7 @@ class RLBenchEnv(object):
                 if k.endswith('_pose'):
                     arm_poses[k] = np.array(v)
         state_dict["arm_links_info"] = (arm_bboxes, arm_poses)
-            
+
         for cam in self.apply_cameras:
             if self.apply_rgb:
                 rgb = getattr(obs, "{}_rgb".format(cam))
@@ -195,7 +200,7 @@ class RLBenchEnv(object):
                 state_dict[key] = np.stack(state_dict[key], 0)
         if 'pc' in state_dict and len(state_dict['pc']) > 0:
             state_dict['pc'] = state_dict['pc'].astype(np.float32)
-        
+
         # fetch gripper state (3+4+1, )
         gripper = np.concatenate([obs.gripper_pose, [obs.gripper_open]]).astype(np.float32)
         state_dict['gripper'] = gripper
@@ -231,7 +236,7 @@ class RLBenchEnv(object):
         return demos[0]
 
     def evaluate(
-        self, task_str, variation, max_episodes, num_demos, log_dir, actioner, 
+        self, task_str, variation, max_episodes, num_demos, log_dir, actioner,
         max_tries: int = 1, demos: Optional[List[Demo]] = None, demo_keys: List = None,
         save_attn: bool = False, save_image: bool = False,
         record_video: bool = False, include_robot_cameras: bool = True, video_rotate_cam: bool = False,
@@ -322,12 +327,12 @@ class RLBenchEnv(object):
                     for cam_name in self.apply_cameras:
                         if cam_name != "wrist":
                             cams[cam_name] = getattr(task._scene, CAMERA_ATTR[cam_name])
-                    
+
                     if self.cam_info is None:
                         self.cam_info = {}
                         for cam_name, cam in cams.items():
                             self.cam_info[cam_name] = cam.get_pose()
-                        
+
                     for cam_name, cam in cams.items():
                         # pos +/- 1 cm
                         cam_pos_range = self.cam_rand_factor * 0.01
@@ -341,7 +346,7 @@ class RLBenchEnv(object):
                         orig_pos = orig_pose[:3]
                         orig_quat = orig_pose[3:]
                         orig_rot = quat_to_euler(orig_quat, False)
-                        
+
                         new_pos = orig_pos + delta_pos
                         new_rot = orig_rot + delta_rot
                         new_quat = euler_to_quat(new_rot, False)
@@ -368,8 +373,8 @@ class RLBenchEnv(object):
                             Image.fromarray(img_by_cam).save(cam_dir / f"{step_id}.png")
 
                     output = actioner.predict(
-                        task_str=task_str, variation=variation, 
-                        step_id=step_id, obs_state_dict=obs_state_dict, 
+                        task_str=task_str, variation=variation,
+                        step_id=step_id, obs_state_dict=obs_state_dict,
                         episode_id=demo_id, instructions=instructions
                     )
                     action = output["action"]
@@ -401,11 +406,11 @@ class RLBenchEnv(object):
                         print(task_str, demo_id, step_id, e)
                         reward = 0
                         break
-                
+
                 cur_demo_id += 1
                 print(
                     task_str, "Variation", variation, "Demo", demo_id, 'Step', step_id+1,
-                    "Reward", reward, "Accumulated SR: %.2f" % (success_rate * 100), 
+                    "Reward", reward, "Accumulated SR: %.2f" % (success_rate * 100),
                     'Estimated SR: %.2f' % (success_rate * num_demos / cur_demo_id * 100)
                 )
 
@@ -502,7 +507,7 @@ class RLBenchEnv(object):
         meta_info['scene_objs'] = []
         for scene_obj in scene_objs:
             obj_meta = {
-                'id': scene_obj.get_handle(), 
+                'id': scene_obj.get_handle(),
                 'name': scene_obj.get_name(),
                 'children': []
             }

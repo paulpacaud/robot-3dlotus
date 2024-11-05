@@ -64,6 +64,9 @@ class Arguments(tap.Tap):
 
     real_robot: bool = False
 
+    exp_config_coarse: str = None
+    checkpoint_coarse: str = None
+
 class Actioner(object):
     def __init__(self, args) -> None:
         self.args = args
@@ -74,29 +77,29 @@ class Actioner(object):
         self.device = torch.device(args.device)
 
         config = get_config(args.exp_config, args.remained_args)
+        config_coarse = get_config(args.exp_config_coarse, args.remained_args)
         self.config = config
+        self.config_coarse = config_coarse
         self.config.defrost()
+        self.config_coarse.defrost()
         self.config.TRAIN_DATASET.sample_points_by_distance = self.config.TRAIN_DATASET.get('sample_points_by_distance', False)
         self.config.TRAIN_DATASET.rm_pc_outliers = self.config.TRAIN_DATASET.get('rm_pc_outliers', False)
         self.config.TRAIN_DATASET.rm_pc_outliers_neighbors = self.config.TRAIN_DATASET.get('rm_pc_outliers_neighbors', 10)
         self.config.TRAIN_DATASET.same_npoints_per_example = self.config.TRAIN_DATASET.get('same_npoints_per_example', False)
         self.config.MODEL.action_config.best_disc_pos = args.best_disc_pos
 
+        self.config_coarse.MODEL.action_config.best_disc_pos = args.best_disc_pos
+
         if args.checkpoint is not None:
             config.checkpoint = args.checkpoint
+        if args.checkpoint_coarse is not None:
+            config_coarse.checkpoint = args.checkpoint_coarse
 
-        model_class = MODEL_FACTORY[config.MODEL.model_class]
-        self.model = model_class(config.MODEL)
-        if config.checkpoint:
-            checkpoint = torch.load(
-                config.checkpoint, map_location=lambda storage, loc: storage
-            )
-            self.model.load_state_dict(checkpoint, strict=True)
-
-        self.model.to(self.device)
-        self.model.eval()
+        self.model = self.set_model(config)
+        self.model_coarse = self.set_model(config_coarse)
 
         self.config.freeze()
+        self.config_coarse.freeze()
 
         data_cfg = self.config.TRAIN_DATASET
         self.data_cfg = data_cfg
@@ -106,6 +109,20 @@ class Actioner(object):
         self.taskvar_instrs = json.load(open(data_cfg.taskvar_instr_file))
 
         self.TABLE_HEIGHT = self.WORKSPACE['TABLE_HEIGHT']
+
+    def set_model(self, config):
+        model_class = MODEL_FACTORY[config.MODEL.model_class]
+        model = model_class(config.MODEL)
+        if config.checkpoint:
+            checkpoint = torch.load(
+                config.checkpoint, map_location=lambda storage, loc: storage
+            )
+            model.load_state_dict(checkpoint, strict=True)
+
+        model.to(self.device)
+        model.eval()
+
+        return model
 
     def _get_mask_with_label_ids(self, sem, label_ids):
         mask = sem == label_ids[0]
@@ -141,15 +158,50 @@ class Actioner(object):
         if rgb is not None:
             rgb = rgb[idxs]
         return xyz, rgb
+
+    def zoom_around_point(self, xyz, workspace, point_of_interest, scale_factor):
+        """
+        Refines the point cloud to focus around the `point_of_interest`.
+
+        Parameters:
+        - xyz: numpy array, the point cloud coordinates.
+        - workspace: dict, bounding box limits for the workspace.
+        - point_of_interest: numpy array, central point for refinement.
+        - scale_factor: float, proportion of the workspace bounds to keep (e.g., 0.25 to keep 1/4).
+
+        Returns:
+        - mask: boolean numpy array, indicating points within the refined area.
+        """
+        workspace_width_x = workspace['X_BBOX'][1] - workspace['X_BBOX'][0]
+        workspace_width_y = workspace['Y_BBOX'][1] - workspace['Y_BBOX'][0]
+        workspace_width_z = workspace['Z_BBOX'][1] - workspace['Z_BBOX'][0]
+        x_min, x_max = point_of_interest[0] - workspace_width_x * scale_factor / 2, \
+                       point_of_interest[0] + workspace_width_x * scale_factor / 2
+        y_min, y_max = point_of_interest[1] - workspace_width_y * scale_factor / 2, \
+                       point_of_interest[1] + workspace_width_y * scale_factor / 2
+        z_min, z_max = point_of_interest[2] - workspace_width_z * scale_factor / 2, \
+                       point_of_interest[2] + workspace_width_z * scale_factor / 2
+
+        mask = (xyz[:, 0] > x_min) & (xyz[:, 0] < x_max) & \
+               (xyz[:, 1] > y_min) & (xyz[:, 1] < y_max) & \
+               (xyz[:, 2] > z_min) & (xyz[:, 2] < z_max)
+
+        return mask
     
     def process_point_clouds(
-        self, xyz, rgb, gt_sem=None, ee_pose=None, arm_links_info=None, taskvar=None
+        self, xyz, rgb, gt_sem=None, ee_pose=None, arm_links_info=None, taskvar=None, point_of_interest=None
     ):
         # keep points in robot workspace
         xyz = xyz.reshape(-1, 3)
         in_mask = (xyz[:, 0] > self.WORKSPACE['X_BBOX'][0]) & (xyz[:, 0] < self.WORKSPACE['X_BBOX'][1]) & \
                   (xyz[:, 1] > self.WORKSPACE['Y_BBOX'][0]) & (xyz[:, 1] < self.WORKSPACE['Y_BBOX'][1]) & \
                   (xyz[:, 2] > self.WORKSPACE['Z_BBOX'][0]) & (xyz[:, 2] < self.WORKSPACE['Z_BBOX'][1])
+
+        if point_of_interest is not None:
+            # if fine mode, zoom around the point of interest
+            mask_area_of_interest = self.zoom_around_point(xyz, self.WORKSPACE, point_of_interest, 0.4)
+            in_mask = in_mask & mask_area_of_interest
+
         if self.data_cfg.rm_table:
             in_mask = in_mask & (xyz[:, 2] > self.WORKSPACE['TABLE_HEIGHT'])
         xyz = xyz[in_mask]
@@ -157,14 +209,15 @@ class Actioner(object):
         if gt_sem is not None:
             gt_sem = gt_sem.reshape(-1)[in_mask]
 
-        # downsampling
-        pcd = o3d.geometry.PointCloud()
-        pcd.points = o3d.utility.Vector3dVector(xyz)
-        pcd, _, trace = pcd.voxel_down_sample_and_trace(
-            self.config.MODEL.action_config.voxel_size, np.min(xyz, 0), np.max(xyz, 0)
-        )
-        xyz = np.asarray(pcd.points)
-        trace = np.array([v[0] for v in trace])
+        if point_of_interest is not None:
+            # if fine mode, use fine voxel size
+            voxel_size = self.config.MODEL.action_config.voxel_size
+        else:
+            # if coarse mode, use coarse voxel size
+            voxel_size = self.config_coarse.MODEL.action_config.voxel_size
+
+        xyz, trace = voxelize_pcd(xyz, voxel_size=voxel_size)
+
         rgb = rgb[trace]
         if gt_sem is not None:
             gt_sem = gt_sem[trace]
@@ -243,7 +296,7 @@ class Actioner(object):
         return pc_ft, centroid, radius, ee_pose
 
 
-    def preprocess_obs(self, taskvar, step_id, obs):
+    def preprocess_obs(self, taskvar, step_id, obs, point_of_interest=None):
         rgb = np.stack(obs['rgb'], 0)  # (N, H, W, C)
         xyz = np.stack(obs['pc'], 0)  # (N, H, W, C)
         if 'gt_mask' in obs:
@@ -257,7 +310,7 @@ class Actioner(object):
         
         pc_ft, pc_centroid, pc_radius, ee_pose = self.process_point_clouds(
             xyz, rgb, gt_sem=gt_sem, ee_pose=copy.deepcopy(obs['gripper']), 
-            arm_links_info=obs['arm_links_info'], taskvar=taskvar
+            arm_links_info=obs['arm_links_info'], taskvar=taskvar, point_of_interest=point_of_interest
         )
         
         batch = {
@@ -283,23 +336,13 @@ class Actioner(object):
         #         print(k, v.size())
         return batch
 
-    def predict(
-        self, task_str=None, variation=None, step_id=None, obs_state_dict=None, 
-        episode_id=None, instructions=None,
-    ):
-        # print(obs_state_dict)
-        taskvar = f'{task_str}+{variation}'
-        batch = self.preprocess_obs(
-            taskvar, step_id, obs_state_dict,
-        )
+    def predict_action(self, batch=None, model=None):
         with torch.no_grad():
             actions = []
-            # TODO
             for _ in range(self.args.num_ensembles):
-                action = self.model(batch)[0].data.cpu()
+                action = model(batch)[0].data.cpu()
                 actions.append(action)
             if len(actions) > 1:
-                # print(torch.stack(actions, 0))
                 avg_action = torch.stack(actions, 0).mean(0)
                 pred_rot = torch.from_numpy(R.from_euler(
                     'xyz', np.mean([R.from_quat(x[3:-1]).as_euler('xyz') for x in actions], 0),
@@ -308,12 +351,41 @@ class Actioner(object):
             else:
                 action = actions[0]
         action[-1] = torch.sigmoid(action[-1]) > 0.5
-        
-        # action = action.data.cpu().numpy()
+
         action = action.numpy()
         action[:3] = action[:3] * batch['pc_radius'] + batch['pc_centroids']
-        # TODO: ensure the action height is above the table
-        action[2] = max(action[2], self.TABLE_HEIGHT+0.005)
+        action[2] = max(action[2], self.TABLE_HEIGHT + 0.005)
+
+        return action
+
+    def predict_point_of_interest(self, batch_coarse=None):
+        action = self.predict_action(batch_coarse, self.model_coarse)
+
+        gripper_pos = action[:3]
+
+        return gripper_pos
+
+    def predict(
+        self, task_str=None, variation=None, step_id=None, obs_state_dict=None, 
+        episode_id=None, instructions=None,
+    ):
+        print(f'Predicting for {task_str}+{variation} at step {step_id}...')
+        taskvar = f'{task_str}+{variation}'
+        batch_coarse = self.preprocess_obs(
+            taskvar, step_id, obs_state_dict,
+        )
+        print(f"Coarse batch size: {batch_coarse['pc_fts'].size()}")
+
+        point_of_interest = self.predict_point_of_interest(batch_coarse)
+        print(f"Point of interest: {point_of_interest}")
+        batch_fine = self.preprocess_obs(
+            taskvar, step_id, obs_state_dict, point_of_interest=point_of_interest
+        )
+        print(f"Fine batch size: {batch_fine['pc_fts'].size()}")
+
+        action = self.predict_action(batch_fine, self.model)
+
+        print(f'Predicted action: {action}')
 
         out = {
             'action': action
@@ -323,102 +395,10 @@ class Actioner(object):
             np.save(
                 os.path.join(self.args.save_obs_outs_dir, f'{task_str}+{variation}-{episode_id}-{step_id}.npy'),
                 {
-                    'batch': {k: v.data.cpu().numpy() if isinstance(v, torch.Tensor) else v for k, v in batch.items()},
+                    'batch': {k: v.data.cpu().numpy() if isinstance(v, torch.Tensor) else v for k, v in batch_fine.items()},
                     'obs': obs_state_dict,
                     'action': action
                 }
             )
 
         return out
-
-
-def evaluate_actioner(args):    
-    
-    set_random_seed(args.seed)
-
-    actioner = Actioner(args)
-    
-    pred_dir = os.path.join(actioner.config.output_dir, 'preds', f'seed{args.seed}')
-    if args.cam_rand_factor > 0:
-        pred_dir = '%s-cam_rand_factor%.1f' % (pred_dir, args.cam_rand_factor)
-    os.makedirs(pred_dir, exist_ok=True)
-
-    if len(args.image_size) == 1:
-        args.image_size = [args.image_size[0], args.image_size[0]]    # (height, width)
-
-    outfile = os.path.join(pred_dir, 'results.jsonl')
-
-    existed_data = set()
-    if os.path.exists(outfile):
-        with jsonlines.open(outfile, 'r') as f:
-            for item in f:
-                existed_data.add((item['checkpoint'], '%s+%d'%(item['task'], item['variation'])))
-
-    if (args.checkpoint, args.taskvar) in existed_data:
-        return
-
-    env = RLBenchEnv(
-        data_path=args.microstep_data_dir,
-        apply_rgb=True,
-        apply_pc=True,
-        apply_mask=True,
-        headless=args.headless,
-        image_size=args.image_size,
-        cam_rand_factor=args.cam_rand_factor,
-    )
-
-    task_str, variation = args.taskvar.split('+')
-    variation = int(variation)
-
-    if args.microstep_data_dir != '':
-        episodes_dir = os.path.join(args.microstep_data_dir, task_str, f"variation{variation}", "episodes")
-        demo_keys, demos = [], []
-        if os.path.exists(str(episodes_dir)):
-            episode_ids = os.listdir(episodes_dir)
-            episode_ids.sort(key=lambda ep: int(ep[7:]))
-            for idx, ep in enumerate(episode_ids):
-                # episode_id = int(ep[7:])
-                try:
-                    demo = env.get_demo(task_str, variation, idx, load_images=False)
-                    demo_keys.append(f'episode{idx}')
-                    demos.append(demo)
-                except Exception as e:
-                    print('\tProblem to load demo_id:', idx, ep)
-                    print(e)
-    else:
-        demo_keys = None
-        demos = None
-            
-    success_rate = env.evaluate(
-        task_str, variation,
-        actioner=actioner,
-        max_episodes=args.max_steps,
-        num_demos=len(demos) if demos is not None else args.num_demos,
-        demos=demos,
-        demo_keys=demo_keys,
-        log_dir=Path(pred_dir),
-        max_tries=args.max_tries,
-        save_image=args.save_image,
-        record_video=args.record_video,
-        include_robot_cameras=(not args.not_include_robot_cameras),
-        video_rotate_cam=args.video_rotate_cam,
-        video_resolution=args.video_resolution,
-    )
-
-    print("Testing Success Rate {}: {:.04f}".format(task_str, success_rate))
-    write_to_file(
-        outfile,
-        {
-            'checkpoint': args.checkpoint,
-            'task': task_str, 'variation': variation,
-            'num_demos': args.num_demos, 'sr': success_rate
-        }
-    )
-
-
-
-if __name__ == '__main__':
-    args = Arguments().parse_args(known_only=True)
-    args.remained_args = args.extra_args
-    
-    evaluate_actioner(args)

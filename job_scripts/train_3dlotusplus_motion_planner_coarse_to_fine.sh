@@ -58,10 +58,10 @@ srun python genrobo3d/train/train_motion_planner.py \
     TRAIN_DATASET.aug_max_rot 45 \
     TRAIN_DATASET.rm_pc_outliers False VAL_DATASET.rm_pc_outliers False \
     TRAIN_DATASET.max_traj_len ${max_traj_len} VAL_DATASET.max_traj_len ${max_traj_len} \
-    TRAIN_DATASET.pc_label_type fine VAL_DATASET.pc_label_type fine \
+    TRAIN_DATASET.pc_label_type coarse VAL_DATASET.pc_label_type coarse \
     TRAIN_DATASET.pc_label_augment 0.0 VAL_DATASET.pc_label_augment 0.0 \
     TRAIN_DATASET.pc_midstep_augment True VAL_DATASET.pc_midstep_augment True \
-    TRAIN_DATASET.data_dir data/gembench/train_dataset/motion_keysteps_bbox_pcd/seed0/voxel1cm \
+    TRAIN_DATASET.data_dir data/gembench/train_dataset/motion_keysteps_bbox_pcd/seed0/voxel0.5cm \
     TRAIN_DATASET.gt_act_obj_label_file assets/taskvars_target_label_zrange.json \
     VAL_DATASET.gt_act_obj_label_file assets/taskvars_target_label_zrange.json \
     TRAIN_DATASET.instr_include_objects False VAL_DATASET.instr_include_objects False \
@@ -70,7 +70,7 @@ srun python genrobo3d/train/train_motion_planner.py \
     TRAIN_DATASET.use_color False VAL_DATASET.use_color False \
     MODEL.ptv3_config.drop_path 0.0 MODEL.ptv3_config.attn_drop 0.1 MODEL.ptv3_config.proj_drop 0.1 \
     MODEL.action_config.dropout 0.2 \
-    MODEL.action_config.voxel_size 0.01 \
+    MODEL.action_config.voxel_size 0.005 \
     MODEL.action_config.reduce max \
     MODEL.action_config.dim_actions 7 MODEL.action_config.rot_pred_type ${rot_type} \
     MODEL.action_config.pos_pred_type heatmap_disc \
