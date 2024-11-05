@@ -21,7 +21,7 @@ code_dir = os.path.join(os.environ.get('HOME'), 'Projects/robot-3dlotus')
 
 input_dir = os.path.join(code_dir, 'data/gembench/train_dataset/keysteps_bbox/seed0')
 output_dir = os.path.join(code_dir, 'data/gembench/train_dataset/keysteps_bbox_pcd/seed0/voxel0.5cm')
-taskvar_file = os.path.join(code_dir, 'assets', 'taskvars_train_debug.json')
+taskvar_file = os.path.join(code_dir, 'assets', 'taskvars_debug.json')
 
 def zoom_around_point(xyz, workspace, point_of_interest, scale_factor):
     """

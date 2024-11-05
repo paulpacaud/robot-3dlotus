@@ -32,11 +32,11 @@ export XDG_RUNTIME_DIR=$SCRATCH/tmp/runtime-$SLURM_JOBID
 mkdir -p $XDG_RUNTIME_DIR
 chmod 700 $XDG_RUNTIME_DIR
 
-expr_dir=data/experiments/gembench/3dlotus/v1
+expr_dir=data/experiments/gembench/3dlotus/v1_coarse
 coarse_model_dir=data/experiments/gembench/3dlotus/v1_coarse
 
 ckpt_step_coarse=150000
-
+ckpt_step=150000
 # validation
 
 #for ckpt_step in 150000 140000 130000 80000 70000 60000 50000
@@ -50,7 +50,7 @@ ckpt_step_coarse=150000
 #    --coarse_model_dir ${coarse_model_dir} --ckpt_step_coarse ${ckpt_step_coarse}
 #done
 
-ckpt_step=140000
+#ckpt_step=140000
 # test
 for seed in {200..600..100}
 do
@@ -66,3 +66,17 @@ singularity exec --bind $HOME:$HOME,$SCRATCH:$SCRATCH --nv ${sif_image} \
 done
 done
 
+#ckpt_step=150000
+#seed=200
+## test
+#singularity exec --bind $HOME:$HOME,$SCRATCH:$SCRATCH --nv ${sif_image} \
+#    xvfb-run -a ${python_bin} genrobo3d/evaluation/eval_simple_policy_server_coarse_to_fine.py \
+#    --expr_dir ${expr_dir} --ckpt_step ${ckpt_step} --num_workers 4 \
+#    --taskvar_file assets/taskvars_debug.json \
+#    --seed ${seed} --num_demos 2 \
+#    --microstep_data_dir data/gembench/test_dataset/microsteps/seed${seed} \
+#    --coarse_model_dir ${coarse_model_dir} --ckpt_step_coarse ${ckpt_step_coarse}
+##    --save_obs_outs_dir data/experiments/gembench/3dlotus/v1/obs_out
+##    --record_video --video_dir ${expr_dir}/videos/debug/seed${seed} \
+##    --not_include_robot_cameras  --video_rotate_cam
+#
