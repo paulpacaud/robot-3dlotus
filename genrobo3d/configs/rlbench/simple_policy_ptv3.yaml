@@ -33,7 +33,7 @@ TRAIN:
   pin_mem: True
 
 TRAIN_DATASET:
-  data_dir: 'data/gembench/train_dataset/keysteps_bbox_pcd/seed0/voxel1cm'
+  data_dir: 'data/gembench/train_dataset/keysteps_bbox_pcd/seed0/voxel0.5cm'
   instr_embed_file: 'data/gembench/train_dataset/keysteps_bbox_pcd/instr_embeds_clip.npy'
   taskvar_instr_file: 'assets/taskvars_instructions_new.json'
   taskvar_file: 'assets/taskvars_train.json'
@@ -55,14 +55,14 @@ TRAIN_DATASET:
   rm_pc_outliers: False
   rm_pc_outliers_neighbors: 25
   pos_bins: 40
-  pos_bin_size: 0.01
+  pos_bin_size: 0.005
   pos_heatmap_type: 'dist' # plain, dist
   pos_heatmap_no_robot: False
   real_robot: False
 
 VAL_DATASET:
   use_val: True
-  data_dir: 'data/gembench/val_dataset/keysteps_bbox_pcd/seed100/voxel1cm'
+  data_dir: 'data/gembench/val_dataset/keysteps_bbox_pcd/seed100/voxel0.5cm'
   instr_embed_file: 'data/gembench/train_dataset/keysteps_bbox_pcd/instr_embeds_clip.npy'
   taskvar_instr_file: 'assets/taskvars_instructions_new.json'
   taskvar_file: 'assets/taskvars_train.json'
@@ -84,7 +84,7 @@ VAL_DATASET:
   rm_pc_outliers: False
   rm_pc_outliers_neighbors: 25
   pos_bins: 40
-  pos_bin_size: 0.01
+  pos_bin_size: 0.005
   pos_heatmap_type: 'dist' # plain, dist
   pos_heatmap_no_robot: False
   real_robot: False
@@ -129,7 +129,7 @@ MODEL:
     add_coords_in_attn: 'none' # none, qk, qkv
 
   action_config:
-    voxel_size: 0.01 # 1cm
+    voxel_size: 0.005 # 0.5cm
     context_channels: 256
 
     txt_ft_size: 512
@@ -150,7 +150,7 @@ MODEL:
     dropout: 0.1
 
     pos_bins: 40
-    pos_bin_size: 0.01
+    pos_bin_size: 0.005
     best_disc_pos: max # max, ens1
 
   loss_config:

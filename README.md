@@ -22,17 +22,23 @@ Dataset structure is as follows:
     - gembench
         - train_dataset
             - microsteps: 567M, initial configurations for each episode
-            - keysteps_bbox: 160G, extracted keysteps data
+            - keysteps_bbox: 160G, extracted keysteps data, used to generate keysteps_bbox_pcd
             - keysteps_bbox_pcd: (used to train 3D-LOTUS)
-                - voxel1m: 10G, processed point clouds
+                - seed0
+                    - voxel1cm: 10G, processed point clouds
                 - instr_embeds_clip.npy: instructions encoded by CLIP text encoder
             - motion_keysteps_bbox_pcd: (used to train 3D-LOTUS++ motion planner)
-                - voxel1m: 2.8G, processed point clouds
+                - seed0
+                    - voxel1cm: 2.8G, processed point clouds
                 - action_embeds_clip.npy: action names encoded by CLIP text encoder
         - val_dataset
             - microsteps: 110M, initial configurations for each episode
             - keysteps_bbox_pcd:
-                - voxel1m: 941M, processed point clouds
+                - seed100
+                    - voxel1cm: 941M, processed point clouds
+            - motion_keysteps_bbox_pcd:
+                - seed100
+                    - voxel1cm: 278MB, processed point clouds
         - test_dataset
             - microsteps: 2.2G, initial configurations for each episode
 ```
@@ -45,13 +51,16 @@ Train the 3D-LOTUS policy end-to-end on the GemBench train split. It takes about
 sbatch job_scripts/train_3dlotus_policy.sh
 ```
 
-The trained checkpoints are available [here](https://www.dropbox.com/scl/fo/0g6iz7d7zb524339dgtms/AHS42SO7aPpwut8I8YN8H3w?rlkey=3fwdehsguqsxofzq9kp9fy8fm&st=eqdd6qvf&dl=0).
+The trained checkpoints are available [here](https://www.dropbox.com/scl/fo/0g6iz7d7zb524339dgtms/AHS42SO7aPpwut8I8YN8H3w?rlkey=3fwdehsguqsxofzq9kp9fy8fm&st=eqdd6qvf&dl=0). You should put them in the folder data/experiments/gembench/3dlotus/v1
 
 ### Evaluation
 ```bash
 # both validation and test splits
 sbatch job_scripts/eval_3dlotus_policy.sh
 ```
+
+The evaluation script evaluates the 3D-LOTUS policy on the validation (seed100) and test splits of the GemBench benchmark.
+The evaluation script skips any task that has already been evaluated before and whose results are already saved in data/experiments/gembench/3dlotus/v1/preds/ so make  sure to clean it if you want to re-evaluate a task that you already evaluated.
 
 We use the validation set to select the best checkpoint. The following script summarizes results on the validation split.
 ```bash
@@ -72,10 +81,10 @@ Download llama3-8B model following [instructions here](https://github.com/cshizh
 
 Train the 3D-LOTUS++ motion planning policy on the GemBench train split. It takes about 14h with a single A100 GPU.
 ```bash
-sbatch job_scripts/train_3dlotusplous_motion_planner.sh
+sbatch job_scripts/train_3dlotusplus_motion_planner.sh
 ```
 
-The trained checkpoints are available [here](https://www.dropbox.com/scl/fo/e623fv9wvu8ke1qjp7ni5/AEydRnEnUHk-eA6n5EVsb_E?rlkey=1uv7fl7zfega1ed80qw3gbzge&st=whuys6zg&dl=0).
+The trained checkpoints are available [here](https://www.dropbox.com/scl/fo/e623fv9wvu8ke1qjp7ni5/AEydRnEnUHk-eA6n5EVsb_E?rlkey=1uv7fl7zfega1ed80qw3gbzge&st=whuys6zg&dl=0). . You should put them in the folder data/experiments/gembench/3dlotusplus/v1
 
 ### Evaluation
 
@@ -87,8 +96,21 @@ We have three evaluation modes:
 See comments in the following scripts:
 ```bash
 # both validation and test splits
-sbatch job_scripts/eval_3dlotus_policy.sh
+sbatch job_scripts/eval_3dlotusplus_policy.sh
 ```
+
+We use the validation set to select the best checkpoint. The following script summarizes results on the validation split.
+```bash
+python scripts/summarize_val_results.py data/experiments/gembench/3dlotusplus/v1/preds-llm_gt-og_gt_coarse/seed100/results.jsonl
+```
+
+The following script summarizes results on the test splits of four generalization levels, for the three evaluation modes:
+```bash
+`python scripts/summarize_tst_results.py data/experiments/gembench/3dlotusplus/v1/preds-llm_gt-og_gt_coarse 140000`
+python scripts/summarize_tst_results.py data/experiments/gembench/3dlotusplus/v1/preds-llm_gt-runstep5 140000
+python scripts/summarize_tst_results.py data/experiments/gembench/3dlotusplus/v1/preds-runstep5 140000
+```
+
 
 ## Citation
 If you use our GemBench benchmark or find our code helpful, please kindly cite our work:

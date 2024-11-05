@@ -33,12 +33,15 @@ mkdir -p $XDG_RUNTIME_DIR
 chmod 700 $XDG_RUNTIME_DIR
 
 expr_dir=data/experiments/gembench/3dlotusplus/v1
+coarse_model_dir=data/experiments/gembench/3dlotusplus/v1_shizhe
+
+ckpt_step_coarse=140000
 
 # validation: with groundtruth task planner and groundtruth object grounding
 for ckpt_step in 150000 140000 130000 120000 110000 100000 90000 80000 70000 60000 50000
 do
 singularity exec --bind $HOME:$HOME,$SCRATCH:$SCRATCH --nv ${sif_image} \
-    xvfb-run -a ${python_bin} genrobo3d/evaluation/eval_robot_pipeline_server.py \
+    xvfb-run -a ${python_bin} genrobo3d/evaluation/eval_robot_pipeline_server_coarse_to_fine.py \
     --full_gt \
     --pipeline_config_file genrobo3d/configs/rlbench/robot_pipeline_gt.yaml \
     --mp_expr_dir ${expr_dir} \
@@ -48,7 +51,8 @@ singularity exec --bind $HOME:$HOME,$SCRATCH:$SCRATCH --nv ${sif_image} \
     --gt_og_label_file assets/taskvars_target_label_zrange.json \
     --seed 100 --num_demos 20 \
     --microstep_data_dir data/gembench/val_dataset/microsteps/seed100 \
-    --pc_label_type fine --run_action_step 1
+    --pc_label_type coarse --run_action_step 1 \
+    --coarse_model_dir ${coarse_model_dir} --ckpt_step_coarse ${ckpt_step_coarse}
 done
 
 # test: with groundtruth task planner and groundtruth object grounding

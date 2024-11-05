@@ -6,6 +6,8 @@ conda create -n gembench python==3.10
 
 conda activate gembench
 
+# On CLEPS, first run `module load gnu12/12.2.0`
+
 conda install nvidia/label/cuda-12.1.0::cuda
 pip install torch==2.3.0 torchvision==0.18.0 torchaudio==2.3.0 --index-url https://download.pytorch.org/whl/cu121
 
@@ -13,6 +15,7 @@ export CUDA_HOME=$HOME/miniconda3/envs/gembench
 export CPATH=$CUDA_HOME/targets/x86_64-linux/include:$CPATH
 export LD_LIBRARY_PATH=$CUDA_HOME/targets/x86_64-linux/lib:$LD_LIBRARY_PATH
 export PATH=$CUDA_HOME/bin:$PATH
+export FORCE_CUDA=1
 
 pip install -r requirements.txt
 
@@ -42,7 +45,7 @@ export QT_QPA_PLATFORM_PLUGIN_PATH=$COPPELIASIM_ROOT
 
 Install Pyrep and RLBench
 ```bash
-git clone https://github.com/stepjam/PyRep
+git clone https://github.com/cshizhe/PyRep.git
 cd PyRep
 pip install -r requirements.txt
 pip install .
@@ -61,8 +64,7 @@ cd ../..
 ```bash
 cd dependencies
 
-# On CLEPS, first run `module load gnu12/12.2.0`
-# Please ensure to set CUDA_HOME
+# Please ensure to set CUDA_HOME beforehand as specified in the export const of the section 1
 git clone https://github.com/cshizhe/chamferdist.git
 cd chamferdist
 python setup.py install
@@ -99,3 +101,9 @@ singularity shell --bind $HOME:$HOME,$SCRATCH:$SCRATCH --nv $SINGULARITY_IMAGE_P
 # run script
 singularity exec --bind $HOME:$HOME,$SCRATCH:$SCRATCH --nv $SINGULARITY_IMAGE_PATH xvfb-run -a ${python_bin} ...
 ```
+
+5. Adapt the codebase to your environment
+
+To adapt the codebase to your environment, you may need to modify the following:
+- replace everywhere $HOME/codes/robot-3dlotus with your path to robot-3dlotus folder
+- replace everywhere the sif_image path to your path to the singularity image nvcuda_v2.sif

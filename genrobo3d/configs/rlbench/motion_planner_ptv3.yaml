@@ -33,7 +33,7 @@ TRAIN:
   pin_mem: True
 
 TRAIN_DATASET:
-  data_dir: 'data/gembench/train_dataset/motion_keysteps_bbox_pcd/seed0/voxel1cm'
+  data_dir: 'data/gembench/train_dataset/motion_keysteps_bbox_pcd/seed0/voxel0.5cm'
   action_embed_file: 'data/gembench/train_dataset/motion_keysteps_bbox_pcd/action_embeds_clip.npy'
   gt_act_obj_label_file: 'assets/taskvars_target_label_zrange.json'
   taskvar_file: 'assets/taskvars_train.json'
@@ -54,7 +54,7 @@ TRAIN_DATASET:
   rm_pc_outliers_neighbors: 25
   aug_max_rot: 45
   pos_bins: 40
-  pos_bin_size: 0.01
+  pos_bin_size: 0.005
   pos_heatmap_type: 'dist' # plain, dist
   pos_heatmap_no_robot: False
   max_traj_len: 5
@@ -67,7 +67,7 @@ TRAIN_DATASET:
 
 VAL_DATASET:
   use_val: True
-  data_dir: 'data/gembench/val_dataset/motion_keysteps_bbox_pcd/seed100/voxel1cm'
+  data_dir: 'data/gembench/val_dataset/motion_keysteps_bbox_pcd/seed100/voxel0.5cm'
   action_embed_file: 'data/gembench/train_dataset/motion_keysteps_bbox_pcd/action_embeds_clip.npy'
   gt_act_obj_label_file: 'assets/taskvars_target_label_zrange.json'
   taskvar_file: 'assets/taskvars_train.json'
@@ -88,7 +88,7 @@ VAL_DATASET:
   rm_pc_outliers_neighbors: 25
   aug_max_rot: 45
   pos_bins: 40
-  pos_bin_size: 0.01
+  pos_bin_size: 0.005
   pos_heatmap_type: 'dist' # plain, dist
   pos_heatmap_no_robot: False
   max_traj_len: 5
@@ -139,7 +139,7 @@ MODEL:
     add_coords_in_attn: 'none' # none, qk, qkv
 
   action_config:
-    voxel_size: 0.01 # 1cm
+    voxel_size: 0.005 # 1cm
     context_channels: 256
 
     pc_label_channels: 64
@@ -164,7 +164,7 @@ MODEL:
     dropout: 0.1
 
     pos_bins: 40
-    pos_bin_size: 0.01
+    pos_bin_size: 0.005
     best_disc_pos: max # max, ens1
 
   loss_config:
