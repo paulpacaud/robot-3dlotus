@@ -157,7 +157,7 @@ def producer_fn(proc_id, k_res, args, taskvar, pred_file, batch_queue, result_qu
     else:
         demos = None
 
-    num_demos = len(demos) if demos is not None else args.num_demos
+    num_demos = args.num_demos #len(demos) if demos is not None else args.num_demos
     
     success_rate = 0.0
     for demo_id in range(num_demos):

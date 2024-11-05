@@ -204,6 +204,7 @@ class Actioner(object):
 
         if self.data_cfg.rm_table:
             in_mask = in_mask & (xyz[:, 2] > self.WORKSPACE['TABLE_HEIGHT'])
+
         xyz = xyz[in_mask]
         rgb = rgb.reshape(-1, 3)[in_mask]
         if gt_sem is not None:
@@ -392,10 +393,13 @@ class Actioner(object):
         }
 
         if self.args.save_obs_outs_dir is not None:
+            os.makedirs(os.path.join(self.args.save_obs_outs_dir, f'{task_str}+{variation}', str(episode_id)), exist_ok=True)
             np.save(
-                os.path.join(self.args.save_obs_outs_dir, f'{task_str}+{variation}-{episode_id}-{step_id}.npy'),
+                os.path.join(self.args.save_obs_outs_dir, f'{task_str}+{variation}/{episode_id}/{step_id}.npy'),
                 {
-                    'batch': {k: v.data.cpu().numpy() if isinstance(v, torch.Tensor) else v for k, v in batch_fine.items()},
+                    'batch_coarse': {k: v.data.cpu().numpy() if isinstance(v, torch.Tensor) else v for k, v in batch_coarse.items()},
+                    'batch_fine': {k: v.data.cpu().numpy() if isinstance(v, torch.Tensor) else v for k, v in batch_fine.items()},
+                    'point_of_interest': point_of_interest,
                     'obs': obs_state_dict,
                     'action': action
                 }

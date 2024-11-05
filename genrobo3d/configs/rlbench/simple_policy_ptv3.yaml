@@ -55,7 +55,7 @@ TRAIN_DATASET:
   rm_pc_outliers: False
   rm_pc_outliers_neighbors: 25
   pos_bins: 40
-  pos_bin_size: 0.005
+  pos_bin_size: 0.01
   pos_heatmap_type: 'dist' # plain, dist
   pos_heatmap_no_robot: False
   real_robot: False
@@ -84,7 +84,7 @@ VAL_DATASET:
   rm_pc_outliers: False
   rm_pc_outliers_neighbors: 25
   pos_bins: 40
-  pos_bin_size: 0.005
+  pos_bin_size: 0.01
   pos_heatmap_type: 'dist' # plain, dist
   pos_heatmap_no_robot: False
   real_robot: False
@@ -150,7 +150,7 @@ MODEL:
     dropout: 0.1
 
     pos_bins: 40
-    pos_bin_size: 0.005
+    pos_bin_size: 0.01
     best_disc_pos: max # max, ens1
 
   loss_config:
