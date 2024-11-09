@@ -24,7 +24,7 @@ from genrobo3d.utils.rotation_transform import (
 )
 from genrobo3d.utils.robot_box import RobotBox
 from genrobo3d.utils.action_position_utils import get_disc_gt_pos_prob
-from genrobo3d.train.datasets.simple_policy_dataset import SimplePolicyDataset
+from genrobo3d.train.datasets.simple_policy_dataset_coarse import SimplePolicyDataset
 
 
 class MotionPlannerDataset(SimplePolicyDataset):

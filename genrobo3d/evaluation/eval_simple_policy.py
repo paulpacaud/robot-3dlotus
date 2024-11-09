@@ -27,7 +27,7 @@ try:
 except:
     print('No RLBench')
 
-from genrobo3d.train.train_simple_policy import MODEL_FACTORY
+from genrobo3d.train.train_simple_policy_coarse import MODEL_FACTORY
 
 from genrobo3d.configs.rlbench.constants import get_robot_workspace, get_rlbench_labels
 from genrobo3d.utils.robot_box import RobotBox

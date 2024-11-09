@@ -101,7 +101,8 @@ class SimplePolicyDataset(Dataset):
         self.pos_heatmap_no_robot = pos_heatmap_no_robot
         self.real_robot = real_robot
 
-        self.TABLE_HEIGHT = get_robot_workspace(real_robot=real_robot)['TABLE_HEIGHT']
+        self.workspace = get_robot_workspace(real_robot=real_robot)
+        self.TABLE_HEIGHT = self.workspace['TABLE_HEIGHT']
         self.rotation_transform = RotationMatrixTransform()
 
     def __exit__(self):
@@ -201,7 +202,7 @@ class SimplePolicyDataset(Dataset):
             gt_rots = torch.cat([gt_rots, gt_rots[-1:]], 0)
         gt_rots = gt_rots.numpy()
         return gt_rots
-    
+
     def __getitem__(self, idx):
         if self.all_step_in_batch:
             taskvar, data_id = self.data_ids[idx]
@@ -215,7 +216,7 @@ class SimplePolicyDataset(Dataset):
         outs = {
             'data_ids': [], 'pc_fts': [], 'step_ids': [],
             'pc_centroids': [], 'pc_radius': [], 'ee_poses': [], 
-            'txt_embeds': [], 'gt_actions': [],
+            'txt_embeds': [], 'gt_actions': [], 'point_of_interests': []
         }
         if self.pos_type == 'disc':
             outs['disc_pos_probs'] = []
@@ -231,6 +232,7 @@ class SimplePolicyDataset(Dataset):
                 continue
 
             xyz, rgb = data['xyz'][t], data['rgb'][t]
+            point_of_interest = data['point_of_interest'][t]
             # # real robot point cloud is very noisy, requiring noise point cloud removal
             # # segmentation fault if n_workers>0
             # if self.real_robot:
@@ -354,6 +356,7 @@ class SimplePolicyDataset(Dataset):
             outs['pc_fts'].append(torch.from_numpy(pc_ft).float())
             outs['txt_embeds'].append(torch.from_numpy(instr_embed).float())
             outs['ee_poses'].append(torch.from_numpy(ee_pose).float())
+            outs['point_of_interests'].append(torch.from_numpy(point_of_interest).float())
             outs['gt_actions'].append(torch.from_numpy(gt_action).float())
             outs['step_ids'].append(t)
 
@@ -366,7 +369,7 @@ def base_collate_fn(data):
     for key in data[0].keys():
         batch[key] = sum([x[key] for x in data], [])
     
-    for key in ['pc_fts', 'ee_poses', 'gt_actions']:   
+    for key in ['pc_fts', 'ee_poses', 'point_of_interests', 'gt_actions']:
         batch[key] = torch.stack(batch[key], 0)
 
     batch['step_ids'] = torch.LongTensor(batch['step_ids'])
@@ -395,7 +398,7 @@ def ptv3_collate_fn(data):
     batch['offset'] = torch.cumsum(torch.LongTensor(npoints_in_batch), dim=0)
     batch['pc_fts'] = torch.cat(batch['pc_fts'], 0) # (#all points, 6)
 
-    for key in ['ee_poses', 'gt_actions']:   
+    for key in ['ee_poses', 'point_of_interests', 'gt_actions']:
         batch[key] = torch.stack(batch[key], 0)
 
     # if 'disc_pos_probs' in batch:
