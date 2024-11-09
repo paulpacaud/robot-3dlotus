@@ -24,7 +24,7 @@ from genrobo3d.rlbench.recorder import (
 from genrobo3d.train.utils.misc import set_random_seed
 from genrobo3d.evaluation.common import write_to_file
 
-from genrobo3d.evaluation.robot_pipeline_gt import GroundtruthRobotPipeline
+from genrobo3d.evaluation.robot_pipeline_gt_coarse_to_fine import GroundtruthRobotPipeline
 from genrobo3d.evaluation.robot_pipeline import RobotPipeline
 
 
@@ -69,19 +69,22 @@ class ServerArguments(tap.Tap):
     no_gt_llm: bool = False
     llm_master_port: int = None
 
-    coarse_model_dir: str
-    ckpt_step_coarse: int
+    coarse_pipeline_config_file: str
+    coarse_mp_expr_dir: str = None
+    coarse_mp_ckpt_step: int = None
+
+    zoom_factor: float = 0.4
 
 
-def consumer_fn(args, pipeline_config, batch_queue, result_queues):
+def consumer_fn(args, pipeline_config, coarse_pipeline_config, batch_queue, result_queues):
     print('consumer start')
     set_random_seed(args.seed)
 
     # build model
     if args.full_gt:
-        actioner = GroundtruthRobotPipeline(pipeline_config)
+        actioner = GroundtruthRobotPipeline(pipeline_config, coarse_pipeline_config)
     else:
-        actioner = RobotPipeline(pipeline_config)
+        actioner = RobotPipeline(pipeline_config, coarse_pipeline_config)
 
     while True:
         print('while loop consumer starts')
@@ -276,6 +279,10 @@ def main():
         pipeline_config = yaml.safe_load(f)
     pipeline_config = EasyDict(pipeline_config)
 
+    with open(args.coarse_pipeline_config_file, 'r') as f:
+        coarse_pipeline_config = yaml.safe_load(f)
+    coarse_pipeline_config = EasyDict(coarse_pipeline_config)
+
     if args.no_gt_llm:
         pipeline_config.llm_planner.use_groundtruth = False
     if args.llm_cache_file is not None:
@@ -307,6 +314,9 @@ def main():
     mp_checkpoint_file = os.path.join(
         args.mp_expr_dir, 'ckpts', f'model_step_{args.mp_ckpt_step}.pt'
     )
+    mp_coarse_checkpoint_file = os.path.join(
+        args.coarse_mp_expr_dir, 'ckpts', f'model_step_{args.coarse_mp_ckpt_step}.pt'
+    )
     if not os.path.exists(mp_checkpoint_file):
         print(mp_checkpoint_file, 'not exists')
         return
@@ -319,7 +329,15 @@ def main():
     )
     pipeline_config.motion_planner.save_obs_outs = args.save_obs_outs
     pipeline_config.motion_planner.pred_dir = pred_dir
-    
+    pipeline_config.zoom_factor = args.zoom_factor
+
+    coarse_pipeline_config.motion_planner.expr_dir = args.coarse_mp_expr_dir
+    coarse_pipeline_config.motion_planner.ckpt_step = args.coarse_mp_ckpt_step
+    coarse_pipeline_config.motion_planner.checkpoint = mp_coarse_checkpoint_file
+    coarse_pipeline_config.motion_planner.config_file = os.path.join(
+        args.coarse_mp_expr_dir, 'logs', 'training_config.yaml'
+    )
+
     existed_taskvars = set()
     if os.path.exists(pred_file):
         with jsonlines.open(pred_file, 'r') as f:
@@ -336,7 +354,7 @@ def main():
     result_queues = [mp.Queue(args.queue_size) for _ in range(args.num_workers)]
     producer_queue = mp.Queue(args.queue_size)
 
-    consumer = mp.Process(target=consumer_fn, args=(args, pipeline_config, batch_queue, result_queues))
+    consumer = mp.Process(target=consumer_fn, args=(args, pipeline_config, coarse_pipeline_config, batch_queue, result_queues))
     consumer.start()
 
     producers = {}

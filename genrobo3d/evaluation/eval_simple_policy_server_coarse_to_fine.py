@@ -56,6 +56,8 @@ class ServerArguments(tap.Tap):
     coarse_model_dir: str
     ckpt_step_coarse: int
 
+    scale_factor: float = 0.4
+
 
 def consumer_fn(args, batch_queue, result_queues):
     print('consumer start')

@@ -27,4 +27,4 @@ export XDG_RUNTIME_DIR=$SCRATCH/tmp/runtime-$SLURM_JOBID
 mkdir -p $XDG_RUNTIME_DIR
 chmod 700 $XDG_RUNTIME_DIR
 
-python preprocess/gen_simple_policy_data.py
+python preprocess/gen_simple_policy_data.py --input_dir data/gembench/val_dataset/keysteps_bbox/seed100 --output_dir data/gembench/val_dataset/keysteps_bbox_pcd/seed100/voxel0.5cm_refine_zoom0.4_noise0.02

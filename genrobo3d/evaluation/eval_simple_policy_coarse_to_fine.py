@@ -1,4 +1,5 @@
 from typing import Tuple, Dict, List
+from datetime import datetime
 
 import os
 import json
@@ -27,7 +28,8 @@ try:
 except:
     print('No RLBench')
 
-from genrobo3d.train.train_simple_policy import MODEL_FACTORY
+from genrobo3d.train.train_simple_policy_coarse import MODEL_FACTORY as MODEL_FACTORY_COARSE
+from genrobo3d.train.train_simple_policy_ctf import MODEL_FACTORY as MODEL_FACTORY_FINE
 
 from genrobo3d.configs.rlbench.constants import get_robot_workspace, get_rlbench_labels
 from genrobo3d.utils.robot_box import RobotBox
@@ -67,6 +69,8 @@ class Arguments(tap.Tap):
     exp_config_coarse: str = None
     checkpoint_coarse: str = None
 
+    scale_factor: float = 0.4
+
 class Actioner(object):
     def __init__(self, args) -> None:
         self.args = args
@@ -95,8 +99,8 @@ class Actioner(object):
         if args.checkpoint_coarse is not None:
             config_coarse.checkpoint = args.checkpoint_coarse
 
-        self.model = self.set_model(config)
-        self.model_coarse = self.set_model(config_coarse)
+        self.model = self.set_model(config, model_type='fine')
+        self.model_coarse = self.set_model(config_coarse, model_type='coarse')
 
         self.config.freeze()
         self.config_coarse.freeze()
@@ -110,7 +114,11 @@ class Actioner(object):
 
         self.TABLE_HEIGHT = self.WORKSPACE['TABLE_HEIGHT']
 
-    def set_model(self, config):
+    def set_model(self, config, model_type):
+        if model_type == 'coarse':
+            MODEL_FACTORY = MODEL_FACTORY_COARSE
+        elif model_type == 'fine':
+            MODEL_FACTORY = MODEL_FACTORY_FINE
         model_class = MODEL_FACTORY[config.MODEL.model_class]
         model = model_class(config.MODEL)
         if config.checkpoint:
@@ -199,7 +207,7 @@ class Actioner(object):
 
         if point_of_interest is not None:
             # if fine mode, zoom around the point of interest
-            mask_area_of_interest = self.zoom_around_point(xyz, self.WORKSPACE, point_of_interest, 0.4)
+            mask_area_of_interest = self.zoom_around_point(xyz, self.WORKSPACE, point_of_interest, self.args.scale_factor)
             in_mask = in_mask & mask_area_of_interest
 
         if self.data_cfg.rm_table:
@@ -207,6 +215,8 @@ class Actioner(object):
 
         xyz = xyz[in_mask]
         rgb = rgb.reshape(-1, 3)[in_mask]
+        print(f"Num points before filtering: {len(xyz)}")
+        print(f"Num points after filtering: {len(xyz)}")
         if gt_sem is not None:
             gt_sem = gt_sem.reshape(-1)[in_mask]
 
@@ -325,6 +335,10 @@ class Actioner(object):
             'npoints_in_batch': [pc_ft.shape[0]],
             'offset': torch.LongTensor([pc_ft.shape[0]]),
         }
+
+        if point_of_interest is not None:
+            batch['point_of_interests'] = torch.from_numpy(point_of_interest).float().unsqueeze(0)
+
         if self.config.MODEL.model_class == 'SimplePolicyPCT':
             batch['pc_fts'] = batch['pc_fts'].unsqueeze(0)
             batch['txt_masks'] = torch.from_numpy(
@@ -370,7 +384,7 @@ class Actioner(object):
         self, task_str=None, variation=None, step_id=None, obs_state_dict=None, 
         episode_id=None, instructions=None,
     ):
-        print(f'Predicting for {task_str}+{variation} at step {step_id}...')
+        print(f"Time: {datetime.now()}, Seed: {self.args.seed}, Task: {task_str}+{variation}, Episode ID: {episode_id}, Step ID: {step_id}")
         taskvar = f'{task_str}+{variation}'
         batch_coarse = self.preprocess_obs(
             taskvar, step_id, obs_state_dict,

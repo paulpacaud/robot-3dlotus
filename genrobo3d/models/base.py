@@ -77,3 +77,18 @@ class RobotPoseEmbedding(nn.Module):
         )
         return act_embeds
 
+class CoarsePredictionEmbedding(nn.Module):
+    def __init__(self, hidden_size) -> None:
+        super().__init__()
+        self.coarse_pred_embedding = nn.Linear(3, hidden_size)
+        self.layer_norm = nn.LayerNorm(hidden_size, eps=1e-12)
+
+    def forward(self, point_of_interest):
+        '''
+        point_of_interest: (batch_size, 3)
+        '''
+        coarse_pred_embeds = self.coarse_pred_embedding(point_of_interest)
+
+        coarse_pred_embeds = self.layer_norm(coarse_pred_embeds)
+        return coarse_pred_embeds
+

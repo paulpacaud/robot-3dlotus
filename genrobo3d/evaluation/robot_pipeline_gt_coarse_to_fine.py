@@ -23,6 +23,7 @@ from genrobo3d.models.motion_planner_ptv3 import (
 )
 from genrobo3d.configs.default import get_config as get_model_config
 from genrobo3d.evaluation.common import load_checkpoint, parse_code
+from preprocess.gen_simple_policy_data import zoom_around_point
 
 
 class GroundtruthTaskPlanner(object):
@@ -60,17 +61,16 @@ class GroundtruthTaskPlanner(object):
 
 class GroundtruthVision(object):
     def __init__(
-        self, gt_label_file, num_points=4096, voxel_size=0.01, 
+        self, gt_label_file, num_points=4096,
         same_npoints_per_example=False, rm_robot='box_keep_gripper',
         xyz_shift='center', xyz_norm=False, use_height=True,
-        pc_label_type='coarse', use_color=False,
+        pc_label_type='coarse', use_color=False, zoom_factor=0.4
     ):
         self.taskvar_gt_target_labels = json.load(open(gt_label_file))
         self.workspace = get_robot_workspace(real_robot=False)
         self.TABLE_HEIGHT = self.workspace['TABLE_HEIGHT']
 
         self.num_points = num_points
-        self.voxel_size = voxel_size
         self.pc_label_type = pc_label_type
         self.same_npoints_per_example = same_npoints_per_example
         self.rm_robot = rm_robot
@@ -79,9 +79,41 @@ class GroundtruthVision(object):
         self.use_height = use_height
         self.use_color = use_color
 
+        self.zoom_factor = zoom_factor
+
+    def zoom_around_point(self, xyz, workspace, point_of_interest):
+        """
+        Refines the point cloud to focus around the `point_of_interest`.
+
+        Parameters:
+        - xyz: numpy array, the point cloud coordinates.
+        - workspace: dict, bounding box limits for the workspace.
+        - point_of_interest: numpy array, central point for refinement.
+        - scale_factor: float, proportion of the workspace bounds to keep (e.g., 0.25 to keep 1/4).
+
+        Returns:
+        - mask: boolean numpy array, indicating points within the refined area.
+        """
+        zoom_factor = self.zoom_factor
+        workspace_width_x = workspace['X_BBOX'][1] - workspace['X_BBOX'][0]
+        workspace_width_y = workspace['Y_BBOX'][1] - workspace['Y_BBOX'][0]
+        workspace_width_z = workspace['Z_BBOX'][1] - workspace['Z_BBOX'][0]
+        x_min, x_max = point_of_interest[0] - workspace_width_x * zoom_factor / 2, \
+                       point_of_interest[0] + workspace_width_x * zoom_factor / 2
+        y_min, y_max = point_of_interest[1] - workspace_width_y * zoom_factor / 2, \
+                       point_of_interest[1] + workspace_width_y * zoom_factor / 2
+        z_min, z_max = point_of_interest[2] - workspace_width_z * zoom_factor / 2, \
+                       point_of_interest[2] + workspace_width_z * zoom_factor / 2
+
+        mask = (xyz[:, 0] > x_min) & (xyz[:, 0] < x_max) & \
+               (xyz[:, 1] > y_min) & (xyz[:, 1] < y_max) & \
+               (xyz[:, 2] > z_min) & (xyz[:, 2] < z_max)
+
+        return mask
+
     def __call__(
-        self, taskvar, step_id, pcd_images, sem_images, gripper_pose, arm_links_info, 
-        rgb_images=None,
+        self, taskvar, step_id, pcd_images, sem_images, gripper_pose, arm_links_info, voxel_size=None,
+        rgb_images=None, point_of_interest=None
     ):
         task, variation = taskvar.split('+')
         pcd_xyz = pcd_images.reshape(-1, 3)
@@ -92,12 +124,17 @@ class GroundtruthVision(object):
 
         # remove background and table points
         fg_mask = get_pc_foreground_mask(pcd_xyz, self.workspace)
+
+        if point_of_interest is not None:
+            mask_area_of_interest = self.zoom_around_point(pcd_xyz, self.workspace, point_of_interest)
+            fg_mask = fg_mask & mask_area_of_interest
+
         pcd_xyz = pcd_xyz[fg_mask]
         pcd_sem = pcd_sem[fg_mask]
         if self.use_color:
             pcd_rgb = pcd_rgb[fg_mask]
 
-        pcd_xyz, idxs = voxelize_pcd(pcd_xyz, voxel_size=self.voxel_size)
+        pcd_xyz, idxs = voxelize_pcd(pcd_xyz, voxel_size=voxel_size)
         pcd_sem = pcd_sem[idxs]
         if self.use_color:
             pcd_rgb = pcd_rgb[idxs]
@@ -182,8 +219,9 @@ class GroundtruthVision(object):
 
 
 class GroundtruthRobotPipeline(object):
-    def __init__(self, config) -> None:
+    def __init__(self, config, coarse_config) -> None:
         self.config = config
+        self.coarse_config = coarse_config
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         # build LLM high-level planner
@@ -193,20 +231,29 @@ class GroundtruthRobotPipeline(object):
         mp_expr_dir = config.motion_planner.expr_dir
         mp_config_file = config.motion_planner.config_file
         mp_config = get_model_config(mp_config_file)
+
+        mp_config_file_coarse = coarse_config.motion_planner.config_file
+        mp_config_coarse = get_model_config(mp_config_file_coarse)
+
+        self.fine_voxel_size = mp_config.MODEL.action_config.voxel_size
+        self.coarse_voxel_size = mp_config_coarse.MODEL.action_config.voxel_size
+
         data_cfg = mp_config.TRAIN_DATASET
         self.instr_include_objects = data_cfg.get('instr_include_objects', False)
         self.vlm_pipeline = GroundtruthVision(
             self.config.object_grounding.gt_label_file,
-            num_points=data_cfg.num_points, voxel_size=mp_config.MODEL.action_config.voxel_size,
+            num_points=data_cfg.num_points,
             same_npoints_per_example=data_cfg.same_npoints_per_example, rm_robot=data_cfg.rm_robot,
             xyz_shift=data_cfg.xyz_shift, xyz_norm=data_cfg.xyz_norm, use_height=data_cfg.use_height,
             pc_label_type=data_cfg.pc_label_type if config.motion_planner.pc_label_type is None else config.motion_planner.pc_label_type, use_color=data_cfg.get('use_color', False),
+            zoom_factor=self.config.zoom_factor
         )
 
         # build motion planner
         # self.clip_model = OpenClipEncoder(device=self.device) # to encode action/object texts
         self.clip_model = ClipEncoder(device=self.device)
-        self.motion_planner = self.build_motion_planner(config.motion_planner, device=self.device)        
+        self.motion_planner_fine = self.build_motion_planner(config.motion_planner, device=self.device)
+        self.motion_planner_coarse = self.build_motion_planner(coarse_config.motion_planner, device=self.device)
 
         # caches
         self.set_system_caches()
@@ -224,7 +271,7 @@ class GroundtruthRobotPipeline(object):
         load_checkpoint(motion_planner, mp_config.checkpoint)
         return motion_planner
 
-    def preprocess_obs(self, taskvar, highlevel_step_id_norelease, obs_state_dict, plan):
+    def coarse_preprocess_obs(self, taskvar, highlevel_step_id_norelease, obs_state_dict, plan):
         pcd_images = obs_state_dict['pc']
         rgb_images = obs_state_dict['rgb']
         sem_images = obs_state_dict['gt_mask']
@@ -234,6 +281,7 @@ class GroundtruthRobotPipeline(object):
         batch = self.vlm_pipeline(
             taskvar, highlevel_step_id_norelease,
             pcd_images, sem_images, gripper_pose, arm_links_info,
+            voxel_size=self.coarse_voxel_size,
             rgb_images=rgb_images
         )
 
@@ -260,6 +308,35 @@ class GroundtruthRobotPipeline(object):
 
         return batch
 
+    def zoom_around_point(self, xyz, workspace, point_of_interest, scale_factor):
+        """
+        Refines the point cloud to focus around the `point_of_interest`.
+
+        Parameters:
+        - xyz: numpy array, the point cloud coordinates.
+        - workspace: dict, bounding box limits for the workspace.
+        - point_of_interest: numpy array, central point for refinement.
+        - scale_factor: float, proportion of the workspace bounds to keep (e.g., 0.25 to keep 1/4).
+
+        Returns:
+        - mask: boolean numpy array, indicating points within the refined area.
+        """
+        workspace_width_x = workspace['X_BBOX'][1] - workspace['X_BBOX'][0]
+        workspace_width_y = workspace['Y_BBOX'][1] - workspace['Y_BBOX'][0]
+        workspace_width_z = workspace['Z_BBOX'][1] - workspace['Z_BBOX'][0]
+        x_min, x_max = point_of_interest[0] - workspace_width_x * scale_factor / 2, \
+                       point_of_interest[0] + workspace_width_x * scale_factor / 2
+        y_min, y_max = point_of_interest[1] - workspace_width_y * scale_factor / 2, \
+                       point_of_interest[1] + workspace_width_y * scale_factor / 2
+        z_min, z_max = point_of_interest[2] - workspace_width_z * scale_factor / 2, \
+                       point_of_interest[2] + workspace_width_z * scale_factor / 2
+
+        mask = (xyz[:, 0] > x_min) & (xyz[:, 0] < x_max) & \
+               (xyz[:, 1] > y_min) & (xyz[:, 1] < y_max) & \
+               (xyz[:, 2] > z_min) & (xyz[:, 2] < z_max)
+
+        return mask
+
     def predict_action(self, batch=None, model=None):
         pred_actions = model(batch, compute_loss=False)[0] # (max_action_len, 8)
         pred_actions[:, 7:] = torch.sigmoid(pred_actions[:, 7:])
@@ -270,6 +347,19 @@ class GroundtruthRobotPipeline(object):
         pred_actions[:, 2] = np.maximum(pred_actions[:, 2], self.vlm_pipeline.TABLE_HEIGHT + 0.005)
 
         return pred_actions
+
+    def prepare_fine_batch(self, taskvar, highlevel_step_id_norelease, obs_state_dict, point_of_interest, batch_coarse):
+        batch_fine = self.vlm_pipeline(
+            taskvar, highlevel_step_id_norelease,
+            obs_state_dict['pc'], obs_state_dict['gt_mask'], obs_state_dict['gripper'],
+            obs_state_dict['arm_links_info'], voxel_size=self.fine_voxel_size,
+            rgb_images=obs_state_dict['rgb'], point_of_interest=point_of_interest
+        )
+        batch_fine['txt_embeds'] = batch_coarse['txt_embeds']
+        batch_fine['txt_lens'] = batch_coarse['txt_lens']
+
+        return batch_fine
+
 
     @torch.no_grad()
     def predict(self, task_str, variation, step_id, obs_state_dict, episode_id, instructions, cache=None):
@@ -335,9 +425,15 @@ class GroundtruthRobotPipeline(object):
             print(f'returning release action and cache')
             return {'action': action, 'cache': cache}
 
-        batch_coarse = self.preprocess_obs(taskvar, cache.highlevel_step_id_norelease, obs_state_dict, plan)
+        batch_coarse = self.coarse_preprocess_obs(taskvar, cache.highlevel_step_id_norelease, obs_state_dict, plan)
         
-        pred_actions = self.predict_action(batch=batch_coarse, model=self.motion_planner)
+        pred_actions = self.predict_action(batch=batch_coarse, model=self.motion_planner_coarse)
+
+        point_of_interest = pred_actions[0][:3]
+
+        batch_fine = self.prepare_fine_batch(taskvar, cache.highlevel_step_id_norelease, obs_state_dict, point_of_interest, batch_coarse)
+
+        pred_actions = self.predict_action(batch=batch_fine, model=self.motion_planner_fine)
 
         valid_actions = []
         for t, pred_action in enumerate(pred_actions):
@@ -365,11 +461,13 @@ class GroundtruthRobotPipeline(object):
         }
 
         if cache.episode_outdir is not None:
-            del batch['txt_embeds'], batch['txt_lens']
+            del batch_coarse['txt_embeds'], batch_coarse['txt_lens']
+            del batch_fine['txt_embeds'], batch_fine['txt_lens']
             np.save(
                 os.path.join(cache.episode_outdir, f'{step_id}.npy'),
                 {
-                    'batch': {k: v.data.cpu().numpy() if isinstance(v, torch.Tensor) else v for k, v in batch.items()},
+                    'batch_coarse': {k: v.data.cpu().numpy() if isinstance(v, torch.Tensor) else v for k, v in batch_coarse.items()},
+                    'batch_fine': {k: v.data.cpu().numpy() if isinstance(v, torch.Tensor) else v for k, v in batch_fine.items()},
                     'obs': obs_state_dict,
                     'valid_actions': valid_actions,
                 } # type: ignore

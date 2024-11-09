@@ -7,7 +7,7 @@ import numpy as np
 import einops
 
 from genrobo3d.utils.rotation_transform import discrete_euler_to_quaternion
-from genrobo3d.models.base import BaseModel, RobotPoseEmbedding
+from genrobo3d.models.base import BaseModel, RobotPoseEmbedding, CoarsePredictionEmbedding
 from genrobo3d.utils.rotation_transform import RotationMatrixTransform
 from genrobo3d.models.PointTransformerV3.model import (
     PointTransformerV3, offset2bincount, offset2batch
@@ -179,6 +179,7 @@ class SimplePolicyPTV3AdaNorm(BaseModel):
             self.pose_embedding = RobotPoseEmbedding(act_cfg.context_channels)
         if act_cfg.use_step_id:
             self.stepid_embedding = nn.Embedding(act_cfg.max_steps, act_cfg.context_channels)
+        self.coarse_pred_embedding = CoarsePredictionEmbedding(act_cfg.context_channels)
 
         self.act_proj_head = ActionHead(
             act_cfg.reduce, act_cfg.pos_pred_type, act_cfg.rot_pred_type, 
@@ -213,6 +214,9 @@ class SimplePolicyPTV3AdaNorm(BaseModel):
         if self.config.action_config.use_ee_pose:
             pose_embeds = self.pose_embedding(batch['ee_poses'])
             ctx_embeds += pose_embeds
+
+        point_of_interest_embeds = self.coarse_pred_embedding(batch['point_of_interests'])
+        ctx_embeds += point_of_interest_embeds
 
         if self.config.action_config.use_step_id:
             step_embeds = self.stepid_embedding(batch['step_ids'])
@@ -389,6 +393,8 @@ class SimplePolicyPTV3CA(SimplePolicyPTV3AdaNorm):
             self.pose_embedding = RobotPoseEmbedding(act_cfg.context_channels)
         if act_cfg.use_step_id:
             self.stepid_embedding = nn.Embedding(act_cfg.max_steps, act_cfg.context_channels)
+        self.coarse_pred_embedding = CoarsePredictionEmbedding(act_cfg.context_channels)
+
         self.act_proj_head = ActionHead(
             act_cfg.reduce, act_cfg.pos_pred_type, act_cfg.rot_pred_type, 
             config.ptv3_config.dec_channels[0], act_cfg.dim_actions, 
@@ -420,6 +426,10 @@ class SimplePolicyPTV3CA(SimplePolicyPTV3AdaNorm):
             ctx_embeds = [torch.cat([c, e.unsqueeze(0)], dim=0) for c, e in zip(ctx_embeds, pose_embeds)]
             ctx_lens += 1
 
+        point_of_interest_embeds = self.coarse_pred_embedding(batch['point_of_interests'])
+        ctx_embeds += point_of_interest_embeds
+        ctx_lens += 1
+
         if self.config.action_config.use_step_id:
             step_embeds = self.stepid_embedding(batch['step_ids'])
             ctx_embeds = [torch.cat([c, e.unsqueeze(0)], dim=0) for c, e in zip(ctx_embeds, step_embeds)]
@@ -449,6 +459,9 @@ class SimplePolicyPTV3Concat(SimplePolicyPTV3AdaNorm):
         if self.config.action_config.use_ee_pose:
             pose_embeds = self.pose_embedding(batch['ee_poses'])
             ctx_embeds += pose_embeds
+
+        point_of_interest_embeds = self.coarse_pred_embedding(batch['point_of_interests'])
+        ctx_embeds += point_of_interest_embeds
 
         if self.config.action_config.use_step_id:
             step_embeds = self.stepid_embedding(batch['step_ids'])

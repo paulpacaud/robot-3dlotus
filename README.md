@@ -69,7 +69,7 @@ python scripts/summarize_val_results.py data/experiments/gembench/3dlotus/v1/pre
 
 The following script summarizes results on the test splits of four generalization levels:
 ```bash
-python scripts/summarize_tst_results.py data/experiments/gembench/3dlotus/v1/preds 150000
+python scripts/summarize_tst_results.py data/experiments/gembench/3dlotus/v1_voxel0.5_posbinsize0.01_zoom0.3/preds 120000
 ```
 
 
@@ -106,7 +106,7 @@ python scripts/summarize_val_results.py data/experiments/gembench/3dlotusplus/v1
 
 The following script summarizes results on the test splits of four generalization levels, for the three evaluation modes:
 ```bash
-`python scripts/summarize_tst_results.py data/experiments/gembench/3dlotusplus/v1/preds-llm_gt-og_gt_coarse 140000`
+python scripts/summarize_tst_results.py data/experiments/gembench/3dlotusplus/v1/preds-llm_gt-og_gt_coarse 140000
 python scripts/summarize_tst_results.py data/experiments/gembench/3dlotusplus/v1/preds-llm_gt-runstep5 140000
 python scripts/summarize_tst_results.py data/experiments/gembench/3dlotusplus/v1/preds-runstep5 140000
 ```
