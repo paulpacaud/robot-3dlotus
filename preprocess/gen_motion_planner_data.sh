@@ -27,10 +27,10 @@ export XDG_RUNTIME_DIR=$SCRATCH/tmp/runtime-$SLURM_JOBID
 mkdir -p $XDG_RUNTIME_DIR
 chmod 700 $XDG_RUNTIME_DIR
 
-#python preprocess/gen_motion_planner_data.py \
-#  --old_keystep_pcd_dir data/gembench/train_dataset/keysteps_bbox_pcd/seed0/voxel0.5cm \
-#  --new_keystep_pcd_dir data/gembench/train_dataset/motion_keysteps_bbox_pcd/seed0/voxel0.5cm
+python preprocess/gen_motion_planner_data_peract.py \
+  --old_keystep_pcd_dir data/peract/train_dataset/keysteps_bbox_pcd/seed0/voxel1cm \
+  --new_keystep_pcd_dir data/peract/train_dataset/motion_keysteps_bbox_pcd/seed0/voxel1cm
 
-python preprocess/gen_motion_planner_data.py \
-  --old_keystep_pcd_dir data/gembench/val_dataset/keysteps_bbox_pcd/seed100/voxel0.5cm \
-  --new_keystep_pcd_dir data/gembench/val_dataset/motion_keysteps_bbox_pcd/seed100/voxel0.5cm \
+#python preprocess/gen_motion_planner_data.py \
+#  --old_keystep_pcd_dir data/gembench/val_dataset/keysteps_bbox_pcd/seed100/voxel0.5cm \
+#  --new_keystep_pcd_dir data/gembench/val_dataset/motion_keysteps_bbox_pcd/seed100/voxel0.5cm \

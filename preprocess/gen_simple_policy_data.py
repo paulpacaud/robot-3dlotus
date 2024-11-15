@@ -17,55 +17,10 @@ from genrobo3d.utils.point_cloud import voxelize_pcd
 
 code_dir = os.path.join(os.environ.get('HOME'), 'Projects/robot-3dlotus')
 
-input_dir = os.path.join(code_dir, 'data/gembench/train_dataset/keysteps_bbox/seed0')
-output_dir = os.path.join(code_dir, 'data/gembench/train_dataset/keysteps_bbox_pcd/seed0/voxel0.5cm')
-taskvar_file = os.path.join(code_dir, 'assets', 'taskvars_train.json')
+input_dir = os.path.join(code_dir, 'data/peract/train_dataset/keysteps_bbox/seed0')
+output_dir = os.path.join(code_dir, 'data/peract/train_dataset/keysteps_bbox_pcd/seed0/voxel1cm')
+taskvar_file = os.path.join(code_dir, 'assets', 'taskvars_peract.json')
 
-
-def zoom_around_point(xyz, workspace, point_of_interest, zoom_factor):
-    """
-    Refines the point cloud to focus around the `point_of_interest`.
-
-    Parameters:
-    - xyz: numpy array, the point cloud coordinates.
-    - workspace: dict, bounding box limits for the workspace.
-    - point_of_interest: numpy array, central point for refinement.
-    - zoom_factor: float, proportion of the workspace bounds to keep
-
-    Returns:
-    - mask: boolean numpy array, indicating points within the refined area.
-    """
-    workspace_width_x = workspace['X_BBOX'][1] - workspace['X_BBOX'][0]
-    workspace_width_y = workspace['Y_BBOX'][1] - workspace['Y_BBOX'][0]
-    workspace_width_z = workspace['Z_BBOX'][1] - workspace['Z_BBOX'][0]
-    x_min, x_max = point_of_interest[0] - workspace_width_x * zoom_factor / 2, \
-                   point_of_interest[0] + workspace_width_x * zoom_factor / 2
-    y_min, y_max = point_of_interest[1] - workspace_width_y * zoom_factor / 2, \
-                   point_of_interest[1] + workspace_width_y * zoom_factor / 2
-    z_min, z_max = point_of_interest[2] - workspace_width_z * zoom_factor / 2, \
-                   point_of_interest[2] + workspace_width_z * zoom_factor / 2
-
-    mask = (xyz[:, 0] > x_min) & (xyz[:, 0] < x_max) & \
-           (xyz[:, 1] > y_min) & (xyz[:, 1] < y_max) & \
-           (xyz[:, 2] > z_min) & (xyz[:, 2] < z_max)
-
-    return mask
-
-def noise_position(position, noise_range):
-    """
-    Apply a random noise to the ground truth action (point of interest).
-
-    Parameters:
-    - position: numpy array or list with shape (3,), representing the x, y, z coordinates.
-    - noise_range: float, maximum amount of noise to apply to each axis, in meters.
-
-    Returns:
-    - Noisy position as a numpy array with shape (3,).
-    """
-    noise = np.random.uniform(-noise_range, noise_range, size=3)
-
-    noisy_position = position + noise
-    return noisy_position
 
 def main():
     print("starting to generate simple policy data")
@@ -73,11 +28,9 @@ def main():
     parser.add_argument('--input_dir', default=input_dir)
     parser.add_argument('--output_dir', default=output_dir)
     parser.add_argument('--taskvar_file', default=taskvar_file)
-    parser.add_argument('--voxel_size', type=float, default=0.005, help='meters')
+    parser.add_argument('--voxel_size', type=float, default=0.01, help='meters')
     parser.add_argument('--real_robot', default=False, action='store_true')
     parser.add_argument('--num_cameras', default=None, type=int, help='use all by default')
-    parser.add_argument('--noise_range', default=0.02, type=float)
-    parser.add_argument('--zoom_factor', default=0.4, type=float)
     args = parser.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)
@@ -135,15 +88,6 @@ def main():
                                   (t_pc[:, 1] > workspace['Y_BBOX'][0]) & (t_pc[:, 1] < workspace['Y_BBOX'][1]) & \
                                   (t_pc[:, 2] > workspace['Z_BBOX'][0]) & (t_pc[:, 2] < workspace['Z_BBOX'][1])
 
-                        if t < num_steps - 1:
-                            gt_action = copy.deepcopy(outs['action'][t + 1])
-                        else:
-                            gt_action = copy.deepcopy(outs['action'][-1])
-
-                        point_of_interest = noise_position(gt_action[:3], args.noise_range)
-                        mask_area_of_interest = zoom_around_point(t_pc, workspace, point_of_interest, args.zoom_factor)
-                        in_mask = in_mask & mask_area_of_interest
-
                         if args.real_robot:
                             in_mask = in_mask & (t_pc[:, 2] > workspace['TABLE_HEIGHT'])
 
@@ -170,7 +114,7 @@ def main():
 
                         outs['xyz'].append(t_pc)
                         outs['rgb'].append(t_rgb)
-                        outs['point_of_interest'].append(point_of_interest)
+
                         if sem is not None:
                             outs['sem'].append(t_sem)
 

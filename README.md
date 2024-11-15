@@ -64,12 +64,12 @@ The evaluation script skips any task that has already been evaluated before and 
 
 We use the validation set to select the best checkpoint. The following script summarizes results on the validation split.
 ```bash
-python scripts/summarize_val_results.py data/experiments/gembench/3dlotus/v1/preds/seed100/results.jsonl
+python scripts/summarize_val_results.py data/experiments/gembench/3dlotus/v1_voxel0.5cm_refine_zoom0.4_noise0.02/preds/seed100/results.jsonl
 ```
 
 The following script summarizes results on the test splits of four generalization levels:
 ```bash
-python scripts/summarize_tst_results.py data/experiments/gembench/3dlotus/v1_voxel0.5_posbinsize0.01_zoom0.3/preds 120000
+python scripts/summarize_tst_results.py data/experiments/gembench/3dlotus/v1_voxel0.5cm_refine_zoom0.4_noise0.02/preds 80000
 ```
 
 
@@ -101,7 +101,7 @@ sbatch job_scripts/eval_3dlotusplus_policy.sh
 
 We use the validation set to select the best checkpoint. The following script summarizes results on the validation split.
 ```bash
-python scripts/summarize_val_results.py data/experiments/gembench/3dlotusplus/v1/preds-llm_gt-og_gt_coarse/seed100/results.jsonl
+python scripts/summarize_val_results.py data/experiments/gembench/3dlotusplus/v1/preds-llm_gt-og_gt_fine/seed100/results.jsonl
 ```
 
 The following script summarizes results on the test splits of four generalization levels, for the three evaluation modes:
@@ -110,7 +110,6 @@ python scripts/summarize_tst_results.py data/experiments/gembench/3dlotusplus/v1
 python scripts/summarize_tst_results.py data/experiments/gembench/3dlotusplus/v1/preds-llm_gt-runstep5 140000
 python scripts/summarize_tst_results.py data/experiments/gembench/3dlotusplus/v1/preds-runstep5 140000
 ```
-
 
 ## Citation
 If you use our GemBench benchmark or find our code helpful, please kindly cite our work:

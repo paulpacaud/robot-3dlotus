@@ -1,0 +1,2157 @@
+# taskvar: close_jar_peract+0
+# query: pick up the lid from the table and put it on the red jar.
+# objects = ['red jar', 'lime jar', 'gray lid', 'magenta jar', 'cyan jar']
+gray_lid = grasp(object="gray lid")
+gray_lid = move_grasped_object(target="red jar")
+gray_lid = rotate_grasped_object()
+release()
+# done
+
+# taskvar: close_jar_peract+1
+# query: grasping the lid, lift it from the table and use it to seal the maroon jar.
+# objects = ['white jar', 'maroon jar', 'gray lid', 'magenta jar', 'gray jar', 'green jar', 'silver jar', 'rose jar']
+gray_lid = grasp(object="gray lid")
+gray_lid = move_grasped_object(target="maroon jar")
+gray_lid = rotate_grasped_object()
+release()
+# done
+
+# taskvar: close_jar_peract+2
+# query: screw on the lime jar lid.
+# objects = ['lime jar', 'violet jar', 'gray lid', 'orange jar', 'silver jar', 'black jar', 'maroon jar', 'blue jar']
+gray_lid = grasp(object="gray lid")
+gray_lid = move_grasped_object(target="lime jar")
+gray_lid = rotate_grasped_object()
+release()
+# done
+
+# taskvar: close_jar_peract+3
+# query: pick up the lid from the table and put it on the green jar.
+# objects = ['violet jar', 'green jar', 'gray lid', 'silver jar', 'lime jar', 'blue jar', 'yellow jar']
+gray_lid = grasp(object="gray lid")
+gray_lid = move_grasped_object(target="green jar")
+gray_lid = rotate_grasped_object()
+release()
+# done
+
+# taskvar: close_jar_peract+4
+# query: pick up the lid from the table and put it on the blue jar.
+# objects = ['blue jar', 'orange jar', 'gray lid', 'olive jar']
+gray_lid = grasp(object="gray lid")
+gray_lid = move_grasped_object(target="blue jar")
+gray_lid = rotate_grasped_object()
+release()
+# done
+
+# taskvar: close_jar_peract+5
+# query: grasping the lid, lift it from the table and use it to seal the navy jar.
+# objects = ['violet jar', 'navy jar', 'gray lid', 'maroon jar', 'red jar', 'magenta jar', 'green jar']
+gray_lid = grasp(object="gray lid")
+gray_lid = move_grasped_object(target="navy jar")
+gray_lid = rotate_grasped_object()
+release()
+# done
+
+# taskvar: close_jar_peract+6
+# query: pick up the lid from the table and put it on the yellow jar.
+# objects = ['yellow jar', 'purple jar', 'gray lid', 'azure jar']
+gray_lid = grasp(object="gray lid")
+gray_lid = move_grasped_object(target="yellow jar")
+gray_lid = rotate_grasped_object()
+release()
+# done
+
+# taskvar: close_jar_peract+7
+# query: screw on the cyan jar lid.
+# objects = ['silver jar', 'cyan jar', 'gray lid', 'azure jar']
+gray_lid = grasp(object="gray lid")
+gray_lid = move_grasped_object(target="cyan jar")
+gray_lid = rotate_grasped_object()
+release()
+# done
+
+# taskvar: close_jar_peract+8
+# query: pick up the lid from the table and put it on the magenta jar.
+# objects = ['magenta jar', 'silver jar', 'gray lid', 'black jar', 'lime jar']
+gray_lid = grasp(object="gray lid")
+gray_lid = move_grasped_object(target="magenta jar")
+gray_lid = rotate_grasped_object()
+release()
+# done
+
+# taskvar: close_jar_peract+9
+# query: pick up the lid from the table and put it on the silver jar.
+# objects = ['red jar', 'silver jar', 'gray lid', 'blue jar', 'white jar', 'orange jar']
+gray_lid = grasp(object="gray lid")
+gray_lid = move_grasped_object(target="silver jar")
+gray_lid = rotate_grasped_object()
+release()
+# done
+
+# taskvar: close_jar_peract+10
+# query: close the gray jar.
+# objects = ['gray jar', 'black jar', 'gray lid', 'green jar', 'blue jar', 'lime jar', 'white jar', 'navy jar', 'teal jar']
+gray_lid = grasp(object="gray lid")
+gray_lid = move_grasped_object(target="gray jar")
+gray_lid = rotate_grasped_object()
+release()
+# done
+
+# taskvar: close_jar_peract+11
+# query: pick up the lid from the table and put it on the orange jar.
+# objects = ['magenta jar', 'orange jar', 'gray lid', 'blue jar', 'violet jar']
+gray_lid = grasp(object="gray lid")
+gray_lid = move_grasped_object(target="orange jar")
+gray_lid = rotate_grasped_object()
+release()
+# done
+
+# taskvar: close_jar_peract+12
+# query: close the olive jar.
+# objects = ['olive jar', 'purple jar', 'gray lid', 'yellow jar', 'orange jar', 'white jar', 'silver jar', 'gray jar', 'green jar']
+gray_lid = grasp(object="gray lid")
+gray_lid = move_grasped_object(target="olive jar")
+gray_lid = rotate_grasped_object()
+release()
+# done
+
+# taskvar: close_jar_peract+13
+# query: pick up the lid from the table and put it on the purple jar.
+# objects = ['rose jar', 'purple jar', 'gray lid', 'yellow jar', 'azure jar', 'teal jar']
+gray_lid = grasp(object="gray lid")
+gray_lid = move_grasped_object(target="purple jar")
+gray_lid = rotate_grasped_object()
+release()
+# done
+
+# taskvar: close_jar_peract+14
+# query: pick up the lid from the table and put it on the teal jar.
+# objects = ['teal jar', 'red jar', 'gray lid', 'rose jar', 'maroon jar', 'lime jar']
+gray_lid = grasp(object="gray lid")
+gray_lid = move_grasped_object(target="teal jar")
+gray_lid = rotate_grasped_object()
+release()
+# done
+
+# taskvar: close_jar_peract+15
+# query: screw on the azure jar lid.
+# objects = ['green jar', 'azure jar', 'gray lid', 'yellow jar', 'blue jar']
+gray_lid = grasp(object="gray lid")
+gray_lid = move_grasped_object(target="azure jar")
+gray_lid = rotate_grasped_object()
+release()
+# done
+
+# taskvar: close_jar_peract+16
+# query: screw on the violet jar lid.
+# objects = ['violet jar', 'blue jar', 'gray lid', 'orange jar', 'red jar', 'rose jar']
+gray_lid = grasp(object="gray lid")
+gray_lid = move_grasped_object(target="violet jar")
+gray_lid = rotate_grasped_object()
+release()
+# done
+
+# taskvar: close_jar_peract+17
+# query: grasping the lid, lift it from the table and use it to seal the rose jar.
+# objects = ['olive jar', 'rose jar', 'gray lid']
+gray_lid = grasp(object="gray lid")
+gray_lid = move_grasped_object(target="rose jar")
+gray_lid = rotate_grasped_object()
+release()
+# done
+
+# taskvar: close_jar_peract+18
+# query: pick up the lid from the table and put it on the black jar.
+# objects = ['black jar', 'lime jar', 'gray lid', 'magenta jar', 'red jar', 'green jar', 'azure jar', 'silver jar', 'teal jar', 'rose jar']
+gray_lid = grasp(object="gray lid")
+gray_lid = move_grasped_object(target="black jar")
+gray_lid = rotate_grasped_object()
+release()
+# done
+
+# taskvar: close_jar_peract+19
+# query: close the white jar.
+# objects = ['gray jar', 'white jar', 'gray lid', 'orange jar', 'red jar', 'navy jar', 'black jar', 'green jar', 'blue jar']
+gray_lid = grasp(object="gray lid")
+gray_lid = move_grasped_object(target="white jar")
+gray_lid = rotate_grasped_object()
+release()
+# done
+
+# taskvar: insert_onto_square_peg_peract+0
+# query: put the ring on the red spoke.
+# objects = ['maroon spoke', 'orange spoke', 'red spoke', 'square ring', 'violet spoke', 'olive spoke', 'blue spoke', 'yellow spoke', 'magenta spoke']
+ring = grasp(object="ring")
+ring = move_grasped_object(target="red spoke")
+release()
+# done
+
+# taskvar: insert_onto_square_peg_peract+1
+# query: put the ring on the maroon spoke.
+# objects = ['maroon spoke', 'green spoke', 'magenta spoke', 'square ring', 'teal spoke', 'white spoke', 'azure spoke', 'purple spoke', 'gray spoke', 'lime spoke', 'violet spoke']
+ring = grasp(object="ring")
+ring = move_grasped_object(target="maroon spoke")
+release()
+# done
+
+# taskvar: insert_onto_square_peg_peract+2
+# query: place the ring onto the lime spoke.
+# objects = ['navy spoke', 'lime spoke', 'teal spoke', 'square ring', 'violet spoke', 'gray spoke', 'azure spoke', 'purple spoke']
+ring = grasp(object="ring")
+ring = move_grasped_object(target="lime spoke")
+release()
+# done
+
+# taskvar: insert_onto_square_peg_peract+3
+# query: put the ring on the green spoke.
+# objects = ['red spoke', 'magenta spoke', 'green spoke', 'square ring', 'silver spoke', 'black spoke', 'olive spoke', 'violet spoke', 'navy spoke']
+ring = grasp(object="ring")
+ring = move_grasped_object(target="green spoke")
+release()
+# done
+
+# taskvar: insert_onto_square_peg_peract+4
+# query: place the ring onto the blue spoke.
+# objects = ['green spoke', 'maroon spoke', 'blue spoke', 'square ring', 'rose spoke', 'teal spoke', 'azure spoke', 'cyan spoke', 'navy spoke', 'white spoke', 'magenta spoke']
+ring = grasp(object="ring")
+ring = move_grasped_object(target="blue spoke")
+release()
+# done
+
+# taskvar: insert_onto_square_peg_peract+5
+# query: slide the ring onto the navy colored spoke.
+# objects = ['magenta spoke', 'navy spoke', 'teal spoke', 'square ring', 'lime spoke', 'silver spoke', 'violet spoke', 'red spoke', 'white spoke']
+ring = grasp(object="ring")
+ring = move_grasped_object(target="navy spoke")
+release()
+# done
+
+# taskvar: insert_onto_square_peg_peract+6
+# query: put the ring on the yellow spoke.
+# objects = ['black spoke', 'yellow spoke', 'orange spoke', 'square ring', 'magenta spoke', 'navy spoke']
+ring = grasp(object="ring")
+ring = move_grasped_object(target="yellow spoke")
+release()
+# done
+
+# taskvar: insert_onto_square_peg_peract+7
+# query: place the ring onto the cyan spoke.
+# objects = ['cyan spoke', 'navy spoke', 'black spoke', 'square ring', 'purple spoke', 'violet spoke', 'blue spoke', 'rose spoke', 'green spoke']
+ring = grasp(object="ring")
+ring = move_grasped_object(target="cyan spoke")
+release()
+# done
+
+# taskvar: insert_onto_square_peg_peract+8
+# query: put the ring on the magenta spoke.
+# objects = ['magenta spoke', 'rose spoke', 'silver spoke', 'square ring', 'azure spoke', 'navy spoke']
+ring = grasp(object="ring")
+ring = move_grasped_object(target="magenta spoke")
+release()
+# done
+
+# taskvar: insert_onto_square_peg_peract+9
+# query: slide the ring onto the silver colored spoke.
+# objects = ['olive spoke', 'silver spoke', 'navy spoke', 'square ring']
+ring = grasp(object="ring")
+ring = move_grasped_object(target="silver spoke")
+release()
+# done
+
+# taskvar: insert_onto_square_peg_peract+10
+# query: put the ring on the gray spoke.
+# objects = ['navy spoke', 'teal spoke', 'gray spoke', 'square ring', 'white spoke', 'magenta spoke', 'purple spoke', 'silver spoke', 'blue spoke', 'violet spoke', 'lime spoke', 'cyan spoke', 'yellow spoke', 'rose spoke']
+ring = grasp(object="ring")
+ring = move_grasped_object(target="gray spoke")
+release()
+# done
+
+# taskvar: insert_onto_square_peg_peract+11
+# query: slide the ring onto the orange colored spoke.
+# objects = ['white spoke', 'rose spoke', 'orange spoke', 'square ring', 'black spoke', 'purple spoke', 'violet spoke', 'red spoke', 'cyan spoke', 'blue spoke', 'gray spoke']
+ring = grasp(object="ring")
+ring = move_grasped_object(target="orange spoke")
+release()
+# done
+
+# taskvar: insert_onto_square_peg_peract+12
+# query: put the ring on the olive spoke.
+# objects = ['lime spoke', 'olive spoke', 'azure spoke', 'square ring', 'orange spoke', 'blue spoke', 'white spoke', 'green spoke', 'purple spoke']
+ring = grasp(object="ring")
+ring = move_grasped_object(target="olive spoke")
+release()
+# done
+
+# taskvar: insert_onto_square_peg_peract+13
+# query: place the ring onto the purple spoke.
+# objects = ['purple spoke', 'teal spoke', 'magenta spoke', 'square ring', 'lime spoke', 'violet spoke', 'yellow spoke', 'navy spoke', 'silver spoke', 'cyan spoke', 'orange spoke', 'black spoke']
+ring = grasp(object="ring")
+ring = move_grasped_object(target="purple spoke")
+release()
+# done
+
+# taskvar: insert_onto_square_peg_peract+14
+# query: slide the ring onto the teal colored spoke.
+# objects = ['yellow spoke', 'olive spoke', 'teal spoke', 'square ring', 'black spoke', 'rose spoke', 'lime spoke']
+ring = grasp(object="ring")
+ring = move_grasped_object(target="teal spoke")
+release()
+# done
+
+# taskvar: insert_onto_square_peg_peract+15
+# query: put the ring on the azure spoke.
+# objects = ['azure spoke', 'orange spoke', 'blue spoke', 'square ring', 'white spoke', 'purple spoke', 'cyan spoke', 'olive spoke', 'red spoke', 'navy spoke', 'yellow spoke', 'lime spoke']
+ring = grasp(object="ring")
+ring = move_grasped_object(target="azure spoke")
+release()
+# done
+
+# taskvar: insert_onto_square_peg_peract+16
+# query: put the ring on the violet spoke.
+# objects = ['black spoke', 'violet spoke', 'red spoke', 'square ring', 'azure spoke', 'magenta spoke', 'olive spoke', 'cyan spoke', 'lime spoke']
+ring = grasp(object="ring")
+ring = move_grasped_object(target="violet spoke")
+release()
+# done
+
+# taskvar: insert_onto_square_peg_peract+17
+# query: place the ring onto the rose spoke.
+# objects = ['violet spoke', 'rose spoke', 'red spoke', 'square ring', 'white spoke', 'orange spoke', 'green spoke', 'olive spoke', 'gray spoke', 'black spoke', 'azure spoke', 'teal spoke', 'navy spoke', 'cyan spoke', 'purple spoke', 'maroon spoke', 'silver spoke', 'lime spoke', 'blue spoke']
+ring = grasp(object="ring")
+ring = move_grasped_object(target="rose spoke")
+release()
+# done
+
+# taskvar: insert_onto_square_peg_peract+18
+# query: place the ring onto the black spoke.
+# objects = ['black spoke', 'violet spoke', 'cyan spoke', 'square ring', 'white spoke', 'gray spoke', 'azure spoke', 'maroon spoke', 'yellow spoke', 'green spoke', 'purple spoke', 'blue spoke']
+ring = grasp(object="ring")
+ring = move_grasped_object(target="black spoke")
+release()
+# done
+
+# taskvar: insert_onto_square_peg_peract+19
+# query: slide the ring onto the white colored spoke.
+# objects = ['violet spoke', 'white spoke', 'gray spoke', 'square ring', 'lime spoke', 'blue spoke', 'green spoke', 'magenta spoke']
+ring = grasp(object="ring")
+ring = move_grasped_object(target="white spoke")
+release()
+# done
+
+# taskvar: light_bulb_in_peract+0
+# query: put the light bulb from the red casing into the lamp.
+# objects = ['lamp base', 'lamp screw', 'gray light bulb', 'red light bulb', 'silver light bulb', 'olive light bulb', 'lime light bulb', 'purple light bulb']
+red_light_bulb = grasp(object="red light bulb")
+red_light_bulb = move_grasped_object(target="brown lamp")
+red_light_bulb = rotate_grasped_object()
+release()
+# done
+
+# taskvar: light_bulb_in_peract+1
+# query: pick up the light bulb from the maroon stand, lift it up to just above the lamp, then screw it down into the lamp in a clockwise fashion.
+# objects = ['lamp base', 'lamp screw', 'maroon light bulb', 'teal light bulb', 'silver light bulb']
+maroon_light_bulb = grasp(object="maroon light bulb")
+maroon_light_bulb = move_grasped_object(target="brown lamp")
+maroon_light_bulb = rotate_grasped_object()
+release()
+# done
+
+# taskvar: light_bulb_in_peract+2
+# query: screw the light bulb from the lime holder into the lamp.
+# objects = ['lamp base', 'lamp screw', 'teal light bulb', 'lime light bulb', 'black light bulb', 'red light bulb', 'purple light bulb']
+lime_light_bulb = grasp(object="lime light bulb")
+lime_light_bulb = move_grasped_object(target="brown lamp")
+lime_light_bulb = rotate_grasped_object()
+release()
+# done
+
+# taskvar: light_bulb_in_peract+3
+# query: put the light bulb from the green casing into the lamp.
+# objects = ['lamp base', 'lamp screw', 'green light bulb', 'gray light bulb']
+green_light_bulb = grasp(object="green light bulb")
+green_light_bulb = move_grasped_object(target="brown lamp")
+green_light_bulb = rotate_grasped_object()
+release()
+# done
+
+# taskvar: light_bulb_in_peract+4
+# query: screw in the blue light bulb.
+# objects = ['lamp base', 'lamp screw', 'orange light bulb', 'blue light bulb', 'rose light bulb', 'silver light bulb', 'magenta light bulb', 'azure light bulb']
+blue_light_bulb = grasp(object="blue light bulb")
+blue_light_bulb = move_grasped_object(target="brown lamp")
+blue_light_bulb = rotate_grasped_object()
+release()
+# done
+
+# taskvar: light_bulb_in_peract+5
+# query: screw in the navy light bulb.
+# objects = ['lamp base', 'lamp screw', 'navy light bulb', 'gray light bulb', 'rose light bulb', 'red light bulb', 'violet light bulb']
+navy_light_bulb = grasp(object="navy light bulb")
+navy_light_bulb = move_grasped_object(target="brown lamp")
+navy_light_bulb = rotate_grasped_object()
+release()
+# done
+
+# taskvar: light_bulb_in_peract+6
+# query: put the light bulb from the yellow casing into the lamp.
+# objects = ['lamp base', 'lamp screw', 'silver light bulb', 'yellow light bulb', 'rose light bulb', 'lime light bulb', 'gray light bulb', 'orange light bulb', 'black light bulb', 'azure light bulb']
+yellow_light_bulb = grasp(object="yellow light bulb")
+yellow_light_bulb = move_grasped_object(target="brown lamp")
+yellow_light_bulb = rotate_grasped_object()
+release()
+# done
+
+# taskvar: light_bulb_in_peract+7
+# query: screw the light bulb from the cyan holder into the lamp.
+# objects = ['lamp base', 'lamp screw', 'cyan light bulb', 'orange light bulb', 'maroon light bulb', 'green light bulb', 'gray light bulb', 'navy light bulb']
+cyan_light_bulb = grasp(object="cyan light bulb")
+cyan_light_bulb = move_grasped_object(target="brown lamp")
+cyan_light_bulb = rotate_grasped_object()
+release()
+# done
+
+# taskvar: light_bulb_in_peract+8
+# query: screw in the magenta light bulb.
+# objects = ['lamp base', 'lamp screw', 'olive light bulb', 'magenta light bulb', 'cyan light bulb', 'purple light bulb', 'red light bulb']
+magenta_light_bulb = grasp(object="magenta light bulb")
+magenta_light_bulb = move_grasped_object(target="brown lamp")
+magenta_light_bulb = rotate_grasped_object()
+release()
+# done
+
+# taskvar: light_bulb_in_peract+9
+# query: pick up the light bulb from the silver stand, lift it up to just above the lamp, then screw it down into the lamp in a clockwise fashion.
+# objects = ['lamp base', 'lamp screw', 'silver light bulb', 'green light bulb', 'blue light bulb', 'lime light bulb', 'white light bulb']
+silver_light_bulb = grasp(object="silver light bulb")
+silver_light_bulb = move_grasped_object(target="brown lamp")
+silver_light_bulb = rotate_grasped_object()
+release()
+# done
+
+# taskvar: light_bulb_in_peract+10
+# query: screw the light bulb from the gray holder into the lamp.
+# objects = ['lamp base', 'lamp screw', 'black light bulb', 'gray light bulb', 'purple light bulb', 'white light bulb', 'blue light bulb', 'silver light bulb', 'olive light bulb', 'azure light bulb']
+gray_light_bulb = grasp(object="gray light bulb")
+gray_light_bulb = move_grasped_object(target="brown lamp")
+gray_light_bulb = rotate_grasped_object()
+release()
+# done
+
+# taskvar: light_bulb_in_peract+11
+# query: put the light bulb from the orange casing into the lamp.
+# objects = ['lamp base', 'lamp screw', 'orange light bulb', 'azure light bulb', 'purple light bulb']
+orange_light_bulb = grasp(object="orange light bulb")
+orange_light_bulb = move_grasped_object(target="brown lamp")
+orange_light_bulb = rotate_grasped_object()
+release()
+# done
+
+# taskvar: light_bulb_in_peract+12
+# query: screw in the olive light bulb.
+# objects = ['lamp base', 'lamp screw', 'cyan light bulb', 'olive light bulb', 'magenta light bulb']
+olive_light_bulb = grasp(object="olive light bulb")
+olive_light_bulb = move_grasped_object(target="brown lamp")
+olive_light_bulb = rotate_grasped_object()
+release()
+# done
+
+# taskvar: light_bulb_in_peract+13
+# query: put the light bulb from the purple casing into the lamp.
+# objects = ['lamp base', 'lamp screw', 'purple light bulb', 'orange light bulb', 'maroon light bulb', 'violet light bulb', 'white light bulb', 'azure light bulb', 'yellow light bulb']
+purple_light_bulb = grasp(object="purple light bulb")
+purple_light_bulb = move_grasped_object(target="brown lamp")
+purple_light_bulb = rotate_grasped_object()
+release()
+# done
+
+# taskvar: light_bulb_in_peract+14
+# query: screw the light bulb from the teal holder into the lamp.
+# objects = ['lamp base', 'lamp screw', 'black light bulb', 'teal light bulb', 'rose light bulb', 'navy light bulb', 'orange light bulb', 'gray light bulb', 'magenta light bulb']
+teal_light_bulb = grasp(object="teal light bulb")
+teal_light_bulb = move_grasped_object(target="brown lamp")
+teal_light_bulb = rotate_grasped_object()
+release()
+# done
+
+# taskvar: light_bulb_in_peract+15
+# query: screw the light bulb from the azure holder into the lamp.
+# objects = ['lamp base', 'lamp screw', 'azure light bulb', 'navy light bulb', 'maroon light bulb', 'purple light bulb']
+azure_light_bulb = grasp(object="azure light bulb")
+azure_light_bulb = move_grasped_object(target="brown lamp")
+azure_light_bulb = rotate_grasped_object()
+release()
+# done
+
+# taskvar: light_bulb_in_peract+16
+# query: screw the light bulb from the violet holder into the lamp.
+# objects = ['lamp base', 'lamp screw', 'blue light bulb', 'violet light bulb', 'maroon light bulb', 'gray light bulb']
+violet_light_bulb = grasp(object="violet light bulb")
+violet_light_bulb = move_grasped_object(target="brown lamp")
+violet_light_bulb = rotate_grasped_object()
+release()
+# done
+
+# taskvar: light_bulb_in_peract+17
+# query: put the light bulb from the rose casing into the lamp.
+# objects = ['lamp base', 'lamp screw', 'rose light bulb', 'azure light bulb', 'cyan light bulb', 'magenta light bulb', 'teal light bulb']
+rose_light_bulb = grasp(object="rose light bulb")
+rose_light_bulb = move_grasped_object(target="brown lamp")
+rose_light_bulb = rotate_grasped_object()
+release()
+# done
+
+# taskvar: light_bulb_in_peract+18
+# query: put the light bulb from the black casing into the lamp.
+# objects = ['lamp base', 'lamp screw', 'white light bulb', 'black light bulb', 'olive light bulb', 'blue light bulb', 'teal light bulb', 'violet light bulb']
+black_light_bulb = grasp(object="black light bulb")
+black_light_bulb = move_grasped_object(target="brown lamp")
+black_light_bulb = rotate_grasped_object()
+release()
+# done
+
+# taskvar: light_bulb_in_peract+19
+# query: screw the light bulb from the white holder into the lamp.
+# objects = ['lamp base', 'lamp screw', 'white light bulb', 'black light bulb', 'olive light bulb', 'teal light bulb', 'purple light bulb']
+white_light_bulb = grasp(object="white light bulb")
+white_light_bulb = move_grasped_object(target="brown lamp")
+white_light_bulb = rotate_grasped_object()
+release()
+# done
+
+# taskvar: meat_off_grill_peract+0
+# query: pick up the chicken and place it next to the grill.
+# objects = ['chicken', 'grill', 'steak']
+chicken = grasp(object="chicken")
+chicken = move_grasped_object(target="grill tray")
+release()
+# done
+
+# taskvar: meat_off_grill_peract+1
+# query: take the steak off the grill.
+# objects = ['chicken', 'grill', 'steak']
+steak = grasp(object="steak")
+steak = move_grasped_object(target="grill tray")
+release()
+# done
+
+# taskvar: open_drawer_peract+0
+# query: open the bottom drawer.
+# objects = ['drawer bottom', 'drawer middle', 'drawer top']
+bottom_drawer_handle = grasp(object="bottom drawer handle")
+bottom_drawer_handle = move_grasped_object(target="out")
+release()
+# done
+
+# taskvar: open_drawer_peract+1
+# query: open the middle drawer.
+# objects = ['drawer bottom', 'drawer middle', 'drawer top']
+middle_drawer_handle = grasp(object="middle drawer handle")
+middle_drawer_handle = move_grasped_object(target="out")
+release()
+# done
+
+# taskvar: open_drawer_peract+2
+# query: open the top drawer.
+# objects = ['drawer bottom', 'drawer middle', 'drawer top']
+top_drawer_handle = grasp(object="top drawer handle")
+top_drawer_handle = move_grasped_object(target="out")
+release()
+# done
+
+# taskvar: place_cups_peract+0
+# query: pick up one cup and slide its handle onto a spoke on the mug holder.
+# objects = ['cups holder base', 'cups holder spoke', 'mug']
+unplaced_mug = grasp(object="unplaced mug")
+unplaced_mug = move_grasped_object(target="cups holder")
+release()
+# done
+
+# taskvar: place_cups_peract+1
+# query: pick up 2 mugs and slide their handles onto the cup holder spokes.
+# objects = ['cups holder base', 'cups holder spoke', 'mug']
+unplaced_mug = grasp(object="unplaced mug")
+unplaced_mug = move_grasped_object(target="cups holder")
+release()
+unplaced_mug = grasp(object="unplaced mug")
+unplaced_mug = move_grasped_object(target="cups holder")
+release()
+# done
+
+# taskvar: place_cups_peract+2
+# query: move 3 cups from the table to the mug tree.
+# objects = ['cups holder base', 'cups holder spoke', 'mug']
+unplaced_mug = grasp(object="unplaced mug")
+unplaced_mug = move_grasped_object(target="cups holder")
+release()
+unplaced_mug = grasp(object="unplaced mug")
+unplaced_mug = move_grasped_object(target="cups holder")
+release()
+unplaced_mug = grasp(object="unplaced mug")
+unplaced_mug = move_grasped_object(target="cups holder")
+release()
+# done
+
+# taskvar: place_shape_in_shape_sorter_peract+0
+# query: pick up the cube and put it in the sorter.
+# objects = ['shape sorter', 'triangular prism', 'star', 'moon', 'cube', 'cylinder']
+cube = grasp(object="cube")
+cube = move_grasped_object(target="shape sorter cube hole")
+release()
+# done
+
+# taskvar: place_shape_in_shape_sorter_peract+1
+# query: place the cylinder into its slot in the shape sorter.
+# objects = ['shape sorter', 'triangular prism', 'star', 'moon', 'cube', 'cylinder']
+cylinder = grasp(object="cylinder")
+cylinder = move_grasped_object(target="shape sorter cylinder hole")
+release()
+# done
+
+# taskvar: place_shape_in_shape_sorter_peract+2
+# query: put the triangular prism in the shape sorter.
+# objects = ['shape sorter', 'triangular prism', 'star', 'moon', 'cube', 'cylinder']
+triangular_prism = grasp(object="triangular prism")
+triangular_prism = move_grasped_object(target="shape sorter triangular hole")
+release()
+# done
+
+# taskvar: place_shape_in_shape_sorter_peract+3
+# query: pick up the star and put it in the sorter.
+# objects = ['shape sorter', 'triangular prism', 'star', 'moon', 'cube', 'cylinder']
+star = grasp(object="star")
+star = move_grasped_object(target="shape sorter star hole")
+release()
+# done
+
+# taskvar: place_shape_in_shape_sorter_peract+4
+# query: put the moon in the shape sorter.
+# objects = ['shape sorter', 'triangular prism', 'star', 'moon', 'cube', 'cylinder']
+moon = grasp(object="moon")
+moon = move_grasped_object(target="shape sorter moon hole")
+release()
+# done
+
+# taskvar: place_wine_at_rack_location_peract+0
+# query: leave the wine on the middle section of the shelf.
+# objects = ['rack', 'wine bottle']
+wine = grasp(object="wine")
+wine = move_grasped_object(target="middle part of rack")
+release()
+# done
+
+# taskvar: place_wine_at_rack_location_peract+1
+# query: leave the wine on the left section of the shelf.
+# objects = ['rack', 'wine bottle']
+wine = grasp(object="wine")
+wine = move_grasped_object(target="left part of rack")
+release()
+# done
+
+# taskvar: place_wine_at_rack_location_peract+2
+# query: grasp the bottle and put it away on the right.
+# objects = ['rack', 'wine bottle']
+wine = grasp(object="wine")
+wine = move_grasped_object(target="right part of rack")
+release()
+# done
+
+# taskvar: push_buttons_peract+1
+# query: push the maroon button, then push the green button.
+# objects = ['maroon button', 'green button', 'violet button', 'azure button', 'orange button', 'magenta button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+# done
+
+# taskvar: push_buttons_peract+2
+# query: press the maroon button, then press the green button, then press the blue button.
+# objects = ['maroon button', 'green button', 'blue button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+blue_button = push_down(object="blue button")
+# done
+
+# taskvar: push_buttons_peract+3
+# query: push the maroon button.
+# objects = ['maroon button', 'navy button', 'gray button']
+maroon_button = push_down(object="maroon button")
+# done
+
+# taskvar: push_buttons_peract+4
+# query: push the maroon button, then push the green button.
+# objects = ['maroon button', 'green button', 'yellow button', 'cyan button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+# done
+
+# taskvar: push_buttons_peract+6
+# query: push down the button with the maroon base.
+# objects = ['maroon button', 'navy button', 'cyan button', 'yellow button', 'magenta button', 'azure button', 'silver button']
+maroon_button = push_down(object="maroon button")
+# done
+
+# taskvar: push_buttons_peract+7
+# query: push the maroon button, then push the green button.
+# objects = ['maroon button', 'green button', 'blue button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+# done
+
+# taskvar: push_buttons_peract+8
+# query: push the maroon button, then push the green button, then push the yellow button.
+# objects = ['maroon button', 'green button', 'yellow button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+yellow_button = push_down(object="yellow button")
+# done
+
+# taskvar: push_buttons_peract+9
+# query: press the maroon button.
+# objects = ['maroon button', 'azure button', 'violet button', 'navy button', 'magenta button']
+maroon_button = push_down(object="maroon button")
+# done
+
+# taskvar: push_buttons_peract+10
+# query: push the maroon button, then push the green button.
+# objects = ['maroon button', 'green button', 'violet button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+# done
+
+# taskvar: push_buttons_peract+11
+# query: push the maroon button, then push the green button, then push the cyan button.
+# objects = ['maroon button', 'green button', 'cyan button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+cyan_button = push_down(object="cyan button")
+# done
+
+# taskvar: push_buttons_peract+12
+# query: push down the button with the maroon base.
+# objects = ['maroon button', 'orange button', 'magenta button', 'teal button', 'navy button']
+maroon_button = push_down(object="maroon button")
+# done
+
+# taskvar: push_buttons_peract+13
+# query: push the maroon button, then push the green button.
+# objects = ['maroon button', 'green button', 'silver button', 'gray button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+# done
+
+# taskvar: push_buttons_peract+14
+# query: push down the button with the maroon base, then the green one, then the magenta one.
+# objects = ['maroon button', 'green button', 'magenta button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+magenta_button = push_down(object="magenta button")
+# done
+
+# taskvar: push_buttons_peract+15
+# query: press the maroon button.
+# objects = ['maroon button', 'rose button', 'black button', 'azure button', 'cyan button']
+maroon_button = push_down(object="maroon button")
+# done
+
+# taskvar: push_buttons_peract+16
+# query: push down the button with the maroon base, then the green one.
+# objects = ['maroon button', 'green button', 'navy button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+# done
+
+# taskvar: push_buttons_peract+17
+# query: push down the button with the maroon base, then the green one, then the silver one.
+# objects = ['maroon button', 'green button', 'silver button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+silver_button = push_down(object="silver button")
+# done
+
+# taskvar: push_buttons_peract+18
+# query: push the maroon button.
+# objects = ['maroon button', 'blue button', 'gray button', 'magenta button']
+maroon_button = push_down(object="maroon button")
+# done
+
+# taskvar: push_buttons_peract+19
+# query: press the maroon button, then press the green button.
+# objects = ['maroon button', 'green button', 'orange button', 'cyan button', 'magenta button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+# done
+
+# taskvar: push_buttons_peract+21
+# query: push the maroon button.
+# objects = ['maroon button', 'gray button', 'azure button']
+maroon_button = push_down(object="maroon button")
+# done
+
+# taskvar: push_buttons_peract+22
+# query: push the maroon button, then push the green button.
+# objects = ['maroon button', 'green button', 'silver button', 'yellow button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+# done
+
+# taskvar: push_buttons_peract+25
+# query: push the maroon button, then push the green button.
+# objects = ['maroon button', 'green button', 'blue button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+# done
+
+# taskvar: push_buttons_peract+26
+# query: push down the button with the maroon base, then the green one, then the olive one.
+# objects = ['maroon button', 'green button', 'olive button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+olive_button = push_down(object="olive button")
+# done
+
+# taskvar: push_buttons_peract+27
+# query: push down the button with the maroon base.
+# objects = ['maroon button', 'yellow button', 'white button', 'navy button', 'gray button']
+maroon_button = push_down(object="maroon button")
+# done
+
+# taskvar: push_buttons_peract+28
+# query: push down the button with the maroon base, then the green one.
+# objects = ['maroon button', 'green button', 'rose button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+# done
+
+# taskvar: push_buttons_peract+29
+# query: push down the button with the maroon base, then the green one, then the purple one.
+# objects = ['maroon button', 'green button', 'purple button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+purple_button = push_down(object="purple button")
+# done
+
+# taskvar: push_buttons_peract+30
+# query: push down the button with the maroon base.
+# objects = ['maroon button', 'teal button', 'green button', 'navy button', 'blue button', 'azure button', 'purple button']
+maroon_button = push_down(object="maroon button")
+# done
+
+# taskvar: push_buttons_peract+31
+# query: push down the button with the maroon base, then the green one.
+# objects = ['maroon button', 'green button', 'blue button', 'olive button', 'azure button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+# done
+
+# taskvar: push_buttons_peract+32
+# query: push the maroon button, then push the green button, then push the teal button.
+# objects = ['maroon button', 'green button', 'teal button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+teal_button = push_down(object="teal button")
+# done
+
+# taskvar: push_buttons_peract+33
+# query: push the maroon button.
+# objects = ['maroon button', 'black button', 'azure button']
+maroon_button = push_down(object="maroon button")
+# done
+
+# taskvar: push_buttons_peract+34
+# query: push the maroon button, then push the green button.
+# objects = ['maroon button', 'green button', 'orange button', 'rose button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+# done
+
+# taskvar: push_buttons_peract+35
+# query: press the maroon button, then press the green button, then press the azure button.
+# objects = ['maroon button', 'green button', 'azure button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+azure_button = push_down(object="azure button")
+# done
+
+# taskvar: push_buttons_peract+36
+# query: push down the button with the maroon base.
+# objects = ['maroon button', 'purple button', 'black button']
+maroon_button = push_down(object="maroon button")
+# done
+
+# taskvar: push_buttons_peract+37
+# query: push the maroon button, then push the green button.
+# objects = ['maroon button', 'green button', 'rose button', 'teal button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+# done
+
+# taskvar: push_buttons_peract+38
+# query: push down the button with the maroon base, then the green one, then the violet one.
+# objects = ['maroon button', 'green button', 'violet button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+violet_button = push_down(object="violet button")
+# done
+
+# taskvar: push_buttons_peract+40
+# query: push down the button with the maroon base, then the green one.
+# objects = ['maroon button', 'green button', 'black button', 'orange button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+# done
+
+# taskvar: push_buttons_peract+41
+# query: push the maroon button, then push the green button, then push the rose button.
+# objects = ['maroon button', 'green button', 'rose button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+rose_button = push_down(object="rose button")
+# done
+
+# taskvar: push_buttons_peract+42
+# query: press the maroon button.
+# objects = ['maroon button', 'magenta button', 'violet button', 'navy button', 'rose button']
+maroon_button = push_down(object="maroon button")
+# done
+
+# taskvar: push_buttons_peract+44
+# query: push the maroon button, then push the green button, then push the black button.
+# objects = ['maroon button', 'green button', 'black button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+black_button = push_down(object="black button")
+# done
+
+# taskvar: push_buttons_peract+45
+# query: press the maroon button.
+# objects = ['maroon button', 'magenta button', 'rose button', 'yellow button', 'azure button', 'gray button']
+maroon_button = push_down(object="maroon button")
+# done
+
+# taskvar: push_buttons_peract+47
+# query: push the maroon button, then push the green button, then push the white button.
+# objects = ['maroon button', 'green button', 'white button']
+maroon_button = push_down(object="maroon button")
+green_button = push_down(object="green button")
+white_button = push_down(object="white button")
+# done
+
+# taskvar: push_buttons_peract+48
+# query: push the maroon button.
+# objects = ['maroon button', 'teal button', 'cyan button', 'rose button', 'green button', 'orange button', 'gray button']
+maroon_button = push_down(object="maroon button")
+# done
+
+# taskvar: push_buttons_peract+49
+# query: press the maroon button, then press the blue button.
+# objects = ['maroon button', 'blue button', 'teal button', 'cyan button']
+maroon_button = push_down(object="maroon button")
+blue_button = push_down(object="blue button")
+# done
+
+# taskvar: put_groceries_in_cupboard_peract+0
+# query: put the crackers in the cupboard.
+# objects = ['chocolate jello', 'strawberry jello', 'soup', 'tuna', 'spam', 'sugar', 'coffee', 'mustard', 'cupboard', 'crackers']
+crackers = grasp(object="crackers")
+crackers = move_grasped_object(target="cupboard")
+release()
+# done
+
+# taskvar: put_groceries_in_cupboard_peract+1
+# query: pick up the chocolate jello and place it in the cupboard.
+# objects = ['chocolate jello', 'strawberry jello', 'soup', 'tuna', 'spam', 'sugar', 'coffee', 'mustard', 'cupboard', 'crackers']
+chocolate_jello = grasp(object="chocolate jello")
+chocolate_jello = move_grasped_object(target="cupboard")
+release()
+# done
+
+# taskvar: put_groceries_in_cupboard_peract+2
+# query: move the strawberry jello to the bottom shelf.
+# objects = ['chocolate jello', 'strawberry jello', 'soup', 'tuna', 'spam', 'sugar', 'coffee', 'mustard', 'cupboard', 'crackers']
+strawberry_jello = grasp(object="strawberry jello")
+strawberry_jello = move_grasped_object(target="cupboard")
+release()
+# done
+
+# taskvar: put_groceries_in_cupboard_peract+3
+# query: pick up the soup and place it in the cupboard.
+# objects = ['chocolate jello', 'strawberry jello', 'soup', 'tuna', 'spam', 'sugar', 'coffee', 'mustard', 'cupboard', 'crackers']
+soup = grasp(object="soup")
+soup = move_grasped_object(target="cupboard")
+release()
+# done
+
+# taskvar: put_groceries_in_cupboard_peract+4
+# query: put the tuna in the cupboard.
+# objects = ['chocolate jello', 'strawberry jello', 'soup', 'tuna', 'spam', 'sugar', 'coffee', 'mustard', 'cupboard', 'crackers']
+tuna = grasp(object="tuna")
+tuna = move_grasped_object(target="cupboard")
+release()
+# done
+
+# taskvar: put_groceries_in_cupboard_peract+5
+# query: move the spam to the bottom shelf.
+# objects = ['chocolate jello', 'strawberry jello', 'soup', 'tuna', 'spam', 'sugar', 'coffee', 'mustard', 'cupboard', 'crackers']
+spam = grasp(object="spam")
+spam = move_grasped_object(target="cupboard")
+release()
+# done
+
+# taskvar: put_groceries_in_cupboard_peract+6
+# query: put away the coffee in the cupboard.
+# objects = ['chocolate jello', 'strawberry jello', 'soup', 'tuna', 'spam', 'sugar', 'coffee', 'mustard', 'cupboard', 'crackers']
+coffee = grasp(object="coffee")
+coffee = move_grasped_object(target="cupboard")
+release()
+# done
+
+# taskvar: put_groceries_in_cupboard_peract+7
+# query: pick up the mustard and place it in the cupboard.
+# objects = ['chocolate jello', 'strawberry jello', 'soup', 'tuna', 'spam', 'sugar', 'coffee', 'mustard', 'cupboard', 'crackers']
+mustard = grasp(object="mustard")
+mustard = move_grasped_object(target="cupboard")
+release()
+# done
+
+# taskvar: put_groceries_in_cupboard_peract+8
+# query: put the sugar in the cupboard.
+# objects = ['chocolate jello', 'strawberry jello', 'soup', 'tuna', 'spam', 'sugar', 'coffee', 'mustard', 'cupboard', 'crackers']
+sugar = grasp(object="sugar")
+sugar = move_grasped_object(target="cupboard")
+release()
+# done
+
+# taskvar: put_item_in_drawer_peract+0
+# query: put the block away in the bottom drawer.
+# objects = ['drawer frame', 'drawer bottom', 'drawer legs', 'drawer middle', 'drawer top', 'item']
+bottom_drawer_handle = grasp(object="bottom drawer handle")
+bottom_drawer_handle = move_grasped_object(target="out")
+release()
+cube = grasp(object="cube")
+cube = move_grasped_object(target="bottom drawer")
+release()
+# done
+
+# taskvar: put_item_in_drawer_peract+1
+# query: put the block away in the middle drawer.
+# objects = ['drawer frame', 'drawer bottom', 'drawer legs', 'drawer middle', 'drawer top', 'item']
+middle_drawer_handle = grasp(object="middle drawer handle")
+middle_drawer_handle = move_grasped_object(target="out")
+release()
+cube = grasp(object="cube")
+cube = move_grasped_object(target="middle drawer")
+release()
+# done
+
+# taskvar: put_item_in_drawer_peract+2
+# query: put the item in the top drawer.
+# objects = ['drawer frame', 'drawer bottom', 'drawer legs', 'drawer middle', 'drawer top', 'item']
+top_drawer_handle = grasp(object="top drawer handle")
+top_drawer_handle = move_grasped_object(target="out")
+release()
+cube = grasp(object="cube")
+cube = move_grasped_object(target="top drawer")
+release()
+# done
+
+# taskvar: put_money_in_safe_peract+0
+# query: place the stack of bank notes on the bottom shelf of the safe.
+# objects = ['safe body', 'dollar', 'safe door']
+money = grasp(object="money")
+money = move_grasped_object(target="bottom shelf")
+release()
+# done
+
+# taskvar: put_money_in_safe_peract+1
+# query: leave the money on the middle shelf on the safe.
+# objects = ['safe body', 'dollar', 'safe door']
+money = grasp(object="money")
+money = move_grasped_object(target="middle shelf")
+release()
+# done
+
+# taskvar: put_money_in_safe_peract+2
+# query: put the money away in the safe on the top shelf.
+# objects = ['safe body', 'dollar', 'safe door']
+money = grasp(object="money")
+money = move_grasped_object(target="top shelf")
+release()
+# done
+
+# taskvar: reach_and_drag_peract+0
+# query: drag the block towards the red square on the table top.
+# objects = ['gray cube', 'stick', 'red square']
+stick = grasp(object="stick")
+gray_cube = push_forward(object="gray cube", target="red square")
+# done
+
+# taskvar: reach_and_drag_peract+1
+# query: pick up the stick and use it to push or pull the cube onto the maroon target.
+# objects = ['gray cube', 'stick', 'maroon square']
+stick = grasp(object="stick")
+gray_cube = push_forward(object="gray cube", target="maroon square")
+# done
+
+# taskvar: reach_and_drag_peract+2
+# query: use the stick to drag the cube onto the lime target.
+# objects = ['gray cube', 'stick', 'lime square']
+stick = grasp(object="stick")
+gray_cube = push_forward(object="gray cube", target="lime square")
+# done
+
+# taskvar: reach_and_drag_peract+3
+# query: grasping the stick by one end, pick it up and use the its other end to move the block onto the green target.
+# objects = ['gray cube', 'stick', 'green square']
+stick = grasp(object="stick")
+gray_cube = push_forward(object="gray cube", target="green square")
+# done
+
+# taskvar: reach_and_drag_peract+4
+# query: pick up the stick and use it to push or pull the cube onto the blue target.
+# objects = ['gray cube', 'stick', 'blue square']
+stick = grasp(object="stick")
+gray_cube = push_forward(object="gray cube", target="blue square")
+# done
+
+# taskvar: reach_and_drag_peract+5
+# query: grasping the stick by one end, pick it up and use the its other end to move the block onto the navy target.
+# objects = ['gray cube', 'stick', 'navy square']
+stick = grasp(object="stick")
+gray_cube = push_forward(object="gray cube", target="navy square")
+# done
+
+# taskvar: reach_and_drag_peract+6
+# query: use the stick to drag the cube onto the yellow target.
+# objects = ['gray cube', 'stick', 'yellow square']
+stick = grasp(object="stick")
+gray_cube = push_forward(object="gray cube", target="yellow square")
+# done
+
+# taskvar: reach_and_drag_peract+7
+# query: drag the block towards the cyan square on the table top.
+# objects = ['gray cube', 'stick', 'cyan square']
+stick = grasp(object="stick")
+gray_cube = push_forward(object="gray cube", target="cyan square")
+# done
+
+# taskvar: reach_and_drag_peract+8
+# query: grasping the stick by one end, pick it up and use the its other end to move the block onto the magenta target.
+# objects = ['gray cube', 'stick', 'magenta square']
+stick = grasp(object="stick")
+gray_cube = push_forward(object="gray cube", target="magenta square")
+# done
+
+# taskvar: reach_and_drag_peract+9
+# query: drag the block towards the silver square on the table top.
+# objects = ['gray cube', 'stick', 'silver square']
+stick = grasp(object="stick")
+gray_cube = push_forward(object="gray cube", target="silver square")
+# done
+
+# taskvar: reach_and_drag_peract+10
+# query: grasping the stick by one end, pick it up and use the its other end to move the block onto the gray target.
+# objects = ['gray cube', 'stick', 'gray square']
+stick = grasp(object="stick")
+gray_cube = push_forward(object="gray cube", target="gray square")
+# done
+
+# taskvar: reach_and_drag_peract+11
+# query: use the stick to drag the cube onto the orange target.
+# objects = ['gray cube', 'stick', 'orange square']
+stick = grasp(object="stick")
+gray_cube = push_forward(object="gray cube", target="orange square")
+# done
+
+# taskvar: reach_and_drag_peract+12
+# query: use the stick to drag the cube onto the olive target.
+# objects = ['gray cube', 'stick', 'olive square']
+stick = grasp(object="stick")
+gray_cube = push_forward(object="gray cube", target="olive square")
+# done
+
+# taskvar: reach_and_drag_peract+13
+# query: grasping the stick by one end, pick it up and use the its other end to move the block onto the purple target.
+# objects = ['gray cube', 'stick', 'purple square']
+stick = grasp(object="stick")
+gray_cube = push_forward(object="gray cube", target="purple square")
+# done
+
+# taskvar: reach_and_drag_peract+14
+# query: pick up the stick and use it to push or pull the cube onto the teal target.
+# objects = ['gray cube', 'stick', 'teal square']
+stick = grasp(object="stick")
+gray_cube = push_forward(object="gray cube", target="teal square")
+# done
+
+# taskvar: reach_and_drag_peract+15
+# query: drag the block towards the azure square on the table top.
+# objects = ['gray cube', 'stick', 'azure square']
+stick = grasp(object="stick")
+gray_cube = push_forward(object="gray cube", target="azure square")
+# done
+
+# taskvar: reach_and_drag_peract+16
+# query: use the stick to drag the cube onto the violet target.
+# objects = ['gray cube', 'stick', 'violet square']
+stick = grasp(object="stick")
+gray_cube = push_forward(object="gray cube", target="violet square")
+# done
+
+# taskvar: reach_and_drag_peract+17
+# query: grasping the stick by one end, pick it up and use the its other end to move the block onto the rose target.
+# objects = ['gray cube', 'stick', 'rose square']
+stick = grasp(object="stick")
+gray_cube = push_forward(object="gray cube", target="rose square")
+# done
+
+# taskvar: reach_and_drag_peract+18
+# query: pick up the stick and use it to push or pull the cube onto the black target.
+# objects = ['gray cube', 'stick', 'black square']
+stick = grasp(object="stick")
+gray_cube = push_forward(object="gray cube", target="black square")
+# done
+
+# taskvar: reach_and_drag_peract+19
+# query: grasping the stick by one end, pick it up and use the its other end to move the block onto the white target.
+# objects = ['gray cube', 'stick', 'white square']
+stick = grasp(object="stick")
+gray_cube = push_forward(object="gray cube", target="white square")
+# done
+
+# taskvar: slide_block_to_color_target_peract+0
+# query: slide the block towards the green plane.
+# objects = ['green square', 'red cube', 'blue square', 'rose square', 'yellow square']
+red_cube = push_forward(object="red cube", target="green square")
+# done
+
+# taskvar: slide_block_to_color_target_peract+1
+# query: cover the blue target with the block by pushing the block in its direction.
+# objects = ['green square', 'red cube', 'blue square', 'rose square', 'yellow square']
+red_cube = push_forward(object="red cube", target="blue square")
+# done
+
+# taskvar: slide_block_to_color_target_peract+2
+# query: slide the block to pink target.
+# objects = ['green square', 'red cube', 'blue square', 'rose square', 'yellow square']
+red_cube = push_forward(object="red cube", target="pink square")
+# done
+
+# taskvar: slide_block_to_color_target_peract+3
+# query: slide the block onto the yellow square.
+# objects = ['green square', 'red cube', 'blue square', 'rose square', 'yellow square']
+red_cube = push_forward(object="red cube", target="yellow square")
+# done
+
+# taskvar: stack_blocks_peract+0
+# query: stack 2 red blocks.
+# objects = ['red cube', 'cyan cube', 'green square', 'green cube', 'silver cube']
+red_cube = grasp(object="red cube")
+red_cube = move_grasped_object(target="green square")
+release()
+red_cube = grasp(object="red cube")
+red_cube = move_grasped_object(target="red cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+1
+# query: place 3 of the red cubes on top of each other.
+# objects = ['red cube', 'lime cube', 'green square']
+red_cube = grasp(object="red cube")
+red_cube = move_grasped_object(target="green square")
+release()
+red_cube = grasp(object="red cube")
+red_cube = move_grasped_object(target="red cube")
+release()
+red_cube = grasp(object="red cube")
+red_cube = move_grasped_object(target="red cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+2
+# query: arrange 4 red blocks in a vertical stack on the table top.
+# objects = ['red cube', 'teal cube', 'green square']
+red_cube = grasp(object="red cube")
+red_cube = move_grasped_object(target="green square")
+release()
+red_cube = grasp(object="red cube")
+red_cube = move_grasped_object(target="red cube")
+release()
+red_cube = grasp(object="red cube")
+red_cube = move_grasped_object(target="red cube")
+release()
+red_cube = grasp(object="red cube")
+red_cube = move_grasped_object(target="red cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+3
+# query: set 2 maroon cubes on top of each other.
+# objects = ['maroon cube', 'purple cube', 'green square', 'olive cube']
+maroon_cube = grasp(object="maroon cube")
+maroon_cube = move_grasped_object(target="green square")
+release()
+maroon_cube = grasp(object="maroon cube")
+maroon_cube = move_grasped_object(target="maroon cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+5
+# query: stack 4 maroon blocks.
+# objects = ['maroon cube', 'purple cube', 'green square']
+maroon_cube = grasp(object="maroon cube")
+maroon_cube = move_grasped_object(target="green square")
+release()
+maroon_cube = grasp(object="maroon cube")
+maroon_cube = move_grasped_object(target="maroon cube")
+release()
+maroon_cube = grasp(object="maroon cube")
+maroon_cube = move_grasped_object(target="maroon cube")
+release()
+maroon_cube = grasp(object="maroon cube")
+maroon_cube = move_grasped_object(target="maroon cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+6
+# query: pick up and set down 2 lime blocks on top of each other.
+# objects = ['lime cube', 'gray cube', 'green square']
+lime_cube = grasp(object="lime cube")
+lime_cube = move_grasped_object(target="green square")
+release()
+lime_cube = grasp(object="lime cube")
+lime_cube = move_grasped_object(target="lime cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+8
+# query: pick up and set down 4 lime blocks on top of each other.
+# objects = ['lime cube', 'gray cube', 'green square', 'black cube']
+lime_cube = grasp(object="lime cube")
+lime_cube = move_grasped_object(target="green square")
+release()
+lime_cube = grasp(object="lime cube")
+lime_cube = move_grasped_object(target="lime cube")
+release()
+lime_cube = grasp(object="lime cube")
+lime_cube = move_grasped_object(target="lime cube")
+release()
+lime_cube = grasp(object="lime cube")
+lime_cube = move_grasped_object(target="lime cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+9
+# query: build a tall tower out of 2 green cubes.
+# objects = ['green cube', 'gray cube', 'green square', 'purple cube', 'violet cube']
+green_cube = grasp(object="green cube")
+green_cube = move_grasped_object(target="green square")
+release()
+green_cube = grasp(object="green cube")
+green_cube = move_grasped_object(target="green cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+11
+# query: pick up and set down 4 green blocks on top of each other.
+# objects = ['green cube', 'navy cube', 'green square', 'rose cube']
+green_cube = grasp(object="green cube")
+green_cube = move_grasped_object(target="green square")
+release()
+green_cube = grasp(object="green cube")
+green_cube = move_grasped_object(target="green cube")
+release()
+green_cube = grasp(object="green cube")
+green_cube = move_grasped_object(target="green cube")
+release()
+green_cube = grasp(object="green cube")
+green_cube = move_grasped_object(target="green cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+12
+# query: build a tall tower out of 2 blue cubes.
+# objects = ['blue cube', 'azure cube', 'green square']
+blue_cube = grasp(object="blue cube")
+blue_cube = move_grasped_object(target="green square")
+release()
+blue_cube = grasp(object="blue cube")
+blue_cube = move_grasped_object(target="blue cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+13
+# query: build a tall tower out of 3 blue cubes.
+# objects = ['blue cube', 'cyan cube', 'green square', 'red cube']
+blue_cube = grasp(object="blue cube")
+blue_cube = move_grasped_object(target="green square")
+release()
+blue_cube = grasp(object="blue cube")
+blue_cube = move_grasped_object(target="blue cube")
+release()
+blue_cube = grasp(object="blue cube")
+blue_cube = move_grasped_object(target="blue cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+14
+# query: stack 4 blue blocks.
+# objects = ['blue cube', 'azure cube', 'green square', 'yellow cube', 'cyan cube', 'navy cube']
+blue_cube = grasp(object="blue cube")
+blue_cube = move_grasped_object(target="green square")
+release()
+blue_cube = grasp(object="blue cube")
+blue_cube = move_grasped_object(target="blue cube")
+release()
+blue_cube = grasp(object="blue cube")
+blue_cube = move_grasped_object(target="green cube")
+release()
+blue_cube = grasp(object="blue cube")
+blue_cube = move_grasped_object(target="blue cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+16
+# query: place 3 of the navy cubes on top of each other.
+# objects = ['navy cube', 'green cube', 'green square']
+navy_cube = grasp(object="navy cube")
+navy_cube = move_grasped_object(target="green square")
+release()
+navy_cube = grasp(object="navy cube")
+navy_cube = move_grasped_object(target="navy cube")
+release()
+navy_cube = grasp(object="navy cube")
+navy_cube = move_grasped_object(target="navy cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+17
+# query: pick up and set down 4 navy blocks on top of each other.
+# objects = ['navy cube', 'cyan cube', 'green square', 'olive cube']
+navy_cube = grasp(object="navy cube")
+navy_cube = move_grasped_object(target="green square")
+release()
+navy_cube = grasp(object="navy cube")
+navy_cube = move_grasped_object(target="navy cube")
+release()
+navy_cube = grasp(object="navy cube")
+navy_cube = move_grasped_object(target="navy cube")
+release()
+navy_cube = grasp(object="navy cube")
+navy_cube = move_grasped_object(target="navy cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+18
+# query: stack 2 yellow blocks.
+# objects = ['yellow cube', 'silver cube', 'green square']
+yellow_cube = grasp(object="yellow cube")
+yellow_cube = move_grasped_object(target="green square")
+release()
+yellow_cube = grasp(object="yellow cube")
+yellow_cube = move_grasped_object(target="yellow cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+19
+# query: place 3 of the yellow cubes on top of each other.
+# objects = ['yellow cube', 'silver cube', 'green square']
+yellow_cube = grasp(object="yellow cube")
+yellow_cube = move_grasped_object(target="green square")
+release()
+yellow_cube = grasp(object="yellow cube")
+yellow_cube = move_grasped_object(target="yellow cube")
+release()
+yellow_cube = grasp(object="yellow cube")
+yellow_cube = move_grasped_object(target="yellow cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+20
+# query: stack 4 yellow blocks.
+# objects = ['yellow cube', 'blue cube', 'green square', 'olive cube']
+yellow_cube = grasp(object="yellow cube")
+yellow_cube = move_grasped_object(target="green square")
+release()
+yellow_cube = grasp(object="yellow cube")
+yellow_cube = move_grasped_object(target="yellow cube")
+release()
+yellow_cube = grasp(object="yellow cube")
+yellow_cube = move_grasped_object(target="yellow cube")
+release()
+yellow_cube = grasp(object="yellow cube")
+yellow_cube = move_grasped_object(target="yellow cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+21
+# query: stack 2 cyan blocks.
+# objects = ['cyan cube', 'gray cube', 'green square', 'yellow cube', 'lime cube', 'blue cube']
+cyan_cube = grasp(object="cyan cube")
+cyan_cube = move_grasped_object(target="green square")
+release()
+cyan_cube = grasp(object="cyan cube")
+cyan_cube = move_grasped_object(target="cyan cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+22
+# query: build a tall tower out of 3 cyan cubes.
+# objects = ['cyan cube', 'red cube', 'green square']
+cyan_cube = grasp(object="cyan cube")
+cyan_cube = move_grasped_object(target="green square")
+release()
+cyan_cube = grasp(object="cyan cube")
+cyan_cube = move_grasped_object(target="cyan cube")
+release()
+cyan_cube = grasp(object="cyan cube")
+cyan_cube = move_grasped_object(target="cyan cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+23
+# query: arrange 4 cyan blocks in a vertical stack on the table top.
+# objects = ['cyan cube', 'green cube', 'green square', 'navy cube']
+cyan_cube = grasp(object="cyan cube")
+cyan_cube = move_grasped_object(target="green square")
+release()
+cyan_cube = grasp(object="cyan cube")
+cyan_cube = move_grasped_object(target="cyan cube")
+release()
+cyan_cube = grasp(object="cyan cube")
+cyan_cube = move_grasped_object(target="cyan cube")
+release()
+cyan_cube = grasp(object="cyan cube")
+cyan_cube = move_grasped_object(target="cyan cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+24
+# query: set 2 magenta cubes on top of each other.
+# objects = ['magenta cube', 'teal cube', 'green square']
+magenta_cube = grasp(object="magenta cube")
+magenta_cube = move_grasped_object(target="green square")
+release()
+magenta_cube = grasp(object="magenta cube")
+magenta_cube = move_grasped_object(target="magenta cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+26
+# query: place 4 of the magenta cubes on top of each other.
+# objects = ['magenta cube', 'blue cube', 'green square', 'silver cube']
+magenta_cube = grasp(object="magenta cube")
+magenta_cube = move_grasped_object(target="green square")
+release()
+magenta_cube = grasp(object="magenta cube")
+magenta_cube = move_grasped_object(target="magenta cube")
+release()
+magenta_cube = grasp(object="magenta cube")
+magenta_cube = move_grasped_object(target="magenta cube")
+release()
+magenta_cube = grasp(object="magenta cube")
+magenta_cube = move_grasped_object(target="magenta cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+27
+# query: arrange 2 silver blocks in a vertical stack on the table top.
+# objects = ['silver cube', 'blue cube', 'green square', 'white cube']
+silver_cube = grasp(object="silver cube")
+silver_cube = move_grasped_object(target="green square")
+release()
+silver_cube = grasp(object="silver cube")
+silver_cube = move_grasped_object(target="silver cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+29
+# query: place 4 of the silver cubes on top of each other.
+# objects = ['silver cube', 'white cube', 'green square']
+silver_cube = grasp(object="silver cube")
+silver_cube = move_grasped_object(target="green square")
+release()
+silver_cube = grasp(object="silver cube")
+silver_cube = move_grasped_object(target="silver cube")
+release()
+silver_cube = grasp(object="silver cube")
+silver_cube = move_grasped_object(target="silver cube")
+release()
+silver_cube = grasp(object="silver cube")
+silver_cube = move_grasped_object(target="silver cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+30
+# query: build a tall tower out of 2 gray cubes.
+# objects = ['gray cube', 'white cube', 'green square', 'azure cube']
+gray_cube = grasp(object="gray cube")
+gray_cube = move_grasped_object(target="green square")
+release()
+gray_cube = grasp(object="gray cube")
+gray_cube = move_grasped_object(target="gray cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+32
+# query: pick up and set down 4 gray blocks on top of each other.
+# objects = ['gray cube', 'teal cube', 'green square', 'lime cube']
+gray_cube = grasp(object="gray cube")
+gray_cube = move_grasped_object(target="green square")
+release()
+gray_cube = grasp(object="gray cube")
+gray_cube = move_grasped_object(target="gray cube")
+release()
+gray_cube = grasp(object="gray cube")
+gray_cube = move_grasped_object(target="gray cube")
+release()
+gray_cube = grasp(object="gray cube")
+gray_cube = move_grasped_object(target="gray cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+33
+# query: build a tall tower out of 2 orange cubes.
+# objects = ['orange cube', 'blue cube', 'green square', 'green cube', 'olive cube', 'lime cube']
+orange_cube = grasp(object="orange cube")
+orange_cube = move_grasped_object(target="green square")
+release()
+orange_cube = grasp(object="orange cube")
+orange_cube = move_grasped_object(target="orange cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+34
+# query: set 3 orange cubes on top of each other.
+# objects = ['orange cube', 'cyan cube', 'green square']
+orange_cube = grasp(object="orange cube")
+orange_cube = move_grasped_object(target="green square")
+release()
+orange_cube = grasp(object="orange cube")
+orange_cube = move_grasped_object(target="orange cube")
+release()
+orange_cube = grasp(object="orange cube")
+orange_cube = move_grasped_object(target="orange cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+36
+# query: arrange 2 olive blocks in a vertical stack on the table top.
+# objects = ['olive cube', 'gray cube', 'green square', 'red cube', 'green cube', 'azure cube', 'magenta cube']
+olive_cube = grasp(object="olive cube")
+olive_cube = move_grasped_object(target="green square")
+release()
+olive_cube = grasp(object="olive cube")
+olive_cube = move_grasped_object(target="olive cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+37
+# query: arrange 3 olive blocks in a vertical stack on the table top.
+# objects = ['olive cube', 'blue cube', 'green square']
+olive_cube = grasp(object="olive cube")
+olive_cube = move_grasped_object(target="green square")
+release()
+olive_cube = grasp(object="olive cube")
+olive_cube = move_grasped_object(target="olive cube")
+release()
+olive_cube = grasp(object="olive cube")
+olive_cube = move_grasped_object(target="olive cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+38
+# query: pick up and set down 4 olive blocks on top of each other.
+# objects = ['olive cube', 'maroon cube', 'green square', 'purple cube']
+olive_cube = grasp(object="olive cube")
+olive_cube = move_grasped_object(target="green square")
+release()
+olive_cube = grasp(object="olive cube")
+olive_cube = move_grasped_object(target="olive cube")
+release()
+olive_cube = grasp(object="olive cube")
+olive_cube = move_grasped_object(target="olive cube")
+release()
+olive_cube = grasp(object="olive cube")
+olive_cube = move_grasped_object(target="olive cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+40
+# query: place 3 of the purple cubes on top of each other.
+# objects = ['purple cube', 'orange cube', 'green square', 'yellow cube', 'white cube', 'gray cube']
+purple_cube = grasp(object="purple cube")
+purple_cube = move_grasped_object(target="green square")
+release()
+purple_cube = grasp(object="purple cube")
+purple_cube = move_grasped_object(target="purple cube")
+release()
+purple_cube = grasp(object="purple cube")
+purple_cube = move_grasped_object(target="purple cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+41
+# query: arrange 4 purple blocks in a vertical stack on the table top.
+# objects = ['purple cube', 'orange cube', 'green square', 'maroon cube', 'violet cube']
+purple_cube = grasp(object="purple cube")
+purple_cube = move_grasped_object(target="green square")
+release()
+purple_cube = grasp(object="purple cube")
+purple_cube = move_grasped_object(target="purple cube")
+release()
+purple_cube = grasp(object="purple cube")
+purple_cube = move_grasped_object(target="purple cube")
+release()
+purple_cube = grasp(object="purple cube")
+purple_cube = move_grasped_object(target="purple cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+42
+# query: build a tall tower out of 2 teal cubes.
+# objects = ['teal cube', 'magenta cube', 'green square', 'purple cube']
+teal_cube = grasp(object="teal cube")
+teal_cube = move_grasped_object(target="green square")
+release()
+teal_cube = grasp(object="teal cube")
+teal_cube = move_grasped_object(target="teal cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+43
+# query: set 3 teal cubes on top of each other.
+# objects = ['teal cube', 'cyan cube', 'green square']
+teal_cube = grasp(object="teal cube")
+teal_cube = move_grasped_object(target="green square")
+release()
+teal_cube = grasp(object="teal cube")
+teal_cube = move_grasped_object(target="teal cube")
+release()
+teal_cube = grasp(object="teal cube")
+teal_cube = move_grasped_object(target="teal cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+44
+# query: place 4 of the teal cubes on top of each other.
+# objects = ['teal cube', 'maroon cube', 'green square']
+teal_cube = grasp(object="teal cube")
+teal_cube = move_grasped_object(target="green square")
+release()
+teal_cube = grasp(object="teal cube")
+teal_cube = move_grasped_object(target="teal cube")
+release()
+teal_cube = grasp(object="teal cube")
+teal_cube = move_grasped_object(target="teal cube")
+release()
+teal_cube = grasp(object="teal cube")
+teal_cube = move_grasped_object(target="teal cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+46
+# query: set 3 azure cubes on top of each other.
+# objects = ['azure cube', 'lime cube', 'green square', 'white cube', 'red cube']
+azure_cube = grasp(object="azure cube")
+azure_cube = move_grasped_object(target="green square")
+release()
+azure_cube = grasp(object="azure cube")
+azure_cube = move_grasped_object(target="azure cube")
+release()
+azure_cube = grasp(object="azure cube")
+azure_cube = move_grasped_object(target="azure cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+47
+# query: stack 4 azure blocks.
+# objects = ['azure cube', 'cyan cube', 'green square', 'silver cube']
+azure_cube = grasp(object="azure cube")
+azure_cube = move_grasped_object(target="green square")
+release()
+azure_cube = grasp(object="azure cube")
+azure_cube = move_grasped_object(target="azure cube")
+release()
+azure_cube = grasp(object="azure cube")
+azure_cube = move_grasped_object(target="azure cube")
+release()
+azure_cube = grasp(object="azure cube")
+azure_cube = move_grasped_object(target="azure cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+48
+# query: place 2 of the violet cubes on top of each other.
+# objects = ['violet cube', 'olive cube', 'green square', 'gray cube', 'white cube']
+violet_cube = grasp(object="violet cube")
+violet_cube = move_grasped_object(target="green square")
+release()
+violet_cube = grasp(object="violet cube")
+violet_cube = move_grasped_object(target="violet cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+49
+# query: stack 3 violet blocks.
+# objects = ['violet cube', 'green cube', 'green square']
+violet_cube = grasp(object="violet cube")
+violet_cube = move_grasped_object(target="green square")
+release()
+violet_cube = grasp(object="violet cube")
+violet_cube = move_grasped_object(target="violet cube")
+release()
+violet_cube = grasp(object="violet cube")
+violet_cube = move_grasped_object(target="violet cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+50
+# query: arrange 4 violet blocks in a vertical stack on the table top.
+# objects = ['violet cube', 'black cube', 'green square', 'blue cube', 'orange cube']
+violet_cube = grasp(object="violet cube")
+violet_cube = move_grasped_object(target="green square")
+release()
+violet_cube = grasp(object="violet cube")
+violet_cube = move_grasped_object(target="violet cube")
+release()
+violet_cube = grasp(object="violet cube")
+violet_cube = move_grasped_object(target="violet cube")
+release()
+violet_cube = grasp(object="violet cube")
+violet_cube = move_grasped_object(target="violet cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+51
+# query: build a tall tower out of 2 rose cubes.
+# objects = ['rose cube', 'maroon cube', 'green square', 'orange cube', 'yellow cube']
+rose_cube = grasp(object="rose cube")
+rose_cube = move_grasped_object(target="green square")
+release()
+rose_cube = grasp(object="rose cube")
+rose_cube = move_grasped_object(target="rose cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+54
+# query: arrange 2 black blocks in a vertical stack on the table top.
+# objects = ['black cube', 'azure cube', 'green square', 'rose cube', 'cyan cube']
+black_cube = grasp(object="black cube")
+black_cube = move_grasped_object(target="green square")
+release()
+black_cube = grasp(object="black cube")
+black_cube = move_grasped_object(target="black cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+55
+# query: place 3 of the black cubes on top of each other.
+# objects = ['black cube', 'blue cube', 'green square', 'silver cube']
+black_cube = grasp(object="black cube")
+black_cube = move_grasped_object(target="green square")
+release()
+black_cube = grasp(object="black cube")
+black_cube = move_grasped_object(target="black cube")
+release()
+black_cube = grasp(object="black cube")
+black_cube = move_grasped_object(target="black cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+56
+# query: arrange 4 black blocks in a vertical stack on the table top.
+# objects = ['black cube', 'red cube', 'green square', 'azure cube']
+black_cube = grasp(object="black cube")
+black_cube = move_grasped_object(target="green square")
+release()
+black_cube = grasp(object="black cube")
+black_cube = move_grasped_object(target="black cube")
+release()
+black_cube = grasp(object="black cube")
+black_cube = move_grasped_object(target="black cube")
+release()
+black_cube = grasp(object="black cube")
+black_cube = move_grasped_object(target="black cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+58
+# query: stack 3 white blocks.
+# objects = ['white cube', 'gray cube', 'green square', 'violet cube']
+white_cube = grasp(object="white cube")
+white_cube = move_grasped_object(target="green square")
+release()
+white_cube = grasp(object="white cube")
+white_cube = move_grasped_object(target="white cube")
+release()
+white_cube = grasp(object="white cube")
+white_cube = move_grasped_object(target="white cube")
+release()
+# done
+
+# taskvar: stack_blocks_peract+59
+# query: pick up and set down 4 white blocks on top of each other.
+# objects = ['white cube', 'violet cube', 'green square']
+white_cube = grasp(object="white cube")
+white_cube = move_grasped_object(target="green square")
+release()
+white_cube = grasp(object="white cube")
+white_cube = move_grasped_object(target="white cube")
+release()
+white_cube = grasp(object="white cube")
+white_cube = move_grasped_object(target="white cube")
+release()
+white_cube = grasp(object="white cube")
+white_cube = move_grasped_object(target="white cube")
+release()
+# done
+
+# taskvar: stack_cups_peract+0
+# query: place two of the cups onto the odd cup out.
+# objects = ['orange cup', 'red cup', 'lime cup', 'azure cup', 'navy cup', 'magenta cup', 'black cup', 'purple cup']
+not_red_cup = grasp(object="not red cup")
+not_red_cup = move_grasped_object(target="red cup")
+release()
+not_red_cup = grasp(object="not red cup")
+not_red_cup = move_grasped_object(target="not red cup")
+release()
+# done
+
+# taskvar: stack_cups_peract+1
+# query: put the remaining two cups on top of the maroon cup.
+# objects = ['navy cup', 'maroon cup', 'cyan cup', 'violet cup', 'olive cup', 'orange cup', 'magenta cup', 'silver cup', 'green cup', 'gray cup', 'yellow cup', 'blue cup']
+not_maroon_cup = grasp(object="not maroon cup")
+not_maroon_cup = move_grasped_object(target="maroon cup")
+release()
+not_maroon_cup = grasp(object="not maroon cup")
+not_maroon_cup = move_grasped_object(target="not maroon cup")
+release()
+# done
+
+# taskvar: stack_cups_peract+2
+# query: create a stack of cups with the lime cup as its base.
+# objects = ['white cup', 'lime cup', 'purple cup', 'yellow cup', 'black cup', 'silver cup', 'maroon cup', 'olive cup']
+not_lime_cup = grasp(object="not lime cup")
+not_lime_cup = move_grasped_object(target="maroon cup")
+release()
+not_lime_cup = grasp(object="not lime cup")
+not_lime_cup = move_grasped_object(target="not lime cup")
+release()
+# done
+
+# taskvar: stack_cups_peract+3
+# query: put the remaining two cups on top of the green cup.
+# objects = ['maroon cup', 'green cup', 'white cup', 'purple cup', 'black cup', 'blue cup', 'lime cup', 'teal cup', 'cyan cup']
+not_green_cup = grasp(object="not green cup")
+not_green_cup = move_grasped_object(target="green cup")
+release()
+not_green_cup = grasp(object="not green cup")
+not_green_cup = move_grasped_object(target="not green cup")
+release()
+# done
+
+# taskvar: stack_cups_peract+4
+# query: create a stack of cups with the blue cup as its base.
+# objects = ['green cup', 'blue cup', 'magenta cup', 'silver cup', 'gray cup', 'white cup', 'lime cup', 'maroon cup']
+not_blue_cup = grasp(object="not blue cup")
+not_blue_cup = move_grasped_object(target="blue cup")
+release()
+not_blue_cup = grasp(object="not blue cup")
+not_blue_cup = move_grasped_object(target="not blue cup")
+release()
+# done
+
+# taskvar: stack_cups_peract+5
+# query: put the remaining two cups on top of the navy cup.
+# objects = ['teal cup', 'navy cup', 'lime cup', 'green cup', 'olive cup', 'purple cup', 'silver cup', 'gray cup']
+not_navy_cup = grasp(object="not navy cup")
+not_navy_cup = move_grasped_object(target="navy cup")
+release()
+not_navy_cup = grasp(object="not navy cup")
+not_navy_cup = move_grasped_object(target="not navy cup")
+release()
+# done
+
+# taskvar: stack_cups_peract+6
+# query: keeping the yellow cup on the table, stack the other two onto it.
+# objects = ['orange cup', 'yellow cup', 'violet cup', 'silver cup', 'white cup', 'navy cup', 'lime cup', 'magenta cup']
+not_yellow_cup = grasp(object="not yellow cup")
+not_yellow_cup = move_grasped_object(target="yellow cup")
+release()
+not_yellow_cup = grasp(object="not yellow cup")
+not_yellow_cup = move_grasped_object(target="not yellow cup")
+release()
+# done
+
+# taskvar: stack_cups_peract+7
+# query: stack the other cups on top of the cyan cup.
+# objects = ['yellow cup', 'cyan cup', 'white cup', 'magenta cup', 'purple cup', 'navy cup', 'gray cup', 'orange cup', 'silver cup', 'green cup']
+not_cyan_cup = grasp(object="not cyan cup")
+not_cyan_cup = move_grasped_object(target="cyan cup")
+release()
+not_cyan_cup = grasp(object="not cyan cup")
+not_cyan_cup = move_grasped_object(target="not cyan cup")
+release()
+# done
+
+# taskvar: stack_cups_peract+8
+# query: put the remaining two cups on top of the magenta cup.
+# objects = ['silver cup', 'magenta cup', 'olive cup', 'black cup', 'maroon cup', 'orange cup']
+not_magenta_cup = grasp(object="not magenta cup")
+not_magenta_cup = move_grasped_object(target="magenta cup")
+release()
+not_magenta_cup = grasp(object="not magenta cup")
+not_magenta_cup = move_grasped_object(target="not magenta cup")
+release()
+# done
+
+# taskvar: stack_cups_peract+9
+# query: create a stack of cups with the silver cup as its base.
+# objects = ['blue cup', 'silver cup', 'black cup', 'azure cup', 'magenta cup', 'rose cup', 'gray cup', 'cyan cup', 'white cup', 'maroon cup', 'orange cup']
+not_silver_cup = grasp(object="not silver cup")
+not_silver_cup = move_grasped_object(target="silver cup")
+release()
+not_silver_cup = grasp(object="not silver cup")
+not_silver_cup = move_grasped_object(target="not silver cup")
+release()
+# done
+
+# taskvar: stack_cups_peract+10
+# query: create a stack of cups with the gray cup as its base.
+# objects = ['green cup', 'gray cup', 'silver cup', 'teal cup', 'cyan cup', 'navy cup', 'black cup', 'lime cup', 'white cup', 'blue cup', 'maroon cup', 'yellow cup']
+not_gray_cup = grasp(object="not gray cup")
+not_gray_cup = move_grasped_object(target="gray cup")
+release()
+not_gray_cup = grasp(object="not gray cup")
+not_gray_cup = move_grasped_object(target="not gray cup")
+release()
+# done
+
+# taskvar: stack_cups_peract+11
+# query: pick up and set the cups down into the orange cup.
+# objects = ['lime cup', 'orange cup', 'yellow cup', 'rose cup', 'maroon cup', 'magenta cup', 'gray cup', 'black cup', 'cyan cup', 'white cup']
+not_orange_cup = grasp(object="not orange cup")
+not_orange_cup = move_grasped_object(target="orange cup")
+release()
+not_orange_cup = grasp(object="not orange cup")
+not_orange_cup = move_grasped_object(target="not orange cup")
+release()
+# done
+
+# taskvar: stack_cups_peract+12
+# query: put the remaining two cups on top of the olive cup.
+# objects = ['navy cup', 'olive cup', 'violet cup', 'azure cup', 'blue cup', 'white cup', 'green cup', 'yellow cup', 'lime cup', 'black cup']
+not_olive_cup = grasp(object="not olive cup")
+not_olive_cup = move_grasped_object(target="olive cup")
+release()
+not_olive_cup = grasp(object="not olive cup")
+not_olive_cup = move_grasped_object(target="not olive cup")
+release()
+# done
+
+# taskvar: stack_cups_peract+13
+# query: put the remaining two cups on top of the purple cup.
+# objects = ['magenta cup', 'purple cup', 'green cup', 'olive cup', 'navy cup']
+not_purple_cup = grasp(object="not purple cup")
+not_purple_cup = move_grasped_object(target="purple cup")
+release()
+not_purple_cup = grasp(object="not purple cup")
+not_purple_cup = move_grasped_object(target="not purple cup")
+release()
+# done
+
+# taskvar: stack_cups_peract+14
+# query: keeping the teal cup on the table, stack the other two onto it.
+# objects = ['red cup', 'teal cup', 'magenta cup', 'cyan cup', 'black cup']
+not_teal_cup = grasp(object="not teal cup")
+not_teal_cup = move_grasped_object(target="teal cup")
+release()
+not_teal_cup = grasp(object="not teal cup")
+not_teal_cup = move_grasped_object(target="not teal cup")
+release()
+# done
+
+# taskvar: stack_cups_peract+15
+# query: keeping the azure cup on the table, stack the other two onto it.
+# objects = ['silver cup', 'azure cup', 'violet cup', 'rose cup', 'yellow cup', 'red cup', 'cyan cup', 'purple cup', 'orange cup', 'blue cup', 'maroon cup', 'green cup', 'gray cup']
+not_azure_cup = grasp(object="not azure cup")
+not_azure_cup = move_grasped_object(target="azure cup")
+release()
+not_azure_cup = grasp(object="not azure cup")
+not_azure_cup = move_grasped_object(target="not azure cup")
+release()
+# done
+
+# taskvar: stack_cups_peract+16
+# query: pick up and set the cups down into the violet cup.
+# objects = ['purple cup', 'violet cup', 'red cup', 'cyan cup', 'maroon cup', 'orange cup', 'gray cup']
+not_violet_cup = grasp(object="not violet cup")
+not_violet_cup = move_grasped_object(target="violet cup")
+release()
+not_violet_cup = grasp(object="not violet cup")
+not_violet_cup = move_grasped_object(target="not violet cup")
+release()
+# done
+
+# taskvar: stack_cups_peract+17
+# query: pick up and set the cups down into the rose cup.
+# objects = ['green cup', 'rose cup', 'red cup', 'silver cup', 'violet cup', 'blue cup', 'navy cup', 'azure cup', 'teal cup', 'cyan cup', 'olive cup', 'white cup']
+not_rose_cup = grasp(object="not rose cup")
+not_rose_cup = move_grasped_object(target="rose cup")
+release()
+not_rose_cup = grasp(object="not rose cup")
+not_rose_cup = move_grasped_object(target="not rose cup")
+release()
+# done
+
+# taskvar: stack_cups_peract+18
+# query: stack the other cups on top of the black cup.
+# objects = ['purple cup', 'black cup', 'maroon cup', 'olive cup', 'cyan cup']
+not_black_cup = grasp(object="not black cup")
+not_black_cup = move_grasped_object(target="black cup")
+release()
+not_black_cup = grasp(object="not black cup")
+not_black_cup = move_grasped_object(target="not black cup")
+release()
+# done
+
+# taskvar: stack_cups_peract+19
+# query: pick up and set the cups down into the white cup.
+# objects = ['gray cup', 'white cup', 'teal cup', 'lime cup', 'navy cup', 'blue cup', 'green cup', 'orange cup', 'violet cup']
+not_white_cup = grasp(object="not white cup")
+not_white_cup = move_grasped_object(target="white cup")
+release()
+not_white_cup = grasp(object="not white cup")
+not_white_cup = move_grasped_object(target="not white cup")
+release()
+# done
+
+# taskvar: sweep_to_dustpan_of_size_peract+0
+# query: use the broom to brush the dirt into the tall dustpan.
+# objects = ['tall dustpan', 'dirt', 'broom', 'short dustpan']
+broom_holder = grasp(object="broom holder")
+dirt = push_forward(object="dirt", target="tall dustpan")
+# done
+
+# taskvar: sweep_to_dustpan_of_size_peract+1
+# query: use the broom to brush the dirt into the short dustpan.
+# objects = ['tall dustpan', 'dirt', 'broom', 'short dustpan']
+broom_holder = grasp(object="broom holder")
+dirt = push_forward(object="dirt", target="short dustpan")
+# done
+
+# taskvar: turn_tap_peract+0
+# query: grasp the left tap and turn it.
+# objects = ['main tap', 'left tap', 'right tap']
+left_tap = grasp(object="left tap")
+left_tap = rotate_grasped_object()
+release()
+# done
+
+# taskvar: turn_tap_peract+1
+# query: turn right tap.
+# objects = ['main tap', 'left tap', 'right tap']
+right_tap = grasp(object="right tap")
+right_tap = rotate_grasped_object()
+release()
+# done
+

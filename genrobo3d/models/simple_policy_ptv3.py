@@ -427,7 +427,7 @@ class SimplePolicyPTV3CA(SimplePolicyPTV3AdaNorm):
             ctx_lens += 1
 
         point_of_interest_embeds = self.coarse_pred_embedding(batch['point_of_interests'])
-        ctx_embeds += point_of_interest_embeds
+        ctx_embeds = [torch.cat([c, e.unsqueeze(0)], dim=0) for c, e in zip(ctx_embeds, point_of_interest_embeds)]
         ctx_lens += 1
 
         if self.config.action_config.use_step_id:

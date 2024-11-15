@@ -23,8 +23,6 @@ from genrobo3d.models.motion_planner_ptv3 import (
 )
 from genrobo3d.configs.default import get_config as get_model_config
 from genrobo3d.evaluation.common import load_checkpoint, parse_code
-from preprocess.gen_simple_policy_data import zoom_around_point
-
 
 class GroundtruthTaskPlanner(object):
     def __init__(self, gt_plan_file):
@@ -129,8 +127,10 @@ class GroundtruthVision(object):
             mask_area_of_interest = self.zoom_around_point(pcd_xyz, self.workspace, point_of_interest)
             fg_mask = fg_mask & mask_area_of_interest
 
+        print(f'vlm pipeline activating mask. Initial number of points: {len(pcd_xyz)}')
         pcd_xyz = pcd_xyz[fg_mask]
         pcd_sem = pcd_sem[fg_mask]
+        print(f'vlm pipeline activating mask. Number of points after mask: {len(pcd_xyz)}')
         if self.use_color:
             pcd_rgb = pcd_rgb[fg_mask]
 
@@ -308,35 +308,6 @@ class GroundtruthRobotPipeline(object):
 
         return batch
 
-    def zoom_around_point(self, xyz, workspace, point_of_interest, scale_factor):
-        """
-        Refines the point cloud to focus around the `point_of_interest`.
-
-        Parameters:
-        - xyz: numpy array, the point cloud coordinates.
-        - workspace: dict, bounding box limits for the workspace.
-        - point_of_interest: numpy array, central point for refinement.
-        - scale_factor: float, proportion of the workspace bounds to keep (e.g., 0.25 to keep 1/4).
-
-        Returns:
-        - mask: boolean numpy array, indicating points within the refined area.
-        """
-        workspace_width_x = workspace['X_BBOX'][1] - workspace['X_BBOX'][0]
-        workspace_width_y = workspace['Y_BBOX'][1] - workspace['Y_BBOX'][0]
-        workspace_width_z = workspace['Z_BBOX'][1] - workspace['Z_BBOX'][0]
-        x_min, x_max = point_of_interest[0] - workspace_width_x * scale_factor / 2, \
-                       point_of_interest[0] + workspace_width_x * scale_factor / 2
-        y_min, y_max = point_of_interest[1] - workspace_width_y * scale_factor / 2, \
-                       point_of_interest[1] + workspace_width_y * scale_factor / 2
-        z_min, z_max = point_of_interest[2] - workspace_width_z * scale_factor / 2, \
-                       point_of_interest[2] + workspace_width_z * scale_factor / 2
-
-        mask = (xyz[:, 0] > x_min) & (xyz[:, 0] < x_max) & \
-               (xyz[:, 1] > y_min) & (xyz[:, 1] < y_max) & \
-               (xyz[:, 2] > z_min) & (xyz[:, 2] < z_max)
-
-        return mask
-
     def predict_action(self, batch=None, model=None):
         pred_actions = model(batch, compute_loss=False)[0] # (max_action_len, 8)
         pred_actions[:, 7:] = torch.sigmoid(pred_actions[:, 7:])
@@ -425,14 +396,21 @@ class GroundtruthRobotPipeline(object):
             print(f'returning release action and cache')
             return {'action': action, 'cache': cache}
 
+        print('highlevel plan', plan)
+        print(f"Preprocessing obs for batch coarse")
+
         batch_coarse = self.coarse_preprocess_obs(taskvar, cache.highlevel_step_id_norelease, obs_state_dict, plan)
-        
+
+        print(f"Predicting action for batch coarse")
         pred_actions = self.predict_action(batch=batch_coarse, model=self.motion_planner_coarse)
 
+        print('pred actions', pred_actions)
         point_of_interest = pred_actions[0][:3]
 
+        print(f"using point of interest {point_of_interest}, preparing batch fine")
         batch_fine = self.prepare_fine_batch(taskvar, cache.highlevel_step_id_norelease, obs_state_dict, point_of_interest, batch_coarse)
 
+        print(f"Predicting action for batch fine")
         pred_actions = self.predict_action(batch=batch_fine, model=self.motion_planner_fine)
 
         valid_actions = []

@@ -69,6 +69,8 @@ class ServerArguments(tap.Tap):
     no_gt_llm: bool = False
     llm_master_port: int = None
 
+    prompt_dir: str = 'prompts/rlbench/gembench'
+
 
 def consumer_fn(args, pipeline_config, batch_queue, result_queues):
     print('consumer start')
@@ -279,6 +281,8 @@ def main():
         pipeline_config.llm_planner.cache_file = args.llm_cache_file
     if args.llm_master_port is not None:
         pipeline_config.llm_planner.master_port = args.llm_master_port
+    if args.prompt_dir is not None:
+        pipeline_config.llm_planner.prompt_dir = args.prompt_dir
 
     if args.gt_og_label_file is not None:
         pipeline_config.object_grounding.gt_label_file = args.gt_og_label_file

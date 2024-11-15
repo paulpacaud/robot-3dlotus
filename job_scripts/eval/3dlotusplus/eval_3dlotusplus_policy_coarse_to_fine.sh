@@ -38,48 +38,53 @@ coarse_model_dir=data/experiments/gembench/3dlotusplus/v1_shizhe
 ckpt_step_coarse=140000
 
 # validation: with groundtruth task planner and groundtruth object grounding
-for ckpt_step in 150000 140000 130000 120000 110000 100000 90000
+#for ckpt_step in 150000 140000 130000 120000 110000 100000 90000
+#do
+#singularity exec --bind $HOME:$HOME,$SCRATCH:$SCRATCH --nv ${sif_image} \
+#    xvfb-run -a ${python_bin} genrobo3d/evaluation/eval_robot_pipeline_server_coarse_to_fine.py \
+#    --full_gt \
+#    --pipeline_config_file genrobo3d/configs/rlbench/robot_pipeline_gt.yaml \
+#    --mp_expr_dir ${expr_dir} \
+#    --mp_ckpt_step ${ckpt_step} \
+#    --num_workers 4 \
+#    --taskvar_file assets/taskvars_train.json \
+#    --gt_og_label_file assets/taskvars_target_label_zrange.json \
+#    --seed 100 --num_demos 20 \
+#    --microstep_data_dir data/gembench/val_dataset/microsteps/seed100 \
+#    --pc_label_type coarse --run_action_step 1 \
+#    --coarse_model_dir ${coarse_model_dir} --ckpt_step_coarse ${ckpt_step_coarse} \
+#    --coarse_pipeline_config_file genrobo3d/configs/rlbench/robot_pipeline_gt.yaml \
+#    --coarse_mp_expr_dir ${coarse_model_dir} \
+#    --coarse_mp_ckpt_step ${ckpt_step_coarse} \
+#    --zoom_factor 0.4 \
+#    --save_obs_outs
+#done
+
+ckpt_step=150000
+# test: with groundtruth task planner and groundtruth object grounding
+#for seed in {200..600..100}
+#do
+for split in test_l2 test_l3 test_l4 train
 do
+seed=200
 singularity exec --bind $HOME:$HOME,$SCRATCH:$SCRATCH --nv ${sif_image} \
-    xvfb-run -a ${python_bin} genrobo3d/evaluation/eval_robot_pipeline_server_coarse_to_fine.py \
+    xvfb-run -a ${python_bin} genrobo3d/evaluation/eval_robot_pipeline_server.py \
     --full_gt \
     --pipeline_config_file genrobo3d/configs/rlbench/robot_pipeline_gt.yaml \
     --mp_expr_dir ${expr_dir} \
     --mp_ckpt_step ${ckpt_step} \
-    --num_workers 4 \
-    --taskvar_file assets/taskvars_train.json \
+    --num_workers 1 \
+    --taskvar_file assets/taskvars_${split}.json \
     --gt_og_label_file assets/taskvars_target_label_zrange.json \
-    --seed 100 --num_demos 20 \
-    --microstep_data_dir data/gembench/val_dataset/microsteps/seed100 \
+    --seed ${seed} --num_demos 20 \
+    --microstep_data_dir data/gembench/test_dataset/microsteps/seed${seed} \
     --pc_label_type coarse --run_action_step 1 \
-    --coarse_model_dir ${coarse_model_dir} --ckpt_step_coarse ${ckpt_step_coarse} \
     --coarse_pipeline_config_file genrobo3d/configs/rlbench/robot_pipeline_gt.yaml \
     --coarse_mp_expr_dir ${coarse_model_dir} \
     --coarse_mp_ckpt_step ${ckpt_step_coarse} \
     --zoom_factor 0.4 \
     --save_obs_outs
 done
-
-# test: with groundtruth task planner and groundtruth object grounding
-#for seed in {200..600..100}
-#do
-#for split in train test_l2 test_l3 test_l4
-#do
-#seed=200
-#singularity exec --bind $HOME:$HOME,$SCRATCH:$SCRATCH --nv ${sif_image} \
-#    xvfb-run -a ${python_bin} genrobo3d/evaluation/eval_robot_pipeline_server.py \
-#    --full_gt \
-#    --pipeline_config_file genrobo3d/configs/rlbench/robot_pipeline_gt.yaml \
-#    --mp_expr_dir ${expr_dir} \
-#    --mp_ckpt_step ${ckpt_step} \
-#    --num_workers 1 \
-#    --taskvar_file assets/taskvars_${split}.json \
-#    --gt_og_label_file assets/taskvars_target_label_zrange.json \
-#    --seed ${seed} --num_demos 20 \
-#    --microstep_data_dir data/gembench/test_dataset/microsteps/seed${seed} \
-#    --pc_label_type fine --run_action_step 1 \
-#    --save_obs_outs
-#done
 #done
 #    --record_video --video_dir ${expr_dir}/videos_llm_gt-og_gt/${split}/seed${seed} \
 #    --not_include_robot_cameras  --video_rotate_cam \

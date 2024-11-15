@@ -99,6 +99,11 @@ class Actioner(object):
         if args.checkpoint_coarse is not None:
             config_coarse.checkpoint = args.checkpoint_coarse
 
+        print(f"args.exp_config: {args.exp_config}")
+        print(f"args.exp_config_coarse: {args.exp_config_coarse}")
+        print(f"Fine model checkpoint: {config.checkpoint}")
+        print(f"Coarse model checkpoint: {config_coarse.checkpoint}")
+
         self.model = self.set_model(config, model_type='fine')
         self.model_coarse = self.set_model(config_coarse, model_type='coarse')
 
@@ -125,6 +130,7 @@ class Actioner(object):
             checkpoint = torch.load(
                 config.checkpoint, map_location=lambda storage, loc: storage
             )
+            print(f"checkpoint keys: {checkpoint.keys()}")
             model.load_state_dict(checkpoint, strict=True)
 
         model.to(self.device)
@@ -213,9 +219,9 @@ class Actioner(object):
         if self.data_cfg.rm_table:
             in_mask = in_mask & (xyz[:, 2] > self.WORKSPACE['TABLE_HEIGHT'])
 
+        print(f"Num points before filtering: {len(xyz)}")
         xyz = xyz[in_mask]
         rgb = rgb.reshape(-1, 3)[in_mask]
-        print(f"Num points before filtering: {len(xyz)}")
         print(f"Num points after filtering: {len(xyz)}")
         if gt_sem is not None:
             gt_sem = gt_sem.reshape(-1)[in_mask]

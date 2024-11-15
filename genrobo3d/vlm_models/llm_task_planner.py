@@ -6,6 +6,7 @@ import json
 import random
 import einops
 import jsonlines
+import numpy as np
 
 import torch
 import torch.nn.functional as F

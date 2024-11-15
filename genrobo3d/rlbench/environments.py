@@ -48,7 +48,6 @@ class Mover:
         self._step_id = 0
 
     def __call__(self, action: np.ndarray, verbose=True):
-        print(f'Mover called for step {self._step_id}, and action {action}')
         action = action.copy()
 
         # change_gripper is a flag that indicates whether the gripper's open/close state is changing between actions
@@ -68,11 +67,8 @@ class Mover:
         obs = None
         terminate = None
         reward = 0
-        print(f'change_gripper: {change_gripper}')
-        print(f'start of the loop to try for step {self._step_id}')
-        for try_id in range(self._max_tries):
-            print('task step', try_id)
 
+        for try_id in range(self._max_tries):
             obs, reward, terminate = self._task.step(action)
 
             pos = obs.gripper_pose[:3]
