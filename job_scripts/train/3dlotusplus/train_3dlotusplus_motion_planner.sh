@@ -58,7 +58,7 @@ srun python genrobo3d/train/train_motion_planner.py \
     TRAIN_DATASET.aug_max_rot 45 \
     TRAIN_DATASET.rm_pc_outliers False VAL_DATASET.rm_pc_outliers False \
     TRAIN_DATASET.max_traj_len ${max_traj_len} VAL_DATASET.max_traj_len ${max_traj_len} \
-    TRAIN_DATASET.pc_label_type fine VAL_DATASET.pc_label_type fine \
+    TRAIN_DATASET.pc_label_type mix VAL_DATASET.pc_label_type mix \
     TRAIN_DATASET.pc_label_augment 0.0 VAL_DATASET.pc_label_augment 0.0 \
     TRAIN_DATASET.pc_midstep_augment True VAL_DATASET.pc_midstep_augment True \
     TRAIN_DATASET.data_dir data/gembench/train_dataset/motion_keysteps_bbox_pcd/seed0/voxel1cm \
@@ -68,6 +68,7 @@ srun python genrobo3d/train/train_motion_planner.py \
     TRAIN_DATASET.action_embed_file data/gembench/train_dataset/motion_keysteps_bbox_pcd/action_embeds_clip.npy \
     VAL_DATASET.action_embed_file data/gembench/train_dataset/motion_keysteps_bbox_pcd/action_embeds_clip.npy \
     TRAIN_DATASET.use_color False VAL_DATASET.use_color False \
+    TRAIN_DATASET.sampling_ratio 0.5 TRAIN_DATASET.noise_range 0.15 TRAIN_DATASET.safe_distance 0.04 \
     MODEL.ptv3_config.drop_path 0.0 MODEL.ptv3_config.attn_drop 0.1 MODEL.ptv3_config.proj_drop 0.1 \
     MODEL.action_config.dropout 0.2 \
     MODEL.action_config.voxel_size 0.01 \

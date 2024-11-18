@@ -54,7 +54,7 @@ TRAIN_DATASET:
   rm_pc_outliers_neighbors: 25
   aug_max_rot: 45
   pos_bins: 40
-  pos_bin_size: 0.005
+  pos_bin_size: 0.01
   pos_heatmap_type: 'dist' # plain, dist
   pos_heatmap_no_robot: False
   max_traj_len: 5
@@ -88,7 +88,7 @@ VAL_DATASET:
   rm_pc_outliers_neighbors: 25
   aug_max_rot: 45
   pos_bins: 40
-  pos_bin_size: 0.005
+  pos_bin_size: 0.01
   pos_heatmap_type: 'dist' # plain, dist
   pos_heatmap_no_robot: False
   max_traj_len: 5
@@ -139,7 +139,7 @@ MODEL:
     add_coords_in_attn: 'none' # none, qk, qkv
 
   action_config:
-    voxel_size: 0.005 # 1cm
+    voxel_size: 0.01 # 1cm
     context_channels: 256
 
     pc_label_channels: 64
@@ -164,7 +164,7 @@ MODEL:
     dropout: 0.1
 
     pos_bins: 40
-    pos_bin_size: 0.005
+    pos_bin_size: 0.01
     best_disc_pos: max # max, ens1
 
   loss_config:

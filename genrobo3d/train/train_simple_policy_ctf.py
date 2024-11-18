@@ -28,7 +28,7 @@ from genrobo3d.train.optim.misc import build_optimizer
 from genrobo3d.configs.default import get_config
 
 from genrobo3d.train.datasets.loader import build_dataloader
-from genrobo3d.train.datasets.simple_policy_dataset import (
+from genrobo3d.train.datasets.simple_policy_dataset_ctf import (
     SimplePolicyDataset, base_collate_fn, ptv3_collate_fn
 )
 

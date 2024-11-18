@@ -88,7 +88,7 @@ def main():
     new_keystep_ids = tmp['new_keystep_ids']
     sep_open_keystep_ids = tmp['separate_gripper_open_at_old_keystep']
 
-    taskvars = json.load(open(os.path.join(asset_dir, 'taskvars_train.json')))
+    taskvars = json.load(open(os.path.join(asset_dir, 'taskvars_peract.json')))
     print('#taskvars', len(taskvars))
 
     TABLE_HEIGHT = get_robot_workspace()['TABLE_HEIGHT']

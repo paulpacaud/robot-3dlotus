@@ -7,6 +7,7 @@ import random
 import lmdb
 import msgpack
 import msgpack_numpy
+
 msgpack_numpy.patch()
 
 import torch
@@ -24,13 +25,13 @@ from genrobo3d.utils.rotation_transform import (
 )
 from genrobo3d.utils.robot_box import RobotBox
 from genrobo3d.utils.action_position_utils import get_disc_gt_pos_prob
-from genrobo3d.train.datasets.simple_policy_dataset_coarse import SimplePolicyDataset
+from genrobo3d.train.datasets.simple_policy_dataset import SimplePolicyDataset
 
 
 class MotionPlannerDataset(SimplePolicyDataset):
     def __init__(
             self, data_dir, action_embed_file, gt_act_obj_label_file,
-            taskvar_file=None, num_points=10000, 
+            taskvar_file=None, num_points=10000,
             xyz_shift='center', xyz_norm=False, use_height=False,
             max_traj_len=5, pc_label_type='coarse',
             pc_label_augment=False, pc_midstep_augment=False,
@@ -38,11 +39,11 @@ class MotionPlannerDataset(SimplePolicyDataset):
             rm_table=True, rm_robot='none', include_last_step=False, augment_pc=False,
             same_npoints_per_example=False,
             rm_pc_outliers=False, rm_pc_outliers_neighbors=25, euler_resolution=5,
-            pos_type='cont', pos_bins=50, pos_bin_size=0.01, 
-            pos_heatmap_type='plain', pos_heatmap_no_robot=False, 
-            aug_max_rot=45, use_color=False, instr_include_objects=False, 
+            pos_type='cont', pos_bins=50, pos_bin_size=0.01,
+            pos_heatmap_type='plain', pos_heatmap_no_robot=False,
+            aug_max_rot=45, use_color=False, instr_include_objects=False,
             real_robot=False, **kwargs
-        ):
+    ):
 
         assert instr_embed_type in ['last', 'all']
         assert xyz_shift in ['none', 'center', 'gripper']
@@ -56,7 +57,7 @@ class MotionPlannerDataset(SimplePolicyDataset):
             self.action_embeds = {instr: embeds[-1:] for instr, embeds in self.action_embeds.items()}
         if gt_act_obj_label_file is not None:
             self.gt_act_obj_labels = json.load(open(gt_act_obj_label_file))
-        
+
         if taskvar_file is not None:
             self.taskvars = json.load(open(taskvar_file))
         else:
@@ -79,7 +80,8 @@ class MotionPlannerDataset(SimplePolicyDataset):
                     if pc_midstep_augment:
                         self.data_ids.extend([(taskvar, key, t) for t in range(len(value['xyz']))])
                     else:
-                        self.data_ids.extend([(taskvar, key, t) for t in range(len(value['xyz'])) if (value['is_new_keystep'][t]) or (t == len(value['xyz'])-1)])
+                        self.data_ids.extend([(taskvar, key, t) for t in range(len(value['xyz'])) if
+                                              (value['is_new_keystep'][t]) or (t == len(value['xyz']) - 1)])
 
         self.num_points = num_points
         self.max_traj_len = max_traj_len
@@ -122,7 +124,7 @@ class MotionPlannerDataset(SimplePolicyDataset):
             gt_rot = self.rotation_transform.quaternion_to_ortho6d(
                 torch.from_numpy(gt_rot[None, :]))[0].numpy()
         return gt_rot
-                
+
     def _augment_pc(self, xyz, ee_pose, gt_trajs, aug_max_rot):
         # rotate around z-axis
         angle = np.random.uniform(-1, 1) * aug_max_rot
@@ -138,7 +140,7 @@ class MotionPlannerDataset(SimplePolicyDataset):
         xyz = pc_noises + xyz
 
         return xyz, ee_pose, gt_trajs
-    
+
     def __getitem__(self, idx):
         if self.all_step_in_batch:
             taskvar, data_id = self.data_ids[idx]
@@ -152,8 +154,8 @@ class MotionPlannerDataset(SimplePolicyDataset):
         data = msgpack.unpackb(self.lmdb_txns[taskvar].get(data_id))
 
         outs = {
-            'data_ids': [], 'pc_fts': [], 'pc_labels': [], 
-            'pc_centroids': [], 'pc_radius': [], 'ee_poses': [], 
+            'data_ids': [], 'pc_fts': [], 'pc_labels': [],
+            'pc_centroids': [], 'pc_radius': [], 'ee_poses': [],
             'txt_embeds': [], 'gt_trajs': [], 'gt_trajs_stop': [],
         }
         if self.pos_type == 'disc':
@@ -174,7 +176,7 @@ class MotionPlannerDataset(SimplePolicyDataset):
 
             xyz, rgb, gt_sem = data['xyz'][t], data['rgb'][t], data['sem'][t]
             arm_links_info = (
-                {k: v[t] for k, v in data['bbox_info'].items()}, 
+                {k: v[t] for k, v in data['bbox_info'].items()},
                 {k: v[t] for k, v in data['pose_info'].items()}
             )
 
@@ -200,7 +202,7 @@ class MotionPlannerDataset(SimplePolicyDataset):
                 xyz = xyz[mask]
                 rgb = rgb[mask]
                 gt_sem = gt_sem[mask]
-                
+
             if self.rm_robot.startswith('box'):
                 mask = self._get_mask_with_robot_box(xyz, arm_links_info, self.rm_robot)
                 xyz = xyz[mask]
@@ -230,11 +232,11 @@ class MotionPlannerDataset(SimplePolicyDataset):
             robot_box = RobotBox(arm_links_info, keep_gripper=False)
             robot_point_idxs = robot_box.get_pc_overlap_ratio(xyz=xyz, return_indices=True)[1]
             robot_point_idxs = np.array(list(robot_point_idxs))
-            robot_mask = np.zeros((xyz.shape[0], ), dtype=bool)
+            robot_mask = np.zeros((xyz.shape[0],), dtype=bool)
             if len(robot_point_idxs) > 0:
                 robot_mask[robot_point_idxs] = True
 
-            pc_label = np.zeros((gt_sem.shape[0], ), dtype=np.int32)
+            pc_label = np.zeros((gt_sem.shape[0],), dtype=np.int32)
             pc_label[robot_mask] = 1
             for oname in ['object', 'target']:
                 if oname in gt_act_obj_labels[keystep]:
@@ -246,14 +248,14 @@ class MotionPlannerDataset(SimplePolicyDataset):
                     obj_mask = self._get_mask_with_label_ids(gt_sem, obj_label_ids)
                     if 'zrange' in v:
                         obj_mask = obj_mask & (xyz[:, 2] > v['zrange'][0]) & (xyz[:, 2] < v['zrange'][1])
-                    if self.pc_label_augment > 0: # only keep part of the gt labels
+                    if self.pc_label_augment > 0:  # only keep part of the gt labels
                         rand_idxs = np.arange(obj_mask.shape[0])[obj_mask]
                         rm_num = int(np.random.uniform(low=0, high=self.pc_label_augment) * len(rand_idxs))
                         rand_idxs = np.random.permutation(rand_idxs)[:rm_num]
                         obj_mask[rand_idxs] = False
                     if oname == 'object':
                         pc_label[obj_mask] = 2
-                    else:   # target
+                    else:  # target
                         pc_label[obj_mask] = 3
 
             # point cloud augmentation
@@ -265,7 +267,7 @@ class MotionPlannerDataset(SimplePolicyDataset):
 
             # normalize point cloud
             if self.xyz_shift == 'none':
-                centroid = np.zeros((3, ))
+                centroid = np.zeros((3,))
             elif self.xyz_shift == 'center':
                 centroid = np.mean(xyz, 0)
             elif self.xyz_shift == 'gripper':
@@ -296,7 +298,7 @@ class MotionPlannerDataset(SimplePolicyDataset):
                 for gt_action in gt_trajs:
                     # (npoints, 3, pos_bins*2)
                     disc_pos_prob = get_disc_gt_pos_prob(
-                        xyz, gt_action[:3], pos_bins=self.pos_bins, 
+                        xyz, gt_action[:3], pos_bins=self.pos_bins,
                         pos_bin_size=self.pos_bin_size,
                         heatmap_type=self.pos_heatmap_type,
                         robot_point_idxs=robot_point_idxs if self.pos_heatmap_no_robot else None
@@ -305,7 +307,7 @@ class MotionPlannerDataset(SimplePolicyDataset):
                 # (max_trajs, npoints, 3, pos_bins*2)
                 gt_trajs_disc_pos_probs = np.stack(gt_trajs_disc_pos_probs, 0)
                 outs['gt_trajs_disc_pos_probs'].append(torch.from_numpy(gt_trajs_disc_pos_probs))
-            
+
             outs['data_ids'].append(f'{taskvar}-{data_id.decode("ascii")}-t{t}')
             outs['pc_fts'].append(torch.from_numpy(pc_ft).float())
             outs['pc_centroids'].append(centroid)
@@ -314,17 +316,17 @@ class MotionPlannerDataset(SimplePolicyDataset):
             outs['txt_embeds'].append(torch.from_numpy(action_embed).float())
             outs['ee_poses'].append(torch.from_numpy(ee_pose).float())
             outs['gt_trajs'].append(torch.from_numpy(gt_trajs).float())
-            outs['gt_trajs_stop'].append(torch.arange(self.max_traj_len) >= (gt_traj_len-1))
-            
+            outs['gt_trajs_stop'].append(torch.arange(self.max_traj_len) >= (gt_traj_len - 1))
+
         return outs
-    
+
 
 def base_collate_fn_partial(max_traj_len, data):
     batch = {}
     for key in data[0].keys():
         batch[key] = sum([x[key] for x in data], [])
-    
-    for key in ['pc_fts', 'pc_labels', 'ee_poses']:   
+
+    for key in ['pc_fts', 'pc_labels', 'ee_poses']:
         batch[key] = torch.stack(batch[key], 0)
 
     gt_trajs, traj_lens = [], []
@@ -354,19 +356,20 @@ def base_collate_fn_partial(max_traj_len, data):
     if len(batch['pc_centroids']) > 0:
         batch['pc_centroids'] = np.stack(batch['pc_centroids'], 0)
         batch['pc_radius'] = np.array(batch['pc_radius'])
-    
+
     return batch
+
 
 def ptv3_collate_fn_partial(max_traj_len, data):
     batch = {}
     for key in data[0].keys():
         batch[key] = sum([x[key] for x in data], [])
-    
+
     npoints_in_batch = [x.size(0) for x in batch['pc_fts']]
     batch['npoints_in_batch'] = npoints_in_batch
     batch['offset'] = torch.cumsum(torch.LongTensor(npoints_in_batch), dim=0)
-    batch['pc_fts'] = torch.cat(batch['pc_fts'], 0)         # (#all points, 6)
-    batch['pc_labels'] = torch.cat(batch['pc_labels'], 0)   # (#all points, )
+    batch['pc_fts'] = torch.cat(batch['pc_fts'], 0)  # (#all points, 6)
+    batch['pc_labels'] = torch.cat(batch['pc_labels'], 0)  # (#all points, )
 
     for key in ['ee_poses', 'gt_trajs_stop']:
         if key in batch:
@@ -389,7 +392,7 @@ def ptv3_collate_fn_partial(max_traj_len, data):
         else:
             assert len(traj) == max_traj_len, len(traj)
             gt_trajs.append(traj)
-    batch['gt_trajs'] = torch.stack(gt_trajs, 0)    # (batch, traj_len, dim)
+    batch['gt_trajs'] = torch.stack(gt_trajs, 0)  # (batch, traj_len, dim)
     batch['traj_lens'] = traj_lens
     batch['traj_masks'] = torch.from_numpy(
         gen_seq_masks(traj_lens, max_len=max_traj_len)
@@ -406,7 +409,7 @@ def ptv3_collate_fn_partial(max_traj_len, data):
             assert len(traj) == max_traj_len, len(traj)
             gt_trajs_disc_pos_probs.append(traj)
     batch['gt_trajs_disc_pos_probs'] = gt_trajs_disc_pos_probs
-    
+
     return batch
 
 
@@ -425,12 +428,12 @@ if __name__ == '__main__':
     #     'data/gembench/train_dataset/motion_keysteps_bbox_pcd/seed0/voxel1cm',
     #     'data/gembench/train_dataset/motion_keysteps_bbox_pcd/action_embeds_clip.npy',
     #     'assets/taskvars_train_target_label.json',
-    #     taskvar_file='assets/taskvars_train.json', 
+    #     taskvar_file='assets/taskvars_train.json',
     #     num_points=4096, xyz_shift='none', xyz_norm=False, use_height=True,
     #     max_traj_len=max_traj_len, pc_label_type='coarse',
     #     pc_label_augment=False, pc_midstep_augment=True, augment_pc=True,
     #     rot_type='euler_disc', instr_embed_type='last', all_step_in_batch=True,
-    #     rm_robot='box_keep_gripper', include_last_step=False, 
+    #     rm_robot='box_keep_gripper', include_last_step=False,
     #     same_npoints_per_example=False,
     #     rm_pc_outliers=False, rm_pc_outliers_neighbors=25, euler_resolution=5,
     #     pos_type='disc', pos_bins=15, pos_bin_size=0.01, pos_heatmap_type='dist',
@@ -439,12 +442,12 @@ if __name__ == '__main__':
     dataset = MotionPlannerRealRobotDataset(
         'data/real_robot_data/v3/keysteps_bbox_pcd_cam2_motionplanner_vlm',
         'data/gembench/train_dataset/motion_keysteps_bbox_pcd/action_embeds_clip.npy',
-        taskvar_file='assets/taskvars_realrobotv1.json', 
+        taskvar_file='assets/taskvars_realrobotv1.json',
         num_points=4096, xyz_shift='none', xyz_norm=False, use_height=True,
         max_traj_len=max_traj_len, pc_label_type='coarse',
         pc_label_augment=False, pc_midstep_augment=True, augment_pc=True,
         rot_type='euler_disc', instr_embed_type='last', all_step_in_batch=True,
-        rm_robot='box_keep_gripper', include_last_step=False, 
+        rm_robot='box_keep_gripper', include_last_step=False,
         same_npoints_per_example=False,
         rm_pc_outliers=False, rm_pc_outliers_neighbors=25, euler_resolution=5,
         pos_type='disc', pos_bins=15, pos_bin_size=0.01, pos_heatmap_type='dist',
@@ -454,7 +457,7 @@ if __name__ == '__main__':
 
     collate_fn = partial(ptv3_collate_fn_partial, max_traj_len)
     dataloader = torch.utils.data.DataLoader(
-        dataset, batch_size=32, shuffle=True, num_workers=0, 
+        dataset, batch_size=32, shuffle=True, num_workers=0,
         collate_fn=collate_fn
     )
     print('#steps', len(dataloader))

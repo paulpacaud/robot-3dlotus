@@ -141,7 +141,13 @@ class GroundtruthVision(object):
         for query_key, query_label_id in zip(['object', 'target'], [2, 3]):
             if query_key in self.taskvar_gt_target_labels[taskvar][step_id]:
                 gt_target_labels = self.taskvar_gt_target_labels[taskvar][step_id][query_key]
-                gt_query_mask = [pcd_sem == x for x in gt_target_labels[self.pc_label_type]]
+
+                if self.pc_label_type != 'mix':
+                    pc_label_type = self.pc_label_type
+                else:
+                    pc_label_type = random.choice(['coarse', 'fine'])
+
+                gt_query_mask = [pcd_sem == x for x in gt_target_labels[pc_label_type]]
                 gt_query_mask = np.sum(gt_query_mask, 0) > 0
                 if 'zrange' in gt_target_labels:
                     gt_query_mask = gt_query_mask & (pcd_xyz[..., 2] > gt_target_labels['zrange'][0]) & (pcd_xyz[..., 2] < gt_target_labels['zrange'][1])

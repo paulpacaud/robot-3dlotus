@@ -32,10 +32,10 @@ export XDG_RUNTIME_DIR=$SCRATCH/tmp/runtime-$SLURM_JOBID
 mkdir -p $XDG_RUNTIME_DIR
 chmod 700 $XDG_RUNTIME_DIR
 
-expr_dir=data/experiments/gembench/3dlotusplus/v1
+expr_dir=data/experiments/gembench/3dlotusplus/v1_augment
 
 # validation: with groundtruth task planner and groundtruth object grounding
-#for ckpt_step in 150000 140000 130000 120000 110000 100000 90000 80000 70000 60000 50000
+#for ckpt_step in 150000 140000 130000 120000 110000 100000 90000
 #do
 #singularity exec --bind $HOME:$HOME,$SCRATCH:$SCRATCH --nv ${sif_image} \
 #    xvfb-run -a ${python_bin} genrobo3d/evaluation/eval_robot_pipeline_server.py \
@@ -48,14 +48,15 @@ expr_dir=data/experiments/gembench/3dlotusplus/v1
 #    --gt_og_label_file assets/taskvars_target_label_zrange.json \
 #    --seed 100 --num_demos 20 \
 #    --microstep_data_dir data/gembench/val_dataset/microsteps/seed100 \
-#    --pc_label_type fine --run_action_step 1
+#    --pc_label_type mix --run_action_step 1
 #done
 
 # test: with groundtruth task planner and groundtruth object grounding
-ckpt_step=130000
-for seed in {200..600..100}
-do
-for split in train test_l2 test_l3 test_l4
+ckpt_step=90000
+seed=200
+#for seed in {200..600..100}
+#do
+for split in test_l2 test_l3 test_l4 train
 do
 singularity exec --bind $HOME:$HOME,$SCRATCH:$SCRATCH --nv ${sif_image} \
     xvfb-run -a ${python_bin} genrobo3d/evaluation/eval_robot_pipeline_server.py \
@@ -68,9 +69,9 @@ singularity exec --bind $HOME:$HOME,$SCRATCH:$SCRATCH --nv ${sif_image} \
     --gt_og_label_file assets/taskvars_target_label_zrange.json \
     --seed ${seed} --num_demos 20 \
     --microstep_data_dir data/gembench/test_dataset/microsteps/seed${seed} \
-    --pc_label_type fine --run_action_step 1
+    --pc_label_type mix --run_action_step 1
 done
-done
+#done
 #    --record_video --video_dir ${expr_dir}/videos_llm_gt-og_gt/${split}/seed${seed} \
 #    --not_include_robot_cameras  --video_rotate_cam \
 
