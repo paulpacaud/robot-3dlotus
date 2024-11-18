@@ -105,9 +105,6 @@
     "light_bulb_in_peract+16",
     "light_bulb_in_peract+15",
     "light_bulb_in_peract+18",
-    "place_cups_peract+1",
-    "place_cups_peract+2",
-    "place_cups_peract+0",
     "close_jar_peract+6",
     "close_jar_peract+4",
     "close_jar_peract+1",
@@ -145,5 +142,8 @@
     "insert_onto_square_peg_peract+8",
     "insert_onto_square_peg_peract+14",
     "insert_onto_square_peg_peract+17",
-    "insert_onto_square_peg_peract+15"
+    "insert_onto_square_peg_peract+15",
+    "place_cups_peract+1",
+    "place_cups_peract+2",
+    "place_cups_peract+0"
 ]

@@ -143,7 +143,14 @@ class GroundtruthVision(object):
         for query_key, query_label_id in zip(['object', 'target'], [2, 3]):
             if query_key in self.taskvar_gt_target_labels[taskvar][episode][step_id]:
                 gt_target_labels = self.taskvar_gt_target_labels[taskvar][episode][step_id][query_key]
-                gt_query_mask = [pcd_sem == x for x in gt_target_labels[self.pc_label_type]]
+
+                if self.pc_label_type != 'mix':
+                    pc_label_type = self.pc_label_type
+                else:
+                    pc_label_type = random.choice(['coarse', 'fine'])
+
+                labels = gt_target_labels[pc_label_type] if pc_label_type in gt_target_labels else gt_target_labels['fine']
+                gt_query_mask = [pcd_sem == x for x in labels]
                 gt_query_mask = np.sum(gt_query_mask, 0) > 0
                 if 'zrange' in gt_target_labels:
                     gt_query_mask = gt_query_mask & (pcd_xyz[..., 2] > gt_target_labels['zrange'][0]) & (pcd_xyz[..., 2] < gt_target_labels['zrange'][1])
@@ -243,8 +250,6 @@ class GroundtruthRobotPipeline(object):
             else:
                 cache.episode_outdir = None
 
-        LOGGER.info(f'taskvar={task_str}+{variation}, step={step_id}, episode_id={episode_id} #cache={len(cache)}')
-        LOGGER.info(f'cache actions: {cache.valid_actions}')
         if len(cache.valid_actions) > 0:
             cur_action = cache.valid_actions[0][:8]
             cache.valid_actions = cache.valid_actions[1:]
@@ -285,9 +290,7 @@ class GroundtruthRobotPipeline(object):
             else:
                 return {'action': np.zeros((8, )), 'cache': cache}
 
-        LOGGER.info(f'retrieving plan for highlevel step id {cache.highlevel_step_id}')
         plan = cache.highlevel_plans[cache.highlevel_step_id]
-        LOGGER.info(f'plan: {plan}')
 
         if plan is None:
             return {'action': np.zeros((8, )), 'cache': cache}
@@ -318,7 +321,6 @@ class GroundtruthRobotPipeline(object):
                 target_name = target_name.replace('_', ' ').strip()
                 action_name = f"{action_name} to {target_name}"
 
-        LOGGER.info(action_name)
         action_embeds = self.clip_model(
             'text', action_name, use_prompt=False, output_hidden_states=True
         )[0]    # shape=(txt_len, hidden_size)
@@ -350,7 +352,7 @@ class GroundtruthRobotPipeline(object):
             cache.highlevel_step_id_norelease += 1
         
         cache.valid_actions = valid_actions[1:]
-        LOGGER.info(f'valid actions: {len(valid_actions)}, {valid_actions}')
+
         out = {
             'action': valid_actions[0][:8],
             'cache': cache

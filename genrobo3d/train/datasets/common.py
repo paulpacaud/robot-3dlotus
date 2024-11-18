@@ -138,17 +138,14 @@ class GripperAugmenter:
             sampling_ratio=0.5,
             noise_range=0.15,  # 15cm
             safe_distance=0.04,  # 4cm
+            restart_pose=False,
             workspace_dims=None
     ):
         self.sampling_ratio = sampling_ratio
         self.noise_range = noise_range
         self.safe_distance = safe_distance
-        self.workspace_dims = {
-            'TABLE_HEIGHT': 0.7505,
-            'X_BBOX': (-0.5, 1.5),
-            'Y_BBOX': (-1, 1),
-            'Z_BBOX': (0.2, 2)
-        }
+        self.restart_pose = restart_pose
+        self.workspace_dims = workspace_dims
 
     def is_point_far_from_objects(self, candidate_point, workspace_points):
         """Check if a candidate point is far enough from workspace objects."""
@@ -219,8 +216,9 @@ class GripperAugmenter:
         xyz[robot_mask] = robot_points + translation
         ee_pose[:3] = ee_pose[:3] + translation
 
-        # Add restart action at beginning of trajectory and remove last action to keep same trajectory length
-        gt_trajs = np.vstack([restart_action[None], gt_trajs])
-        gt_trajs = gt_trajs[:-1]
+        if self.restart_pose:
+            # Add restart action at beginning of trajectory and remove last action to keep same trajectory length
+            gt_trajs = np.vstack([restart_action[None], gt_trajs])
+            gt_trajs = gt_trajs[:-1]
 
         return xyz, pc_label, ee_pose, gt_trajs

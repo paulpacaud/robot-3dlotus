@@ -1,7 +1,7 @@
 import json
 import numpy as np
 
-set = 'val'
+set = 'test'
 output_file_path = f'../../prompts/rlbench/in_context_examples_{set}_peract.txt'
 
 with open(f'../../assets/taskvars_{set}_peract.json', 'r') as f:

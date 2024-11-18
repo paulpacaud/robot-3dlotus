@@ -247,7 +247,11 @@ class MotionPlannerDatasetPerAct(SimplePolicyDataset):
                         else:
                             obj_label_ids = v[self.pc_label_type] if self.pc_label_type in v else v['fine']
                     else:
-                        obj_label_ids = v[random.choice(['coarse', 'fine'])]
+                        label = random.choice(['coarse', 'fine'])
+                        if label == 'fine':
+                            obj_label_ids = v[label]
+                        else:
+                            obj_label_ids = v[label] if label in v else v['fine']
                     obj_mask = self._get_mask_with_label_ids(gt_sem, obj_label_ids)
                     if 'zrange' in v:
                         obj_mask = obj_mask & (xyz[:, 2] > v['zrange'][0]) & (xyz[:, 2] < v['zrange'][1])

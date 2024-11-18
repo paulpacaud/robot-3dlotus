@@ -31,8 +31,8 @@ export MASTER_ADDR=$master_addr
 
 ulimit -n 2048
 
-
-output_dir=data/experiments/peract/3dlotusplus/v1_label_coarse
+label_type=coarse
+output_dir=data/experiments/peract/3dlotusplus/v1_${label_type}
 
 rot_type=euler_disc
 npoints=4096
@@ -58,7 +58,7 @@ srun python genrobo3d/train/train_motion_planner_peract.py \
     TRAIN_DATASET.aug_max_rot 45 \
     TRAIN_DATASET.rm_pc_outliers False VAL_DATASET.rm_pc_outliers False \
     TRAIN_DATASET.max_traj_len ${max_traj_len} VAL_DATASET.max_traj_len ${max_traj_len} \
-    TRAIN_DATASET.pc_label_type coarse VAL_DATASET.pc_label_type coarse \
+    TRAIN_DATASET.pc_label_type ${label_type} VAL_DATASET.pc_label_type ${label_type} \
     TRAIN_DATASET.pc_label_augment 0.0 VAL_DATASET.pc_label_augment 0.0 \
     TRAIN_DATASET.pc_midstep_augment True VAL_DATASET.pc_midstep_augment True \
     TRAIN_DATASET.data_dir data/peract/train_dataset/motion_keysteps_bbox_pcd/seed0/voxel1cm \

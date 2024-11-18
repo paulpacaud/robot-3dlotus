@@ -40,7 +40,7 @@ class MotionPlannerDatasetAugment(SimplePolicyDataset):
             pos_type='cont', pos_bins=50, pos_bin_size=0.01, 
             pos_heatmap_type='plain', pos_heatmap_no_robot=False, 
             aug_max_rot=45, use_color=False, instr_include_objects=False, 
-            real_robot=False, sampling_ratio=0.5, noise_range=0.15, safe_distance=0.04, **kwargs
+            real_robot=False, sampling_ratio=0.5, noise_range=0.15, safe_distance=0.04, restart_pose=False, **kwargs
         ):
 
         assert instr_embed_type in ['last', 'all']
@@ -112,7 +112,13 @@ class MotionPlannerDatasetAugment(SimplePolicyDataset):
         self.rotation_transform = RotationMatrixTransform()
         self.workspace = get_robot_workspace(real_robot=self.real_robot)
 
-        self.gripperAugmenter = GripperAugmenter(sampling_ratio, noise_range, safe_distance, self.workspace)
+        self.gripperAugmenter = GripperAugmenter(
+            sampling_ratio,
+            noise_range,
+            safe_distance,
+            restart_pose,
+            self.workspace
+        )
 
     def _get_rotation_from_quat(self, gt_rot):
         if self.rot_type == 'euler':

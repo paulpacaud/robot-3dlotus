@@ -397,8 +397,12 @@ def main():
         LOGGER.info(f"i < len(taskvars): {i} < {len(taskvars)}")
 
     LOGGER.info(f"All tasks launched. Waiting for final {len(producers)} producers to finish...")
-    for p in producers.values():
-        p.join()
+    while len(producers) > 0:
+        proc_id, k_res = producer_queue.get()
+        LOGGER.info(f"Producer {proc_id} finished, joining...")
+        producers[proc_id].join()
+        LOGGER.info(f"Producer {proc_id} joined successfully")
+        del producers[proc_id]
 
     LOGGER.info("All producers finished. Sending shutdown signal to consumer...")
     batch_queue.put(None)

@@ -32,7 +32,7 @@ export MASTER_ADDR=$master_addr
 ulimit -n 2048
 
 
-output_dir=data/experiments/gembench/3dlotusplus/v1_augment
+output_dir=data/experiments/gembench/3dlotusplus/v1
 
 rot_type=euler_disc
 npoints=4096

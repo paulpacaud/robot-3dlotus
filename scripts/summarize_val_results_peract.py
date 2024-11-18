@@ -94,9 +94,14 @@ def display_results(task_averages: Dict[str, TaskMetrics], overall_metrics: Task
     print("-" * 60)
 
 
-def main(result_file: str, ckpt_step: int):
-    task_averages, overall_metrics = process_results(result_file, ckpt_step)
-    display_results(task_averages, overall_metrics, ckpt_step)
+def main(result_file, ckpt_step):
+    if ckpt_step is None:
+        for ckpt_step in [150000, 140000, 130000, 120000, 110000, 100000]:
+            task_averages, overall_metrics = process_results(result_file, ckpt_step)
+            display_results(task_averages, overall_metrics, ckpt_step)
+    else:
+        task_averages, overall_metrics = process_results(result_file, ckpt_step)
+        display_results(task_averages, overall_metrics, ckpt_step)
 
 
 if __name__ == '__main__':
@@ -104,6 +109,6 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('result_file', help='Path to the results file')
-    parser.add_argument('ckpt_step', type=int, help='Checkpoint step to filter results')
+    parser.add_argument('--ckpt_step', type=int, help='Checkpoint step to filter results', default=None)
     args = parser.parse_args()
     main(args.result_file, args.ckpt_step)

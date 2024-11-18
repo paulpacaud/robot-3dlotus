@@ -64,9 +64,6 @@ TRAIN_DATASET:
   use_color: False
   instr_include_objects: False
   real_robot: False
-  sampling_ratio: 0.5
-  noise_range: 0.15
-  safe_distance: 0.04
 
 VAL_DATASET:
   use_val: True
