@@ -31,8 +31,8 @@ export MASTER_ADDR=$master_addr
 
 ulimit -n 2048
 
-label_type=coarse
-output_dir=data/experiments/peract/3dlotusplus/v1_${label_type}
+label_type=fine
+output_dir=data/experiments/peract/3dlotusplus/v2_${label_type}
 
 rot_type=euler_disc
 npoints=4096
@@ -42,7 +42,7 @@ max_traj_len=5
 srun python genrobo3d/train/train_motion_planner_peract.py \
     --exp-config genrobo3d/configs/rlbench/motion_planner_ptv3.yaml \
     output_dir ${output_dir} \
-    TRAIN.num_epochs null TRAIN.num_train_steps 150000 \
+    TRAIN.num_epochs null TRAIN.num_train_steps 180000 \
     TRAIN.log_steps 1000 TRAIN.save_steps 10000 TRAIN.val_steps 10000 \
     TRAIN.train_batch_size 8 TRAIN.val_batch_size 8 \
     VAL_DATASET.use_val False \
@@ -63,8 +63,8 @@ srun python genrobo3d/train/train_motion_planner_peract.py \
     TRAIN_DATASET.pc_midstep_augment True VAL_DATASET.pc_midstep_augment True \
     TRAIN_DATASET.data_dir data/peract/train_dataset/motion_keysteps_bbox_pcd/seed0/voxel1cm \
     TRAIN_DATASET.taskvar_file assets/taskvars_train_peract.json VAL_DATASET.taskvar_file assets/taskvars_train_peract.json \
-    TRAIN_DATASET.gt_act_obj_label_file assets/taskvars_target_label_zrange_peract.json \
-    VAL_DATASET.gt_act_obj_label_file assets/taskvars_target_label_zrange_peract.json \
+    TRAIN_DATASET.gt_act_obj_label_file assets/taskvars_target_label_zrange_peract_new.json \
+    VAL_DATASET.gt_act_obj_label_file assets/taskvars_target_label_zrange_peract_new.json \
     TRAIN_DATASET.instr_include_objects False VAL_DATASET.instr_include_objects False \
     TRAIN_DATASET.action_embed_file data/peract/train_dataset/motion_keysteps_bbox_pcd/action_embeds_clip.npy \
     VAL_DATASET.action_embed_file data/peract/train_dataset/motion_keysteps_bbox_pcd/action_embeds_clip.npy \

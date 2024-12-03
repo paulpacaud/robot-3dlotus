@@ -14,7 +14,7 @@ from rlbench.action_modes.gripper_action_modes import Discrete
 from rlbench.action_modes.arm_action_modes import EndEffectorPoseViaPlanning
 from rlbench.backend.exceptions import InvalidActionError
 from rlbench.backend.observation import Observation
-from rlbench.demo import Demo 
+from rlbench.demo import Demo
 from rlbench.backend.utils import task_file_to_task_class
 from pyrep.errors import IKError, ConfigurationPathError
 from pyrep.const import RenderMode, ObjectType
@@ -23,20 +23,33 @@ from pyrep.objects.vision_sensor import VisionSensor
 
 from rlbench.backend.utils import rgb_handles_to_mask
 
-from .coord_transforms import convert_gripper_pose_world_to_image, quat_to_euler, euler_to_quat
-# from .visualize import plot_attention
-from .recorder import TaskRecorder, StaticCameraMotion, CircleCameraMotion, AttachedCameraMotion
+from .coord_transforms import (
+    convert_gripper_pose_world_to_image,
+    quat_to_euler,
+    euler_to_quat,
+)
 
+# from .visualize import plot_attention
+from .recorder import (
+    TaskRecorder,
+    StaticCameraMotion,
+    CircleCameraMotion,
+    AttachedCameraMotion,
+)
+from genrobo3d.train.utils.logger import LOGGER
 
 CAMERA_ATTR = {
     "front": "_cam_front",
     "wrist": "_cam_wrist",
     "left_shoulder": "_cam_over_shoulder_left",
-    "right_shoulder": "_cam_over_shoulder_right"
+    "right_shoulder": "_cam_over_shoulder_right",
 }
 
+
 class Mover:
-    def __init__(self, task: TaskEnvironment, disabled: bool = False, max_tries: int = 1):
+    def __init__(
+        self, task: TaskEnvironment, disabled: bool = False, max_tries: int = 1
+    ):
         self._task = task
         self._last_action: Optional[np.ndarray] = None
         self._step_id = 0
@@ -53,8 +66,9 @@ class Mover:
         # change_gripper is a flag that indicates whether the gripper's open/close state is changing between actions
         # we want to Separate Arm Movement from Gripper Actions: Move to the correct position before changing the gripper state.
         # that's why we store the change flag and then we erase the gripper state by putting the last gripper state to not change it while moving the arm
-        change_gripper = ((self._last_action[-1] > 0.5) & (action[-1] < 0.5)) or \
-                         ((self._last_action[-1] < 0.5) & (action[-1] > 0.5))
+        change_gripper = ((self._last_action[-1] > 0.5) & (action[-1] < 0.5)) or (
+            (self._last_action[-1] < 0.5) & (action[-1] > 0.5)
+        )
 
         if self._disabled:
             return self._task.step(action)
@@ -77,9 +91,9 @@ class Mover:
             dist_rot = np.sqrt(np.square(target[3:7] - rot).sum())  # type: ignore
             # criteria = (dist_pos < 5e-2, dist_rot < 1e-1, (gripper > 0.5) == (target_gripper > 0.5))
             if change_gripper:
-                criteria = (dist_pos < 2e-2, )
+                criteria = (dist_pos < 2e-2,)
             else:
-                criteria = (dist_pos < 5e-2, )
+                criteria = (dist_pos < 5e-2,)
 
             if all(criteria) or reward == 1:
                 break
@@ -92,15 +106,13 @@ class Mover:
         # we execute the gripper action after re-tries
         # TODO: only execute the gripper openness action if gripper reaches target location
         action = target
-        if (
-            not reward
-            and change_gripper
-            and all(criteria)
-        ):
+        if not reward and change_gripper and all(criteria):
             obs, reward, terminate = self._task.step(action)
 
-        if (try_id == self._max_tries - 1) and (not all(criteria)): # and verbose:
-            print(f"Step {self._step_id} Failure after {self._max_tries} tries (pos: {dist_pos:.3f})")
+        if (try_id == self._max_tries - 1) and (not all(criteria)):  # and verbose:
+            print(
+                f"Step {self._step_id} Failure after {self._max_tries} tries (pos: {dist_pos:.3f})"
+            )
 
         self._step_id += 1
         self._last_action = action.copy()
@@ -113,7 +125,7 @@ class Mover:
 class RLBenchEnv(object):
     def __init__(
         self,
-        data_path='',
+        data_path="",
         apply_rgb=False,
         apply_depth=False,
         apply_pc=False,
@@ -134,11 +146,16 @@ class RLBenchEnv(object):
         self.apply_mask = apply_mask
         self.gripper_pose = gripper_pose
         self.image_size = image_size
-        self.cam_rand_factor=cam_rand_factor
+        self.cam_rand_factor = cam_rand_factor
 
         # setup RLBench environments
         self.obs_config = self.create_obs_config(
-            apply_rgb, apply_depth, apply_pc, apply_mask, apply_cameras, image_size,
+            apply_rgb,
+            apply_depth,
+            apply_pc,
+            apply_mask,
+            apply_cameras,
+            image_size,
         )
         self.action_mode = MoveArmThenGripper(
             arm_action_mode=EndEffectorPoseViaPlanning(collision_checking=False),
@@ -152,8 +169,8 @@ class RLBenchEnv(object):
 
     def get_observation(self, obs: Observation):
         """Fetch the desired state based on the provided demo.
-            :param obs: incoming obs
-            :return: required observation (rgb, pc, gripper state)
+        :param obs: incoming obs
+        :return: required observation (rgb, pc, gripper state)
         """
 
         # fetch state: (#cameras, H, W, C)
@@ -163,10 +180,10 @@ class RLBenchEnv(object):
 
         arm_bboxes, arm_poses = {}, {}
         for k, v in obs.misc.items():
-            if k.startswith('Panda_'):
-                if k.endswith('_bbox'):
+            if k.startswith("Panda_"):
+                if k.endswith("_bbox"):
                     arm_bboxes[k] = np.array(v)
-                if k.endswith('_pose'):
+                if k.endswith("_pose"):
                     arm_poses[k] = np.array(v)
         state_dict["arm_links_info"] = (arm_bboxes, arm_poses)
 
@@ -189,17 +206,21 @@ class RLBenchEnv(object):
                 if mask.ndim == 2:
                     state_dict["gt_mask"] += [mask]
                 else:
-                    state_dict["gt_mask"] += [rgb_handles_to_mask(mask).astype(np.uint8)]
+                    state_dict["gt_mask"] += [
+                        rgb_handles_to_mask(mask).astype(np.uint8)
+                    ]
 
-        for key in ['rgb', 'depth', 'pc', 'gt_mask']:
+        for key in ["rgb", "depth", "pc", "gt_mask"]:
             if key in state_dict and len(state_dict[key]) > 0:
                 state_dict[key] = np.stack(state_dict[key], 0)
-        if 'pc' in state_dict and len(state_dict['pc']) > 0:
-            state_dict['pc'] = state_dict['pc'].astype(np.float32)
+        if "pc" in state_dict and len(state_dict["pc"]) > 0:
+            state_dict["pc"] = state_dict["pc"].astype(np.float32)
 
         # fetch gripper state (3+4+1, )
-        gripper = np.concatenate([obs.gripper_pose, [obs.gripper_open]]).astype(np.float32)
-        state_dict['gripper'] = gripper
+        gripper = np.concatenate([obs.gripper_pose, [obs.gripper_open]]).astype(
+            np.float32
+        )
+        state_dict["gripper"] = gripper
 
         if self.gripper_pose:
             gripper_imgs = np.zeros(
@@ -227,15 +248,26 @@ class RLBenchEnv(object):
             amount=1,
             from_episode_number=episode_index,
             random_selection=False,
-            load_images=load_images
+            load_images=load_images,
         )
         return demos[0]
 
     def evaluate(
-        self, task_str, variation, max_episodes, num_demos, log_dir, actioner,
-        max_tries: int = 1, demos: Optional[List[Demo]] = None, demo_keys: List = None,
-        save_attn: bool = False, save_image: bool = False,
-        record_video: bool = False, include_robot_cameras: bool = True, video_rotate_cam: bool = False,
+        self,
+        task_str,
+        variation,
+        max_episodes,
+        num_demos,
+        log_dir,
+        actioner,
+        max_tries: int = 1,
+        demos: Optional[List[Demo]] = None,
+        demo_keys: List = None,
+        save_attn: bool = False,
+        save_image: bool = False,
+        record_video: bool = False,
+        include_robot_cameras: bool = True,
+        video_rotate_cam: bool = False,
         video_resolution: int = 480,
         return_detail_results: bool = False,
         skip_demos: int = 0,
@@ -261,14 +293,16 @@ class RLBenchEnv(object):
 
         if record_video:
             # Add a global camera to the scene
-            cam_placeholder = Dummy('cam_cinematic_placeholder')
+            cam_placeholder = Dummy("cam_cinematic_placeholder")
             cam_resolution = [video_resolution, video_resolution]
             cam = VisionSensor.create(cam_resolution)
             cam.set_pose(cam_placeholder.get_pose())
             cam.set_parent(cam_placeholder)
 
             if video_rotate_cam:
-                global_cam_motion = CircleCameraMotion(cam, Dummy('cam_cinematic_base'), 0.005)
+                global_cam_motion = CircleCameraMotion(
+                    cam, Dummy("cam_cinematic_base"), 0.005
+                )
             else:
                 global_cam_motion = StaticCameraMotion(cam)
 
@@ -280,9 +314,15 @@ class RLBenchEnv(object):
                 cam_right = VisionSensor.create(cam_resolution)
                 cam_wrist = VisionSensor.create(cam_resolution)
 
-                left_cam_motion = AttachedCameraMotion(cam_left, task._scene._cam_over_shoulder_left)
-                right_cam_motion = AttachedCameraMotion(cam_right, task._scene._cam_over_shoulder_right)
-                wrist_cam_motion = AttachedCameraMotion(cam_wrist, task._scene._cam_wrist)
+                left_cam_motion = AttachedCameraMotion(
+                    cam_left, task._scene._cam_over_shoulder_left
+                )
+                right_cam_motion = AttachedCameraMotion(
+                    cam_right, task._scene._cam_over_shoulder_right
+                )
+                wrist_cam_motion = AttachedCameraMotion(
+                    cam_wrist, task._scene._cam_wrist
+                )
 
                 cams_motion["left"] = left_cam_motion
                 cams_motion["right"] = right_cam_motion
@@ -290,7 +330,7 @@ class RLBenchEnv(object):
             tr = TaskRecorder(cams_motion, fps=30)
             task._scene.register_step_callback(tr.take_snap)
 
-            video_log_dir = log_dir / 'videos' / f'{task_str}+{variation}'
+            video_log_dir = log_dir / "videos" / f"{task_str}+{variation}"
             os.makedirs(str(video_log_dir), exist_ok=True)
 
         success_rate = 0.0
@@ -301,7 +341,7 @@ class RLBenchEnv(object):
             fetch_list = demos
 
         if demo_keys is None:
-            demo_keys = [f'episode{i}' for i in range(num_demos)]
+            demo_keys = [f"episode{i}" for i in range(num_demos)]
 
         if return_detail_results:
             detail_results = {}
@@ -315,8 +355,9 @@ class RLBenchEnv(object):
                 if isinstance(demo, int):
                     instructions, obs = task.reset()
                 else:
-                    print("Resetting to demo", demo_id)
+                    LOGGER.info(f"Resetting to demo {demo_id}")
                     instructions, obs = task.reset_to_demo(demo)  # type: ignore
+                    LOGGER.info(f"Reset to demo {demo_id}")
 
                 if self.cam_rand_factor:
                     cams = {}
@@ -335,8 +376,12 @@ class RLBenchEnv(object):
                         # euler angles +/- 0.05 rad = 2.87 deg
                         cam_rot_range = self.cam_rand_factor * 0.05
 
-                        delta_pos = np.random.uniform(low=-cam_pos_range, high=cam_pos_range, size=3)
-                        delta_rot = np.random.uniform(low=-cam_rot_range, high=cam_rot_range, size=3)
+                        delta_pos = np.random.uniform(
+                            low=-cam_pos_range, high=cam_pos_range, size=3
+                        )
+                        delta_rot = np.random.uniform(
+                            low=-cam_rot_range, high=cam_rot_range, size=3
+                        )
                         orig_pose = self.cam_info[cam_name]
 
                         orig_pos = orig_pose[:3]
@@ -352,34 +397,46 @@ class RLBenchEnv(object):
                         cam.set_pose(new_pose)
 
                 reward = None
-
+                LOGGER.info(f"starting demo {demo_id}")
                 if log_dir is not None and (save_attn or save_image):
                     ep_dir = log_dir / task_str / demo_id
                     ep_dir.mkdir(exist_ok=True, parents=True)
-
+                LOGGER.info(f"getting observation")
                 obs_state_dict = self.get_observation(obs)  # type: ignore
-                move.reset(obs_state_dict['gripper'])
+                move.reset(obs_state_dict["gripper"])
+                LOGGER.info(f"got observation")
 
                 for step_id in range(max_episodes):
+                    LOGGER.info(f"step {step_id} / {max_episodes}")
                     # fetch the current observation, and predict one action
                     if log_dir is not None and save_image:
-                        for cam_id, img_by_cam in enumerate(obs_state_dict['rgb']):
-                            cam_dir = ep_dir / f'camera_{cam_id}'
+                        for cam_id, img_by_cam in enumerate(obs_state_dict["rgb"]):
+                            cam_dir = ep_dir / f"camera_{cam_id}"
                             cam_dir.mkdir(exist_ok=True, parents=True)
                             Image.fromarray(img_by_cam).save(cam_dir / f"{step_id}.png")
 
+                    LOGGER.info(f"predicting action")
                     output = actioner.predict(
-                        task_str=task_str, variation=variation,
-                        step_id=step_id, obs_state_dict=obs_state_dict,
-                        episode_id=demo_id, instructions=instructions
+                        task_str=task_str,
+                        variation=variation,
+                        step_id=step_id,
+                        obs_state_dict=obs_state_dict,
+                        episode_id=demo_id,
+                        instructions=instructions,
                     )
+                    LOGGER.info(f"predicted action")
                     action = output["action"]
+                    LOGGER.info(f"got action {action}")
 
                     if action is None:
                         break
 
                     # TODO
-                    if log_dir is not None and save_attn and output["action"] is not None:
+                    if (
+                        log_dir is not None
+                        and save_attn
+                        and output["action"] is not None
+                    ):
                         ep_dir = log_dir / f"episode{demo_id}"
                         # fig = plot_attention(
                         #     output["attention"],
@@ -390,8 +447,11 @@ class RLBenchEnv(object):
 
                     # update the observation based on the predicted action
                     try:
+                        LOGGER.info(f"move action")
                         obs, reward, terminate, _ = move(action, verbose=False)
+                        LOGGER.info(f"moved action, reward {reward}")
                         obs_state_dict = self.get_observation(obs)  # type: ignore
+                        LOGGER.info("got observation")
 
                         if reward == 1:
                             success_rate += 1 / num_demos
@@ -405,15 +465,24 @@ class RLBenchEnv(object):
 
                 cur_demo_id += 1
                 print(
-                    task_str, "Variation", variation, "Demo", demo_id, 'Step', step_id+1,
-                    "Reward", reward, "Accumulated SR: %.2f" % (success_rate * 100),
-                    'Estimated SR: %.2f' % (success_rate * num_demos / cur_demo_id * 100)
+                    task_str,
+                    "Variation",
+                    variation,
+                    "Demo",
+                    demo_id,
+                    "Step",
+                    step_id + 1,
+                    "Reward",
+                    reward,
+                    "Accumulated SR: %.2f" % (success_rate * 100),
+                    "Estimated SR: %.2f"
+                    % (success_rate * num_demos / cur_demo_id * 100),
                 )
 
                 if return_detail_results:
                     detail_results[demo_id] = reward
 
-                if record_video: # and reward < 1:
+                if record_video:  # and reward < 1:
                     tr.save(str(video_log_dir / f"{demo_id}_SR{reward}"))
 
         self.env.shutdown()
@@ -423,7 +492,14 @@ class RLBenchEnv(object):
         return success_rate
 
     def create_obs_config(
-        self, apply_rgb, apply_depth, apply_pc, apply_mask, apply_cameras, image_size, **kwargs
+        self,
+        apply_rgb,
+        apply_depth,
+        apply_pc,
+        apply_mask,
+        apply_cameras,
+        image_size,
+        **kwargs,
     ):
         """
         Set up observation config for RLBench environment.
@@ -481,40 +557,55 @@ class RLBenchEnv(object):
         """
         meta_info = {}
 
-        arm_mask_ids = [obj.get_handle() for obj in task._robot.arm.get_objects_in_tree(exclude_base=False)]
-        gripper_mask_ids = [obj.get_handle() for obj in task._robot.gripper.get_objects_in_tree(exclude_base=False)]
+        arm_mask_ids = [
+            obj.get_handle()
+            for obj in task._robot.arm.get_objects_in_tree(exclude_base=False)
+        ]
+        gripper_mask_ids = [
+            obj.get_handle()
+            for obj in task._robot.gripper.get_objects_in_tree(exclude_base=False)
+        ]
         robot_mask_ids = arm_mask_ids + gripper_mask_ids
-        obj_mask_ids = [obj.get_handle() for obj in task._task.get_base().get_objects_in_tree(exclude_base=False)]
+        obj_mask_ids = [
+            obj.get_handle()
+            for obj in task._task.get_base().get_objects_in_tree(exclude_base=False)
+        ]
 
-        meta_info['arm_mask_ids'] = arm_mask_ids
-        meta_info['gripper_mask_ids'] = gripper_mask_ids
-        meta_info['obj_mask_ids'] = obj_mask_ids
+        meta_info["arm_mask_ids"] = arm_mask_ids
+        meta_info["gripper_mask_ids"] = gripper_mask_ids
+        meta_info["obj_mask_ids"] = obj_mask_ids
         if verbose:
-            print('arm ids', arm_mask_ids)
-            print('gripper ids', gripper_mask_ids)
-            print('obj ids', obj_mask_ids)
+            print("arm ids", arm_mask_ids)
+            print("gripper ids", gripper_mask_ids)
+            print("obj ids", obj_mask_ids)
 
         scene_objs = task._task.get_base().get_objects_in_tree(
-            object_type=ObjectType.SHAPE, exclude_base=False, first_generation_only=False
+            object_type=ObjectType.SHAPE,
+            exclude_base=False,
+            first_generation_only=False,
         )
         if verbose:
-            print('all scene objs', scene_objs)
+            print("all scene objs", scene_objs)
 
-        meta_info['scene_objs'] = []
+        meta_info["scene_objs"] = []
         for scene_obj in scene_objs:
             obj_meta = {
-                'id': scene_obj.get_handle(),
-                'name': scene_obj.get_name(),
-                'children': []
+                "id": scene_obj.get_handle(),
+                "name": scene_obj.get_name(),
+                "children": [],
             }
             if verbose:
-                print(obj_meta['id'], obj_meta['name'])
+                print(obj_meta["id"], obj_meta["name"])
             for child in scene_obj.get_objects_in_tree():
-                obj_meta['children'].append(
-                    {'id': child.get_handle(), 'name': child.get_name()}
+                obj_meta["children"].append(
+                    {"id": child.get_handle(), "name": child.get_name()}
                 )
                 if verbose:
-                    print('\t', obj_meta['children'][-1]['id'], obj_meta['children'][-1]['name'])
-            meta_info['scene_objs'].append(obj_meta)
+                    print(
+                        "\t",
+                        obj_meta["children"][-1]["id"],
+                        obj_meta["children"][-1]["name"],
+                    )
+            meta_info["scene_objs"].append(obj_meta)
 
         return meta_info

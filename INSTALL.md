@@ -6,21 +6,29 @@ conda create -n gembench python==3.10
 
 conda activate gembench
 
-# On CLEPS, first run `module load gnu12/12.2.0`
 
+#On CLEPS or some specific HPC clusters, you may need: `module load gnu12/12.2.0` 
 conda install nvidia/label/cuda-12.1.0::cuda
-pip install torch==2.3.0 torchvision==0.18.0 torchaudio==2.3.0 --index-url https://download.pytorch.org/whl/cu121
 
-export CUDA_HOME=$HOME/miniconda3/envs/gembench
+export CUDA_HOME=$HOME/.conda/envs/gembench # change here the path to your conda environment
 export CPATH=$CUDA_HOME/targets/x86_64-linux/include:$CPATH
 export LD_LIBRARY_PATH=$CUDA_HOME/targets/x86_64-linux/lib:$LD_LIBRARY_PATH
 export PATH=$CUDA_HOME/bin:$PATH
-export FORCE_CUDA=1
+#On CLEPS or some specific HPC clusters, you may need: export FORCE_CUDA=1
 
-pip install -r requirements.txt
+# On Jean-Zay or some specific HPC clusters, you may need: `module load gcc/11.3.1` for gnu-c++ errors
+
+# some people report issues with conda-forge when installing torch related packages, due to the crypt.h file missing. Refer to this thread for help: https://github.com/stanford-futuredata/ColBERT/issues/309
+
+### Everywhere
+pip install --no-cache-dir torch==2.3.0 torchvision==0.18.0 torchaudio==2.3.0 --index-url https://download.pytorch.org/whl/cu121
+
+pip install --no-cache-dir -r requirements.txt
+# if issues with torch_scatter, try: pip install torch_scatter==2.1.2 -f https://data.pyg.org/whl/torch-2.3.0+cu121.html
+
 
 # install genrobo3d
-pip install -e .
+pip install --no-cache-dir -e .
 ```
 
 2. Install RLBench
@@ -47,15 +55,15 @@ Install Pyrep and RLBench
 ```bash
 git clone https://github.com/cshizhe/PyRep.git
 cd PyRep
-pip install -r requirements.txt
-pip install .
+pip install --no-cache-dir -r requirements.txt
+pip install --no-cache-dir .
 cd ..
 
 # Our modified version of RLBench to support new tasks in GemBench
 git clone https://github.com/rjgpinel/RLBench
 cd RLBench
-pip install -r requirements.txt
-pip install .
+pip install --no-cache-dir -r requirements.txt
+pip install --no-cache-dir .
 cd ../..
 ```
 
@@ -64,12 +72,13 @@ cd ../..
 ```bash
 cd dependencies
 
-# Please ensure to set CUDA_HOME beforehand as specified in the export const of the section 1
+# If applicable (e.g on CLEPS), lease ensure to set CUDA_HOME beforehand as specified in the export const of the section 1
 git clone https://github.com/cshizhe/chamferdist.git
 cd chamferdist
 python setup.py install
 cd ..
 
+# you may need to set export MAX_JOBS=2 or 1 before running the following commands because of the limited resources of your cluster
 git clone https://github.com/cshizhe/Pointnet2_PyTorch.git
 cd Pointnet2_PyTorch/pointnet2_ops_lib
 python setup.py install
@@ -78,8 +87,11 @@ cd ../..
 # llama3: needed for 3D-LOTUS++
 git clone https://github.com/cshizhe/llama3.git
 cd llama3
-pip install -e .
+pip install --no-cache-dir -e .
 cd ../..
+
+# Download llama3-8B model following instructions here: https://github.com/cshizhe/llama3?tab=readme-ov-file#download, and modify the configuration path in genrobo3d/configs/rlbench/robot_pipeline.yaml
+# You may need to change the download folder of the model to point to a large memory folder by changing export LLAMA_STACK_CONFIG_DIR=
 ```
 
 4. Running headless

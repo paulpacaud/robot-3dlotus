@@ -10,16 +10,15 @@ from dataclasses import dataclass
 class TaskMetrics:
     success_rate: float
     fps: float
+    std: float = 0.0
 
 
 def process_results(result_file: str, ckpt_step: int) -> Tuple[Dict[str, TaskMetrics], TaskMetrics]:
-    # Read results and group by task
     task_results = collections.defaultdict(lambda: {'sr': [], 'fps': []})
     seen = set()
 
     with jsonlines.open(result_file, 'r') as f:
         for item in f:
-            # Filter by checkpoint
             if isinstance(item.get('checkpoint'), int):
                 res_ckpt = item['checkpoint']
             else:
@@ -31,67 +30,65 @@ def process_results(result_file: str, ckpt_step: int) -> Tuple[Dict[str, TaskMet
             if res_ckpt != ckpt_step:
                 continue
 
-            # Skip duplicates
             key = (item['task'], item['variation'])
             if key in seen:
                 continue
             seen.add(key)
 
-            # Extract task name, success rate, and fps
             task_str = item['task']
-            success_rate = item['sr'] * 100  # Convert to percentage
-            fps = item.get('fps', 0.0)  # Default to 0 if fps not found
+            success_rate = item['sr'] * 100
+            fps = item.get('fps', 0.0)
 
             task_results[task_str]['sr'].append(success_rate)
             task_results[task_str]['fps'].append(fps)
 
-    # Calculate per-task averages
     task_averages = {}
     all_success_rates = []
     all_fps = []
+    all_stds = []
 
     for task_str, metrics in task_results.items():
-        if not metrics['sr']:  # Skip if no results after filtering
+        if not metrics['sr']:
             continue
 
         avg_success_rate = np.mean(metrics['sr'])
         avg_fps = np.mean(metrics['fps'])
+        std = np.std(metrics['sr']) if len(metrics['sr']) > 1 else 0.0
 
         task_averages[task_str] = TaskMetrics(
-            success_rate=avg_success_rate,
-            fps=avg_fps
+            success_rate=round(avg_success_rate, 1),
+            fps=round(avg_fps, 1),
+            std=round(std, 1)
         )
 
         all_success_rates.append(avg_success_rate)
         all_fps.append(avg_fps)
+        all_stds.append(std)
 
-    # Calculate overall averages
     overall_metrics = TaskMetrics(
-        success_rate=np.mean(all_success_rates) if all_success_rates else 0.0,
-        fps=np.mean(all_fps) if all_fps else 0.0
+        success_rate=round(np.mean(all_success_rates), 1) if all_success_rates else 0.0,
+        fps=round(np.mean(all_fps), 1) if all_fps else 0.0,
+        std=round(np.mean(all_stds), 1) if all_stds else 0.0
     )
 
     return task_averages, overall_metrics
 
 
 def display_results(task_averages: Dict[str, TaskMetrics], overall_metrics: TaskMetrics, ckpt_step: int):
-    # Print header with checkpoint information
     print(f"\nResults for checkpoint step {ckpt_step}:")
     print("\nPer-Task Metrics:")
-    print("-" * 60)
-    print(f"{'Task':<30} {'Success Rate':>12} {'FPS':>12}")
-    print("-" * 60)
+    print("-" * 75)
+    print(f"{'Task':<30} {'Success Rate':>12} {'Std Dev':>12} {'FPS':>12}")
+    print("-" * 75)
 
-    # Display per-task metrics
     for task_str, metrics in sorted(task_averages.items()):
-        print(f"{task_str:<30} {metrics.success_rate:>11.2f}% {metrics.fps:>11.2f}")
+        print(f"{task_str:<30} {metrics.success_rate:>11.1f}% {metrics.std:>11.1f}% {metrics.fps:>11.1f}")
 
-    # Print overall averages
-    print("\n" + "-" * 60)
+    print("\n" + "-" * 75)
     print(f"Overall Averages:")
-    print(f"Success Rate: {overall_metrics.success_rate:.2f}%")
-    print(f"FPS: {overall_metrics.fps:.2f}")
-    print("-" * 60)
+    print(f"Success Rate: {overall_metrics.success_rate:.1f}% (±{overall_metrics.std:.1f}%)")
+    print(f"FPS: {overall_metrics.fps:.1f}")
+    print("-" * 75)
 
 
 def main(result_file, ckpt_step):
