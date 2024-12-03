@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Tuple, Dict, List
 from pyrep.objects.dummy import Dummy
 from pyrep.objects.vision_sensor import VisionSensor
+from genrobo3d.train.utils.logger import LOGGER
 
 
 class CameraMotion(object):
@@ -41,6 +42,7 @@ class StaticCameraMotion(CameraMotion):
     def step(self):
         pass
 
+
 class AttachedCameraMotion(CameraMotion):
 
     def __init__(self, cam: VisionSensor, parent_cam: VisionSensor):
@@ -62,18 +64,23 @@ class TaskRecorder(object):
         for cam_name, cam_motion in self._cams_motion.items():
             cam_motion.step()
             self._snaps[cam_name].append(
-                (cam_motion.cam.capture_rgb() * 255.).astype(np.uint8))
+                (cam_motion.cam.capture_rgb() * 255.0).astype(np.uint8)
+            )
 
     def save(self, path):
-        print('Converting to video ...')
+        LOGGER.info("Converting to video ...")
         path = Path(path)
         path.mkdir(exist_ok=True)
         # OpenCV QT version can conflict with PyRep, so import here
         import cv2
+
         for cam_name, cam_motion in self._cams_motion.items():
             video = cv2.VideoWriter(
-                    str(path / f"{cam_name}.avi"), cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), self._fps,
-                    tuple(cam_motion.cam.get_resolution()))
+                str(path / f"{cam_name}.avi"),
+                cv2.VideoWriter_fourcc("m", "p", "4", "v"),
+                self._fps,
+                tuple(cam_motion.cam.get_resolution()),
+            )
             for image in self._snaps[cam_name]:
                 video.write(cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
             video.release()

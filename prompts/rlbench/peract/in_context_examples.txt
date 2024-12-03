@@ -1021,8 +1021,8 @@ release()
 # done
 
 # taskvar: put_item_in_drawer_peract+0
-# query: put the block away in the bottom drawer.
-# objects = ['drawer frame', 'drawer bottom', 'drawer legs', 'drawer middle', 'drawer top', 'item']
+# query: put the cube away in the bottom drawer.
+# objects = ['drawer frame', 'drawer bottom', 'drawer legs', 'drawer middle', 'drawer top', 'cube']
 bottom_drawer_handle = grasp(object="bottom drawer handle")
 bottom_drawer_handle = move_grasped_object(target="out")
 release()
@@ -1032,8 +1032,8 @@ release()
 # done
 
 # taskvar: put_item_in_drawer_peract+1
-# query: put the item in the middle drawer.
-# objects = ['drawer frame', 'drawer bottom', 'drawer legs', 'drawer middle', 'drawer top', 'item']
+# query: put the cube in the middle drawer.
+# objects = ['drawer frame', 'drawer bottom', 'drawer legs', 'drawer middle', 'drawer top', 'cube']
 middle_drawer_handle = grasp(object="middle drawer handle")
 middle_drawer_handle = move_grasped_object(target="out")
 release()
@@ -1043,8 +1043,8 @@ release()
 # done
 
 # taskvar: put_item_in_drawer_peract+2
-# query: put the block away in the top drawer.
-# objects = ['drawer frame', 'drawer bottom', 'drawer legs', 'drawer middle', 'drawer top', 'item']
+# query: put the cube away in the top drawer.
+# objects = ['drawer frame', 'drawer bottom', 'drawer legs', 'drawer middle', 'drawer top', 'cube']
 top_drawer_handle = grasp(object="top drawer handle")
 top_drawer_handle = move_grasped_object(target="out")
 release()

@@ -257,12 +257,12 @@ class MotionPlannerDatasetPerAct(SimplePolicyDataset):
                         obj_mask = obj_mask & (xyz[:, 2] > v['zrange'][0]) & (xyz[:, 2] < v['zrange'][1])
 
                     if 'xy_bbox' in v and self.pc_label_type != 'coarse':
-                        keystep = v["xy_bbox"]["keystep"]
                         bbox_offset = v["xy_bbox"]["bbox_offset"]
                         bbox_size = v["xy_bbox"]["bbox_size"]
 
-                        bbox_pos = data['ee_pose'][keystep][:3]
-                        gripper_quat = data['ee_pose'][keystep][3:-1]
+                        obj_pose = v["xy_bbox"]["obj_pose"]
+                        bbox_pos = obj_pose[:3]
+                        gripper_quat = obj_pose[3:]
                         bbox_rot = R.from_quat(gripper_quat).as_matrix()
 
                         # Rotate the offset by the rotation matrix

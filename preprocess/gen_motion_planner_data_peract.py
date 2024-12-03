@@ -34,7 +34,7 @@ def generate_action_trajectories(actions, new_keystep_ids, sep_open_keystep_ids=
         if step_eidx == -1:
             step_eidx = num_steps - 1
         traj_ids.append(np.arange(step_sidx + 1, step_eidx + 1))
-        traj = copy.deepcopy(actions[step_sidx + 1: step_eidx + 1])
+        traj = copy.deepcopy(actions[step_sidx + 1 : step_eidx + 1])
 
         # separate gripper openness at certain steps
         if step_eidx in sep_ids:
@@ -43,9 +43,9 @@ def generate_action_trajectories(actions, new_keystep_ids, sep_open_keystep_ids=
             # else:value
             #     traj[-1][-1] = 1    # 1 is open, 0 is close
             if traj[-1][-1] != 1:
-                print('last action is not open', traj[-1][-1])
+                print("last action is not open", traj[-1][-1])
             if actions[step_eidx - 1][-1] != 0:
-                print('previous action is already open', actions[step_eidx - 1][-1])
+                print("previous action is already open", actions[step_eidx - 1][-1])
             traj[-1][-1] = actions[step_eidx - 1][-1]
             end_open_actions.append(True)
         else:
@@ -73,28 +73,28 @@ def expand_action_trajectories(traj_ids, trajs, end_open_actions):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--old_keystep_pcd_dir', required=True)
-    parser.add_argument('--new_keystep_pcd_dir', required=True)
+    parser.add_argument("--old_keystep_pcd_dir", required=True)
+    parser.add_argument("--new_keystep_pcd_dir", required=True)
     args = parser.parse_args()
 
     old_keystep_dir = args.old_keystep_pcd_dir
     new_keystep_dir = args.new_keystep_pcd_dir
     os.makedirs(new_keystep_dir, exist_ok=True)
 
-    asset_dir = os.path.join(os.environ.get('HOME'), 'Projects/robot-3dlotus/assets')
+    asset_dir = os.path.join(os.environ.get("HOME"), "Projects/robot-3dlotus/assets")
 
-    tmp = json.load(open(os.path.join(asset_dir, 'task_new_keystep_ids_peract.json')))
-    old_num_keysteps = tmp['old_num_keysteps']
-    new_keystep_ids = tmp['new_keystep_ids']
-    sep_open_keystep_ids = tmp['separate_gripper_open_at_old_keystep']
+    tmp = json.load(open(os.path.join(asset_dir, "task_new_keystep_ids_peract.json")))
+    old_num_keysteps = tmp["old_num_keysteps"]
+    new_keystep_ids = tmp["new_keystep_ids"]
+    sep_open_keystep_ids = tmp["separate_gripper_open_at_old_keystep"]
 
-    taskvars = json.load(open(os.path.join(asset_dir, 'taskvars_peract.json')))
-    print('#taskvars', len(taskvars))
+    taskvars = json.load(open(os.path.join(asset_dir, "taskvars_train_peract.json")))
+    print("#taskvars", len(taskvars))
 
-    TABLE_HEIGHT = get_robot_workspace()['TABLE_HEIGHT']
+    TABLE_HEIGHT = get_robot_workspace()["TABLE_HEIGHT"]
 
     for taskvar in tqdm(taskvars):
-        task, variation = taskvar.split('+')
+        task, variation = taskvar.split("+")
 
         task_num_keysteps = old_num_keysteps[task]
         try:
@@ -104,33 +104,37 @@ def main():
 
         out_lmdb_dir = os.path.join(new_keystep_dir, taskvar)
         if os.path.exists(out_lmdb_dir):
-            print(taskvar, 'existed!')
+            print(taskvar, "existed!")
             continue
 
         num_invalid_episodes = 0
-        out_lmdb_env = lmdb.open(out_lmdb_dir, map_size=int(1024 ** 4))
-        with lmdb.open(os.path.join(old_keystep_dir, taskvar), readonly=True) as lmdb_env:
+        out_lmdb_env = lmdb.open(out_lmdb_dir, map_size=int(1024**4))
+        with lmdb.open(
+            os.path.join(old_keystep_dir, taskvar), readonly=True
+        ) as lmdb_env:
             with lmdb_env.begin() as txn:
                 for episode_key, value in txn.cursor():
                     # episode_key = episode_key.decode('ascii')
 
                     value = msgpack.unpackb(value)
 
-                    if len(value['key_frameids']) not in task_num_keysteps:
+                    if len(value["key_frameids"]) not in task_num_keysteps:
                         num_invalid_episodes += 1
                         continue
 
                     new_value = {
-                        'xyz': [], 'rgb': [], 'sem': [],
-                        'ee_pose': value['action'],
-                        'bbox_info': value['bbox_info'],
-                        'pose_info': value['pose_info'],
+                        "xyz": [],
+                        "rgb": [],
+                        "sem": [],
+                        "ee_pose": value["action"],
+                        "bbox_info": value["bbox_info"],
+                        "pose_info": value["pose_info"],
                     }
 
-                    for t in range(len(value['key_frameids'])):
-                        xyz = value['xyz'][t]
-                        rgb = value['rgb'][t]
-                        sem = value['sem'][t]
+                    for t in range(len(value["key_frameids"])):
+                        xyz = value["xyz"][t]
+                        rgb = value["rgb"][t]
+                        sem = value["sem"][t]
 
                         # remove table (already removed background)
                         mask = xyz[:, 2] > TABLE_HEIGHT
@@ -138,22 +142,27 @@ def main():
                         rgb = rgb[mask]
                         sem = sem[mask]
 
-                        new_value['xyz'].append(xyz)
-                        new_value['rgb'].append(rgb)
-                        new_value['sem'].append(sem)
+                        new_value["xyz"].append(xyz)
+                        new_value["rgb"].append(rgb)
+                        new_value["sem"].append(sem)
 
                     try:
                         task_sep_open_keystep_ids = sep_open_keystep_ids.get(task, None)
                     except:
-                        task_sep_open_keystep_ids = sep_open_keystep_ids.get(taskvar, None)
+                        task_sep_open_keystep_ids = sep_open_keystep_ids.get(
+                            taskvar, None
+                        )
                     traj_ids, trajs, end_open_actions = generate_action_trajectories(
-                        value['action'], task_new_keystep_ids, task_sep_open_keystep_ids
+                        value["action"], task_new_keystep_ids, task_sep_open_keystep_ids
                     )
-                    new_value['trajs'], new_value['end_open_actions'], new_value[
-                        'is_new_keystep'] = expand_action_trajectories(
-                        traj_ids, trajs, end_open_actions
+                    (
+                        new_value["trajs"],
+                        new_value["end_open_actions"],
+                        new_value["is_new_keystep"],
+                    ) = expand_action_trajectories(traj_ids, trajs, end_open_actions)
+                    print(
+                        f"asserting {len(new_value['trajs'])} == {len(value['action'])}"
                     )
-                    print(f"asserting {len(new_value['trajs'])} == {len(value['action'])}")
 
                     out_txn = out_lmdb_env.begin(write=True)
                     out_txn.put(episode_key, msgpack.packb(new_value))
@@ -161,8 +170,8 @@ def main():
 
         out_lmdb_env.close()
 
-        print(taskvar, '#invalid epsiodes', num_invalid_episodes)
+        print(taskvar, "#invalid epsiodes", num_invalid_episodes)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
