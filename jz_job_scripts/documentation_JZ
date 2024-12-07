@@ -1,0 +1,14 @@
+## v100:
+- qos_gpu-t3 (défaut) [20h]
+- qos_gpu-t4 [100h]
+- qos_gpu-dev [2h]
+
+## a100:
+- qos_gpu_a100-t3 (défaut) [20h]
+- qos_gpu_a100-dev [2h]
+
+## h100:
+- qos_gpu_h100-t3 (défaut) [20h]
+- qos_gpu_h100-dev [2h]
+- qos_gpu_h100-t4 [100h]
+

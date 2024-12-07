@@ -92,6 +92,20 @@ cd ../..
 
 # Download llama3-8B model following instructions here: https://github.com/cshizhe/llama3?tab=readme-ov-file#download, and modify the configuration path in genrobo3d/configs/rlbench/robot_pipeline.yaml
 # You may need to change the download folder of the model to point to a large memory folder by changing export LLAMA_STACK_CONFIG_DIR=
+
+# You will also need CLIP encoder. If you plan to run the code in an offline environment, download the models beforehand:
+# You just need to load them once, and they will be cached
+module load miniforge/24.9.0
+conda activate gembench
+python
+>>> from transformers import CLIPModel, AutoTokenizer, CLIPProcessor
+>>> model_name='openai/clip-vit-base-patch32'
+>>> model = CLIPModel.from_pretrained(model_name)
+>>> tokenizer = AutoTokenizer.from_pretrained(model_name)
+>>> processor = CLIPProcessor.from_pretrained(model_name)
+>>> model.save_pretrained("./clip-vit-base-patch32")
+>>> tokenizer.save_pretrained("./clip-vit-base-patch32")
+>>> processor.save_pretrained("./clip-vit-base-patch32")
 ```
 
 4. Running headless

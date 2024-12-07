@@ -4,17 +4,17 @@ import numpy as np
 set = "test"
 output_file_path = f"../../prompts/rlbench/in_context_examples_{set}_peract.txt"
 
-with open(f"../../assets/taskvars_{set}_peract.json", "r") as f:
+with open(f"../../assets/peract/taskvars_{set}_peract.json", "r") as f:
     taskvars_val = json.load(f)
 with open("../../assets/peract/taskvars_target_label_zrange_peract.json", "r") as f:
     labels = json.load(f)
 with open("../../assets/peract/taskvars_instructions_peract.json", "r") as f:
     taskvars_instr = json.load(f)
-with open(f"../../assets/objects_peract_{set}.json", "r") as f:
+with open(f"../../assets/peract/objects_peract_{set}.json", "r") as f:
     taskvar_obj = json.load(f)
 
 if set == "train":
-    with open(f"../../assets/objects_peract_val.json", "r") as f:
+    with open(f"../../assets/peract/objects_peract_val.json", "r") as f:
         taskvar_obj = json.load(f)
 
     taskvar_obj_dict = {}
@@ -29,7 +29,7 @@ if set == "train":
         taskvar_obj_list = [obj for obj in taskvar_obj_list if obj]
         taskvar_obj_dict[task] = taskvar_obj_list
 
-    with open(f"../../assets/objects_peract_test.json", "r") as f:
+    with open(f"../../assets/peract/objects_peract_test.json", "r") as f:
         taskvar_obj = json.load(f)
 
     for task in taskvars_val:
@@ -45,7 +45,7 @@ if set == "train":
         taskvar_obj_list = [obj for obj in taskvar_obj_list if obj]
         taskvar_obj_dict[task] = taskvar_obj_list
 else:
-    with open(f"../../assets/objects_peract_{set}.json", "r") as f:
+    with open(f"../../assets/peract/objects_peract_{set}.json", "r") as f:
         taskvar_obj = json.load(f)
 
     taskvar_obj_dict = {}

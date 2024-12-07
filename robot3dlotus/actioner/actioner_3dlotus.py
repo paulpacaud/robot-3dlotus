@@ -336,9 +336,7 @@ class Actioner:
                 instr: embeds[-1:] for instr, embeds in self.instr_embeds.items()
             }
 
-        self.taskvar_instrs = json.load(
-            open(self.config.TRAIN_DATASET.taskvar_instr_file)
-        )
+        self.taskvar_instrs = json.load(open(self.args.taskvars_instructions_file))
 
     def predict(
         self,

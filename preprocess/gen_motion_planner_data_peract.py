@@ -4,7 +4,7 @@ import sys
 import json
 import numpy as np
 import copy
-
+import tap
 import open3d as o3d
 
 import lmdb
@@ -17,6 +17,16 @@ from tqdm import tqdm
 import argparse
 
 from genrobo3d.configs.rlbench.constants import get_robot_workspace
+
+
+class Arguments(tap.Tap):
+    old_keystep_pcd_dir: str = (
+        "data/peract/train_dataset/keysteps_bbox_pcd/seed0/voxel1cm"
+    )
+    new_keystep_pcd_dir: str = (
+        "data/peract/train_dataset/motion_keysteps_bbox_pcd/seed0/voxel1cm"
+    )
+    asset_dir: str = "assets/peract"
 
 
 def generate_action_trajectories(actions, new_keystep_ids, sep_open_keystep_ids=None):
@@ -72,23 +82,22 @@ def expand_action_trajectories(traj_ids, trajs, end_open_actions):
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--old_keystep_pcd_dir", required=True)
-    parser.add_argument("--new_keystep_pcd_dir", required=True)
-    args = parser.parse_args()
+    args = Arguments().parse_args(known_only=True)
 
     old_keystep_dir = args.old_keystep_pcd_dir
     new_keystep_dir = args.new_keystep_pcd_dir
     os.makedirs(new_keystep_dir, exist_ok=True)
 
-    asset_dir = os.path.join(os.environ.get("HOME"), "Projects/robot-3dlotus/assets")
-
-    tmp = json.load(open(os.path.join(asset_dir, "task_new_keystep_ids_peract.json")))
+    tmp = json.load(
+        open(os.path.join(args.asset_dir, "task_new_keystep_ids_peract.json"))
+    )
     old_num_keysteps = tmp["old_num_keysteps"]
     new_keystep_ids = tmp["new_keystep_ids"]
     sep_open_keystep_ids = tmp["separate_gripper_open_at_old_keystep"]
 
-    taskvars = json.load(open(os.path.join(asset_dir, "taskvars_train_peract.json")))
+    taskvars = json.load(
+        open(os.path.join(args.asset_dir, "taskvars_train_peract.json"))
+    )
     print("#taskvars", len(taskvars))
 
     TABLE_HEIGHT = get_robot_workspace()["TABLE_HEIGHT"]
@@ -114,7 +123,15 @@ def main():
         ) as lmdb_env:
             with lmdb_env.begin() as txn:
                 for episode_key, value in txn.cursor():
-                    # episode_key = episode_key.decode('ascii')
+                    if (
+                        taskvar == "place_cups_peract+1"
+                        or taskvar == "place_cups_peract+2"
+                    ):
+                        list_task_new_keystep_ids = task_new_keystep_ids[
+                            episode_key.decode("ascii")
+                        ]
+                    else:
+                        list_task_new_keystep_ids = task_new_keystep_ids.copy()
 
                     value = msgpack.unpackb(value)
 
@@ -153,16 +170,15 @@ def main():
                             taskvar, None
                         )
                     traj_ids, trajs, end_open_actions = generate_action_trajectories(
-                        value["action"], task_new_keystep_ids, task_sep_open_keystep_ids
+                        value["action"],
+                        list_task_new_keystep_ids,
+                        task_sep_open_keystep_ids,
                     )
                     (
                         new_value["trajs"],
                         new_value["end_open_actions"],
                         new_value["is_new_keystep"],
                     ) = expand_action_trajectories(traj_ids, trajs, end_open_actions)
-                    print(
-                        f"asserting {len(new_value['trajs'])} == {len(value['action'])}"
-                    )
 
                     out_txn = out_lmdb_env.begin(write=True)
                     out_txn.put(episode_key, msgpack.packb(new_value))
