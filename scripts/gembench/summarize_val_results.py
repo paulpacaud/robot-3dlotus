@@ -20,7 +20,7 @@ def main(args):
             if (item["checkpoint"], item["task"], item["variation"]) in taskvar_set:
                 continue
             results[item["checkpoint"]].append(
-                (item["task"], item["variation"], item["sr"], item["num_episodes"])
+                (item["task"], item["variation"], item["sr"], item["num_demos"])
             )
             taskvar_set.add((item["checkpoint"], item["task"], item["variation"]))
 

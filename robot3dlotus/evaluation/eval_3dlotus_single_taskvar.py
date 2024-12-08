@@ -422,15 +422,13 @@ class TaskEvaluator:
         pred_file = os.path.join(pred_dir, "results.jsonl")
 
         results = {
-            "checkpoint": os.path.join(
-                self.args.expr_dir, "ckpts", f"model_step_{self.args.ckpt_step}.pt"
-            ),
+            "checkpoint": self.args.ckpt_step,
             "task": self.args.task_str,
             "variation": self.args.variation,
             "num_demos": self.args.num_episodes,
             "sr": round(self.metrics.success_rate, 2),
             "fps": round(self.metrics.inference_speed_fps, 2),
-            "avg_inference_time": self.metrics.avg_inference_time,
+            "avg_inference_time": round(self.metrics.avg_inference_time, 3),
         }
         write_to_file(pred_file, results)
 

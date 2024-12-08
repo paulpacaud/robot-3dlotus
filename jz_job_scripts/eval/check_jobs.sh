@@ -22,7 +22,7 @@ calculate_duration() {
     local end_time="$2"
 
     # Return "Not started" if no start time
-    if [ "$start_time" = "None" ]; then
+    if [ "$start_time" = "None" ] || [ "$start_time" = "Unknown" ]; then
         echo "Not started"
         return
     fi
@@ -64,7 +64,7 @@ tail -n +2 "${JOBS_FILE}" | while IFS=, read -r jobid taskvar submit_time status
     end_time=$(echo "$job_info" | awk '{print $3}' | tr -d '[:space:]')
 
     # Calculate duration
-    if [ "$start_time" != "None" ]; then
+    if [ "$start_time" != "None" ] && [ "$start_time" != "Unknown" ]; then
         if [ "$end_time" != "None" ] && [ "$end_time" != "Unknown" ]; then
             duration=$(( $(date -d "$end_time" +%s) - $(date -d "$start_time" +%s) ))
         else

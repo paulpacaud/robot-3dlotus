@@ -83,6 +83,22 @@ def process_results(
 def display_results(
     task_averages: Dict[str, TaskMetrics], overall_metrics: TaskMetrics, ckpt_step: int
 ):
+    # Skip if no results
+    if len(task_averages) == 0:
+        return
+
+    # ANSI color codes
+    RED = "\033[91m"
+    YELLOW = "\033[93m"
+    RESET = "\033[0m"
+
+    def color_success_rate(rate: float) -> str:
+        if rate < 33:
+            return f"{RED}{rate:>11.1f}%{RESET}"
+        elif rate < 70:
+            return f"{YELLOW}{rate:>11.1f}%{RESET}"
+        return f"{rate:>11.1f}%"
+
     print(f"\nResults for checkpoint step {ckpt_step}:")
     print("\nPer-Task Metrics:")
     print("-" * 75)
@@ -91,21 +107,42 @@ def display_results(
 
     for task_str, metrics in sorted(task_averages.items()):
         print(
-            f"{task_str:<30} {metrics.success_rate:>11.1f}% {metrics.std:>11.1f}% {metrics.fps:>11.1f}"
+            f"{task_str:<30} {color_success_rate(metrics.success_rate)} {metrics.std:>11.1f}% {metrics.fps:>11.1f}"
         )
 
     print("\n" + "-" * 75)
     print(f"Overall Averages:")
     print(
-        f"Success Rate: {overall_metrics.success_rate:.1f}% (±{overall_metrics.std:.1f}%)"
+        f"Success Rate: {color_success_rate(overall_metrics.success_rate)} (±{overall_metrics.std:.1f}%)"
     )
     print(f"FPS: {overall_metrics.fps:.1f}")
     print("-" * 75)
 
 
-def main(result_file, ckpt_step):
-    task_averages, overall_metrics = process_results(result_file, ckpt_step)
-    display_results(task_averages, overall_metrics, ckpt_step)
+def display_summary(summary):
+    print("\nSummary:")
+    print("-" * 75)
+    for ckpt_step, metrics in summary.items():
+        print(
+            f"{ckpt_step}: {metrics.success_rate:.1f}% (±{metrics.std:.1f}%), FPS: {metrics.fps:.1f}"
+        )
+
+    print("-" * 75)
+    print("Best Checkpoint:")
+    best_ckpt = max(summary, key=lambda x: summary[x].success_rate)
+    print(
+        f"{best_ckpt}: {summary[best_ckpt].success_rate:.1f}% (±{summary[best_ckpt].std:.1f}%), FPS: {summary[best_ckpt].fps:.1f}"
+    )
+
+
+def main(result_file, ckpt_steps):
+    summary = {}
+    for ckpt_step in ckpt_steps:
+        task_averages, overall_metrics = process_results(result_file, ckpt_step)
+        display_results(task_averages, overall_metrics, ckpt_step)
+        if overall_metrics.success_rate > 0:
+            summary[ckpt_step] = overall_metrics
+    display_summary(summary)
 
 
 if __name__ == "__main__":
@@ -114,10 +151,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("result_file", help="Path to the results file")
     parser.add_argument(
-        "--ckpt_step",
+        "--ckpt_steps",
+        nargs="+",
         type=int,
-        help="Checkpoint step to filter results",
+        help="Checkpoint steps to filter results (space-separated list)",
         default=[
+            180000,
+            170000,
+            160000,
             150000,
             140000,
             130000,
@@ -131,4 +172,4 @@ if __name__ == "__main__":
         ],
     )
     args = parser.parse_args()
-    main(args.result_file, args.ckpt_step)
+    main(args.result_file, args.ckpt_steps)

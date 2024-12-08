@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=trMPperact
+#SBATCH --job-name=trMP
 #SBATCH -A hjx@h100
 #SBATCH -C h100
 #SBATCH --qos=qos_gpu_h100-t3
@@ -39,21 +39,21 @@ export MASTER_ADDR=$master_addr
 
 ulimit -n 2048
 
-dataset=peract
+benchmark=peract
 label_type=coarse
-output_dir=data/experiments/${dataset}/3dlotusplus/v2_${label_type}
+output_dir=data/experiments/${benchmark}/3dlotusplus/v2_${label_type}
 
 rot_type=euler_disc
 npoints=4096
 pos_bin_size=15
 max_traj_len=5
 
-if [ "$dataset" = "gembench" ]; then
+if [ "$benchmark" = "gembench" ]; then
     script_path="genrobo3d/train/train_motion_planner.py"
-elif [ "$dataset" = "peract" ]; then
+elif [ "$benchmark" = "peract" ]; then
     script_path="genrobo3d/train/train_motion_planner_peract.py"
 else
-    echo "Error: Unknown dataset ${dataset}"
+    echo "Error: Unknown benchmark ${benchmark}"
     exit 1
 fi
 
@@ -97,15 +97,15 @@ srun python ${script_path} \
     VAL_DATASET.pc_label_augment 0.0 \
     TRAIN_DATASET.pc_midstep_augment True \
     VAL_DATASET.pc_midstep_augment True \
-    TRAIN_DATASET.data_dir data/${dataset}/train_dataset/motion_keysteps_bbox_pcd/seed0/voxel1cm \
-    TRAIN_DATASET.taskvar_file assets/${dataset}/taskvars_train_${dataset}.json \
-    VAL_DATASET.taskvar_file assets/${dataset}/taskvars_train_${dataset}.json \
-    TRAIN_DATASET.gt_act_obj_label_file assets/${dataset}/taskvars_target_label_zrange_${dataset}.json \
-    VAL_DATASET.gt_act_obj_label_file assets/${dataset}/taskvars_target_label_zrange_${dataset}.json \
+    TRAIN_DATASET.data_dir data/${benchmark}/train_dataset/motion_keysteps_bbox_pcd/seed0/voxel1cm \
+    TRAIN_DATASET.taskvar_file assets/${benchmark}/taskvars_train_${benchmark}.json \
+    VAL_DATASET.taskvar_file assets/${benchmark}/taskvars_train_${benchmark}.json \
+    TRAIN_DATASET.gt_act_obj_label_file assets/${benchmark}/taskvars_target_label_zrange_${benchmark}.json \
+    VAL_DATASET.gt_act_obj_label_file assets/${benchmark}/taskvars_target_label_zrange_${benchmark}.json \
     TRAIN_DATASET.instr_include_objects False \
     VAL_DATASET.instr_include_objects False \
-    TRAIN_DATASET.action_embed_file data/${dataset}/train_dataset/motion_keysteps_bbox_pcd/action_embeds_clip.npy \
-    VAL_DATASET.action_embed_file data/${dataset}/train_dataset/motion_keysteps_bbox_pcd/action_embeds_clip.npy \
+    TRAIN_DATASET.action_embed_file data/${benchmark}/train_dataset/motion_keysteps_bbox_pcd/action_embeds_clip.npy \
+    VAL_DATASET.action_embed_file data/${benchmark}/train_dataset/motion_keysteps_bbox_pcd/action_embeds_clip.npy \
     TRAIN_DATASET.use_color False \
     VAL_DATASET.use_color False \
     MODEL.ptv3_config.drop_path 0.0 \

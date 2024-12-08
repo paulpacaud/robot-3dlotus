@@ -35,13 +35,14 @@ export SINGULARITYENV_LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${COPPELIASIM_ROOT}
 
 # --------------------------------------------------------------------------
 benchmark=gembench
-model=3dlotus
 ckpt_version=v1_shizhe
 ckpt_step=150000
 taskvar=light_bulb_in_peract+17
 seed=100
 dataset=val
 
+# --------------------------------------------------------------------------
+model=3dlotus
 expr_dir=data/experiments/${benchmark}/{model}/${ckpt_version}
 
 singularity exec --bind $HOME:$HOME,$WORK:$WORK,$SCRATCH:$SCRATCH --nv ${sif_image} \

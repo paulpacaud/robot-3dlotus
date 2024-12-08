@@ -193,7 +193,12 @@ class GroundtruthVision(object):
             else:
                 pc_label_type = random.choice(["coarse", "fine"])
 
-            gt_query_mask = [pcd_sem == x for x in gt_target_labels[pc_label_type]]
+            labels = (
+                gt_target_labels[pc_label_type]
+                if pc_label_type in gt_target_labels
+                else gt_target_labels["fine"]
+            )
+            gt_query_mask = [pcd_sem == x for x in labels]
             gt_query_mask = np.sum(gt_query_mask, 0) > 0
             if "zrange" in gt_target_labels:
                 gt_query_mask = (
@@ -208,8 +213,7 @@ class GroundtruthVision(object):
                 obj_pose = gt_target_labels["xy_bbox"]["obj_pose"]
                 bbox_pos = obj_pose[:3]
                 gripper_quat = obj_pose[3:]
-                LOGGER.info(f"obj_pose: {obj_pose}")
-                LOGGER.info(f"gripper_quat: {gripper_quat}")
+
                 bbox_rot = R.from_quat(gripper_quat).as_matrix()
 
                 # Rotate the offset by the rotation matrix

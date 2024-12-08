@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=evRP
-#SBATCH -A hjx@h100
-#SBATCH -C h100
-#SBATCH --qos=qos_gpu_h100-t3
+#SBATCH -A hjx@v100
+#SBATCH -C v100
+#SBATCH --qos=qos_gpu-t3
 #SBATCH --nodes 1
 #SBATCH --ntasks-per-node 1
 #SBATCH --gres=gpu:1
@@ -37,11 +37,11 @@ export SINGULARITYENV_LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${COPPELIASIM_ROOT}
 # --------------------------------------------------------------------------
 benchmark=peract
 model=3dlotusplus
-ckpt_version=v2_fine
+pc_label_type=mix
+ckpt_version=v2_${pc_label_type}
 taskvar=light_bulb_in_peract+19
 seed=100
 dataset=val
-pc_label_type=fine
 run_step=1
 
 expr_dir=data/experiments/${benchmark}/${model}/${ckpt_version}
@@ -58,6 +58,7 @@ singularity exec --bind $HOME:$HOME,$WORK:$WORK,$SCRATCH:$SCRATCH --nv ${sif_ima
     --pipeline_config_file genrobo3d/configs/rlbench/robot_pipeline_gt.yaml \
     --gt_og_label_file assets/${benchmark}/taskvars_target_label_zrange_${benchmark}.json \
     --gt_plan_file prompts/rlbench/${benchmark}/in_context_examples_${dataset}.txt \
-    --pc_label_type ${pc_label_type} --run_action_step ${run_step} \
-    --enable_flashattn
+    --pc_label_type ${pc_label_type} --run_action_step ${run_step}
 done
+
+#     --enable_flashattn

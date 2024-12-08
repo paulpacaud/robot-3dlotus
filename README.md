@@ -119,10 +119,42 @@ sbatch jz_job_scripts/eval/robot_pipeline/eval_robot_pipeline_single_taskvar.sh
 ````
 #### Multi taskvar
 ```bash
-chmod +x jz_job_scripts/eval/submit_parallel_jobs.sh; taskfile="assets/gembench/taskvars_train.csv" EVAl_TASK_SCRIPT="jz_job_scripts/eval/robot_pipeline/eval_robot_pipeline_single_taskvar_VALIDATION.sh" ./jz_job_scripts/eval/submit_parallel_jobs.sh
+chmod +x jz_job_scripts/eval/submit_parallel_jobs.sh; taskfile="assets/peract/taskvars_test_peract.csv" MODEL="3dlotus" ./jz_job_scripts/eval/submit_parallel_jobs.sh
+
+chmod +x jz_job_scripts/eval/submit_parallel_jobs.sh; taskfile="assets/peract/taskvars_val_peract.csv" MODEL="robot_pipeline" ./jz_job_scripts/eval/submit_parallel_jobs.sh
+chmod +x jz_job_scripts/eval/submit_parallel_jobs.sh; taskfile="assets/peract/taskvars_test_peract.csv" MODEL="robot_pipeline" ./jz_job_scripts/eval/submit_parallel_jobs.sh
 
 chmod +x ./jz_job_scripts/eval/check_jobs.sh; ./jz_job_scripts/eval/check_jobs.sh <JOBS_FILE_ID>
 ```
+
+VAL
+> RUN
+```bash
+chmod +x jz_job_scripts/eval/submit_parallel_jobs.sh; taskfile="assets/peract/taskvars_val_peract.csv" MODEL="robot_pipeline" ./jz_job_scripts/eval/submit_parallel_jobs.sh
+```
+> RESULTS
+```bash
+python scripts/peract/summarize_results_peract.py data/experiments/peract/3dlotusplus/v2_fine/preds-llm_gt-og_gt_fine-runstep1/seed100/results.jsonl
+```
+
+TEST
+> RUN
+```bash
+chmod +x jz_job_scripts/eval/submit_parallel_jobs.sh; taskfile="assets/peract/taskvars_test_peract.csv" MODEL="robot_pipeline" ./jz_job_scripts/eval/submit_parallel_jobs.sh
+```
+> RESULTS
+```bash
+python scripts/peract/summarize_results_peract.py data/experiments/peract/3dlotusplus/v2_fine/preds-llm_gt-og_gt_fine-runstep1/seed200/results.jsonl --ckpt_steps 140000
+```
+python scripts/peract/summarize_results_peract.py data/experiments/peract/3dlotusplus/v2_mix/preds-llm_gt-og_gt_mix-runstep1/seed200/results.jsonl --ckpt_steps 120000
+
+obsolete:
+chmod +x jz_job_scripts/eval/submit_parallel_jobs.sh; taskfile="assets/gembench/taskvars_train.csv" EVAL_TASK_SCRIPT="jz_job_scripts/eval/robot_pipeline/eval_robot_pipeline_single_taskvar_VALIDATION.sh" ./jz_job_scripts/eval/submit_parallel_jobs.sh
+
+chmod +x jz_job_scripts/eval/submit_parallel_jobs.sh; taskfile="assets/peract/taskvars_val_peract.csv" EVAL_TASK_SCRIPT="jz_job_scripts/eval/robot_pipeline/eval_robot_pipeline_single_taskvar_VALIDATION.sh" ./jz_job_scripts/eval/submit_parallel_jobs.sh
+
+chmod +x jz_job_scripts/eval/submit_parallel_jobs.sh; taskfile="assets/peract/taskvars_test_peract.csv" EVAL_TASK_SCRIPT="jz_job_scripts/eval/robot_pipeline/eval_robot_pipeline_single_taskvar.sh" ./jz_job_scripts/eval/submit_parallel_jobs.sh
+
 
 ## Citation
 If you use our GemBench benchmark or find our code helpful, please kindly cite our work:
