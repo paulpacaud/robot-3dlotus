@@ -54,7 +54,7 @@ nb_steps=5
 #    --num_workers 4 \
 #    --taskvar_file assets/peract/taskvars_val_peract_wo_place_cups.json \
 #    --gt_og_label_file assets/peract/taskvars_target_label_zrange_peract_new.json \
-#    --gt_plan_file prompts/rlbench/in_context_examples_val_peract.txt \
+#    --gt_plan_file prompts/rlbench/peract/in_context_examples_val_peract.txt \
 #    --seed 100 \
 #    --microstep_data_dir data/peract/val_dataset/microsteps/seed100 \
 #    --pc_label_type ${label_type} --run_action_step ${nb_steps}
@@ -85,7 +85,7 @@ singularity exec --bind $HOME:$HOME,$SCRATCH:$SCRATCH --nv ${sif_image} \
 #    --mp_ckpt_step ${ckpt_step} \
 #    --num_workers 4 \
 #    --taskvar_file assets/peract/taskvars_test_peract.json \
-#    --gt_plan_file prompts/rlbench/in_context_examples_test_peract.txt \
+#    --gt_plan_file prompts/rlbench/peract/in_context_examples_test_peract.txt \
 #    --seed ${seed} --num_demos 20 \
 #    --microstep_data_dir data/peract/test_dataset/microsteps/seed${seed} \
 #    --prompt_dir prompts/rlbench/peract --asset_dir assets/peract \
@@ -102,6 +102,6 @@ singularity exec --bind $HOME:$HOME,$SCRATCH:$SCRATCH --nv ${sif_image} \
 #    --seed ${seed} \
 #    --microstep_data_dir data/peract/test_dataset/microsteps/seed${seed} \
 #    --pc_label_type ${label_type} --run_action_step ${nb_steps} \
-#    --gt_plan_file prompts/rlbench/in_context_examples_test_peract.txt \
+#    --gt_plan_file prompts/rlbench/peract/in_context_examples_test_peract.txt \
 #    --prompt_dir prompts/rlbench/peract --asset_dir assets/peract \
 #    --no_gt_llm --llm_master_port ${llm_port}

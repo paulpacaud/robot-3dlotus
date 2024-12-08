@@ -67,7 +67,7 @@ class ServerArguments(tap.Tap):
 
     pc_label_type: str = None
     gt_og_label_file: str = "assets/taskvars_train_target_label.json"
-    gt_plan_file: str = "prompts/rlbench/in_context_examples_peract.txt"
+    gt_plan_file: str = "prompts/rlbench/peract/in_context_examples.txt"
 
     run_action_step: int = 1
 

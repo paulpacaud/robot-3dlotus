@@ -33,7 +33,6 @@ sif_image=$SINGULARITY_ALLOWED_DIR/nvcuda_v2.sif
 export python_bin=$HOME/.conda/envs/gembench/bin/python
 export SINGULARITYENV_LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${COPPELIASIM_ROOT}
 
-
 # --------------------------------------------------------------------------
 taskvar=close_jar_peract+6
 
@@ -80,7 +79,10 @@ case $dataset in
                 --pipeline_config_file genrobo3d/configs/rlbench/robot_pipeline_gt.yaml \
                 --gt_og_label_file assets/${benchmark}/taskvars_target_label_zrange_${benchmark}.json \
                 --gt_plan_file prompts/rlbench/${benchmark}/in_context_examples_${dataset}.txt \
-                --pc_label_type ${pc_label_type} --run_action_step ${run_step}
+                --pc_label_type ${pc_label_type} --run_action_step ${run_step} \
+                --save_obs_outs_dir $expr_dir/records/seed${seed}/${taskvar} \
+                --record_video --video_dir $expr_dir/records/seed${seed}/${taskvar} \
+                --not_include_robot_cameras --video_rotate_cam
         done
         ;;
     *)

@@ -47,7 +47,7 @@ class EvaluationArguments(tap.Tap):
     microstep_data_dir: str = ""
     seed: int = 100  # seed for RLBench
     best_disc_pos: str = "max"  # max, ens1
-    save_obs_outs: bool = False
+    save_obs_outs_dir: str = None
     record_video: bool = False
     video_dir: str = None
     not_include_robot_cameras: bool = False
@@ -524,7 +524,7 @@ def main():
     pipeline_config.motion_planner.config_file = os.path.join(
         args.expr_dir, "logs", "training_config.yaml"
     )
-    pipeline_config.motion_planner.save_obs_outs = args.save_obs_outs
+    pipeline_config.save_obs_outs_dir = args.save_obs_outs_dir
     pipeline_config.motion_planner.enable_flashattn = args.enable_flashattn
     pipeline_config.clip_path = args.clip_path
 

@@ -1,3 +1,7 @@
+"""
+Actioner Robot Pipeline Ground Truth
+"""
+
 import os
 import random
 import json
@@ -5,7 +9,7 @@ import re
 import numpy as np
 from easydict import EasyDict
 import copy
-
+from typing import Dict, List
 import torch
 import open3d as o3d
 from scipy.spatial.transform import Rotation as R
@@ -469,21 +473,62 @@ class GroundtruthActioner(object):
             cache.highlevel_step_id_norelease += 1
 
         cache.valid_actions = valid_actions[1:]
-        # LOGGER.info(f'valid actions {valid_actions}')
         out = {"action": valid_actions[0][:8], "cache": cache}
 
-        if cache.episode_outdir is not None:
-            del batch["txt_embeds"], batch["txt_lens"]
-            np.save(
-                os.path.join(cache.episode_outdir, f"{step_id}.npy"),
-                {
-                    "batch": {
-                        k: v.data.cpu().numpy() if isinstance(v, torch.Tensor) else v
-                        for k, v in batch.items()
-                    },
-                    "obs": obs_state_dict,
-                    "valid_actions": valid_actions,
-                },  # type: ignore
+        if self.config.save_obs_outs_dir is not None:
+            LOGGER.info(f"Saving step obs outputs...")
+            self._save_outputs(
+                episode_id,
+                step_id,
+                batch,
+                obs_state_dict,
+                valid_actions,
+                cache.highlevel_plans,
+                plan,
+                action_name,
             )
 
         return out
+
+    def _save_outputs(
+        self,
+        episode_id: int,
+        step_id: int,
+        batch: Dict,
+        obs_state_dict: Dict,
+        valid_actions: List,
+        highlevel_plans: List,
+        plan: Dict,
+        action_name: str,
+    ) -> None:
+        """Save outputs to file."""
+        if episode_id is None:
+            return
+
+        obs_dir = os.path.join(
+            self.config.save_obs_outs_dir, f"ep_{episode_id}", "steps"
+        )
+        os.makedirs(obs_dir, exist_ok=True)
+
+        save_path = os.path.join(obs_dir, f"step_{step_id}.npy")
+
+        del batch["txt_embeds"], batch["txt_lens"]
+        # Convert tensors to numpy arrays
+        processed_batch = {
+            k: v.data.cpu().numpy() if isinstance(v, torch.Tensor) else v
+            for k, v in batch.items()
+        }
+
+        results = {
+            "batch": processed_batch,
+            "obs": obs_state_dict,
+            "valid_actions": valid_actions,
+            "highlevel_plans": highlevel_plans,
+            "plan": plan,
+            "action_name": action_name,
+        }
+
+        np.save(
+            save_path,
+            results,
+        )
