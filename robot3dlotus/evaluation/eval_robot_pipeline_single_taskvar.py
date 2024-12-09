@@ -65,7 +65,15 @@ class EvaluationArguments(tap.Tap):
     no_gt_llm: bool = False
     llm_master_port: int = None
     prompt_dir: str = "prompts/rlbench/gembench"
+    taskvars_instructions_file: str = (
+        "assets/gembench/taskvars_instructions_gembench.json"
+    )
+    taskvars_train_file: str = "assets/gembench/taskvars_train_gembench.json"
+    llm_ckpt_dir: str = "data/pretrained/meta-llama/Meta-Llama-3.1-8B-Instruct"
     clip_path: str = "data/pretrained/clip-vit-base-patch32"
+    bert_path: str = "data/pretrained/all-MiniLM-L6-v2"
+    owlv2_path: str = "data/pretrained/owlv2-large-patch14-ensemble"
+    sam_path: str = "data/pretrained/sam-vit-huge"
 
 
 @dataclass
@@ -498,6 +506,16 @@ def main():
         pipeline_config.llm_planner.master_port = args.llm_master_port
     if args.prompt_dir is not None:
         pipeline_config.llm_planner.prompt_dir = args.prompt_dir
+    if args.taskvars_train_file is not None:
+        pipeline_config.llm_planner.taskvars_train_file = args.taskvars_train_file
+    if args.taskvars_instructions_file is not None:
+        pipeline_config.llm_planner.taskvars_instructions_file = (
+            args.taskvars_instructions_file
+        )
+    if args.llm_ckpt_dir is not None:
+        pipeline_config.llm_planner.ckpt_dir = args.llm_ckpt_dir
+    if args.bert_path is not None:
+        pipeline_config.llm_planner.bert_path = args.bert_path
 
     if args.gt_og_label_file is not None:
         pipeline_config.object_grounding.gt_label_file = args.gt_og_label_file
@@ -527,6 +545,9 @@ def main():
     pipeline_config.save_obs_outs_dir = args.save_obs_outs_dir
     pipeline_config.motion_planner.enable_flashattn = args.enable_flashattn
     pipeline_config.clip_path = args.clip_path
+
+    pipeline_config.object_grounding.sam_path = args.sam_path
+    pipeline_config.object_grounding.owlv2_path = args.owlv2_path
 
     task_str, variation = args.taskvar.split("+")
     args.task_str = task_str

@@ -12,3 +12,14 @@
 - qos_gpu_h100-dev [2h]
 - qos_gpu_h100-t4 [100h]
 
+### Share things on JZ
+
+1. cd $ALL_CCFRSCRATCH
+2. mkdir -p peract_checkpoints
+3. setfacl --set=u::rwx,u:<USERNAME>:rwx,g::r-x,o::---,m::rwx .
+4. add a new user: setfacl -m u:<USERNAME>:rwx .
+
+
+
+
+

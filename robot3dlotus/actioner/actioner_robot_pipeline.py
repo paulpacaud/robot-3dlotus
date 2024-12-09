@@ -1,5 +1,7 @@
 import os
 import json
+from typing import Dict, List
+
 import numpy as np
 from easydict import EasyDict
 import copy
@@ -13,7 +15,7 @@ from genrobo3d.evaluation.common import load_checkpoint, parse_code
 from genrobo3d.configs.default import get_config as get_model_config
 
 from genrobo3d.utils.robot_box import RobotBox
-from genrobo3d.evaluation.robot_pipeline.robot_pipeline_gt import GroundtruthTaskPlanner
+from robot3dlotus.actioner.actioner_robot_pipeline_gt import GroundtruthTaskPlanner
 from genrobo3d.vlm_models.llm_task_planner import LlamaTaskPlanner
 from genrobo3d.vlm_models.vlm_pipeline import VLMPipeline
 from genrobo3d.vlm_models.clip_encoder import ClipEncoder
@@ -38,7 +40,8 @@ class Actioner(object):
         else:
             self.llm_planner = LlamaTaskPlanner(
                 llm_config.prompt_dir,
-                llm_config.asset_dir,
+                llm_config.taskvars_train_file,
+                llm_config.taskvars_instructions_file,
                 temperature=0,
                 max_seq_len=8192,
                 top_p=0.9,
@@ -49,14 +52,16 @@ class Actioner(object):
                 ckpt_dir=llm_config.ckpt_dir,
                 groq_model=llm_config.groq_model,
                 cache_file=llm_config.cache_file,
+                bert_path=llm_config.bert_path,
             )
 
         # self.task_objects = json.load(open(config.env.task_object_file))
 
         # build VLM for coarse-grained object grounding
+        object_grounding_config = config.object_grounding
         self.vlm_pipeline = VLMPipeline(
-            sam_model_id="huge",
-            det_model_id="large",
+            sam_path=object_grounding_config.sam_path,
+            owlv2_path=object_grounding_config.owlv2_path,
             use_2d_caption=False,
             use_3d_caption=False,
             env_name=self.env_name,
@@ -279,7 +284,7 @@ class Actioner(object):
         extra_outs = EasyDict()
         if len(mani_obj) > 0:
             extra_outs.mani_obj = mani_obj
-        return batch, extra_outs
+        return batch, extra_outs, action_name
 
     def move_grasped_obj_xyz(self, cur_action, prev_pose, obj_xyz):
         translation = cur_action[:3] - prev_pose[:3]
@@ -447,7 +452,7 @@ class Actioner(object):
             if zrange is not None:
                 zrange += self.workspace["TABLE_HEIGHT"]
 
-        batch, extra_outs = self.prepare_motion_planner_input(
+        batch, extra_outs, action_name = self.prepare_motion_planner_input(
             vlm_results,
             plan,
             arm_links_info,
@@ -501,18 +506,17 @@ class Actioner(object):
         cache.valid_actions = valid_actions[1:]
         out = {"action": valid_actions[0][:8]}
 
-        if cache.episode_outdir is not None:
-            del batch["txt_embeds"], batch["txt_lens"]
-            np.save(
-                os.path.join(cache.episode_outdir, f"{step_id}.npy"),
-                {
-                    "batch": {
-                        k: v.data.cpu().numpy() if isinstance(v, torch.Tensor) else v
-                        for k, v in batch.items()
-                    },
-                    "obs": obs_state_dict,
-                    "valid_actions": valid_actions,
-                },
+        if self.config.save_obs_outs_dir is not None:
+            LOGGER.info(f"Saving step obs outputs...")
+            self._save_outputs(
+                episode_id,
+                step_id,
+                batch,
+                obs_state_dict,
+                valid_actions,
+                cache.highlevel_plans,
+                plan,
+                action_name,
             )
 
         if (
@@ -520,7 +524,7 @@ class Actioner(object):
             and cache.grasped_obj_name in cache.ret_objs
             and plan["action"].startswith("move grasped object")
         ):
-            # rotate the grasped object position
+            # rotate the grasped object  position
             self.move_grasped_obj_xyz(
                 out["action"],
                 cache.prev_ee_pose,
@@ -530,3 +534,46 @@ class Actioner(object):
 
         out["cache"] = cache
         return out
+
+    def _save_outputs(
+        self,
+        episode_id: int,
+        step_id: int,
+        batch: Dict,
+        obs_state_dict: Dict,
+        valid_actions: List,
+        highlevel_plans: List,
+        plan: Dict,
+        action_name: str,
+    ) -> None:
+        """Save outputs to file."""
+        if episode_id is None:
+            return
+
+        obs_dir = os.path.join(
+            self.config.save_obs_outs_dir, f"ep_{episode_id}", "steps"
+        )
+        os.makedirs(obs_dir, exist_ok=True)
+
+        save_path = os.path.join(obs_dir, f"step_{step_id}.npy")
+
+        del batch["txt_embeds"], batch["txt_lens"]
+        # Convert tensors to numpy arrays
+        processed_batch = {
+            k: v.data.cpu().numpy() if isinstance(v, torch.Tensor) else v
+            for k, v in batch.items()
+        }
+
+        results = {
+            "batch": processed_batch,
+            "obs": obs_state_dict,
+            "valid_actions": valid_actions,
+            "highlevel_plans": highlevel_plans,
+            "plan": plan,
+            "action_name": action_name,
+        }
+
+        np.save(
+            save_path,
+            results,
+        )

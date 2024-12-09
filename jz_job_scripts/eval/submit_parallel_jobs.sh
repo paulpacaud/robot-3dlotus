@@ -31,10 +31,14 @@ JOBS_FILE="${LOG_DIR}/jobs_${TIMESTAMP}.txt"
 mkdir -p "${LOG_DIR}"
 
 # Initialize our jobs tracking file with headers
-echo "JOBID,TASKVAR,SUBMIT_TIME,STATUS" > "${JOBS_FILE}"
+echo "JOBID,TASKVAR,SUBMIT_TIME,STATUS,PORT" > "${JOBS_FILE}"
 
 # Create a temporary directory for job scripts
 TEMP_DIR=$(mktemp -d)
+
+# Initialize base port number
+BASE_PORT=15324
+PORT_COUNTER=0
 
 # Submit jobs and track them
 cat "${taskfile}" | while IFS=, read -r taskvar rest; do
@@ -44,19 +48,25 @@ cat "${taskfile}" | while IFS=, read -r taskvar rest; do
         continue
     fi
 
+    # Calculate unique port for this job
+    CURRENT_PORT=$((BASE_PORT + PORT_COUNTER))
+    PORT_COUNTER=$((PORT_COUNTER + 1))
+
     # Create and modify job script
     job_script="${TEMP_DIR}/job_${taskvar//+/_}.sh"
     cp "$EVAL_TASK_SCRIPT" "$job_script"
     sed -i "s/taskvar=.*/taskvar=${taskvar}/" "$job_script"
+    # Replace the port number in the script
+    sed -i "s/llm_port=.*/llm_port=${CURRENT_PORT}/" "$job_script"
 
     # Submit job and capture the job ID
     job_id=$(sbatch --parsable "$job_script")
     submit_time=$(date '+%Y-%m-%d_%H:%M:%S')
 
-    # Record job information
-    echo "${job_id},${taskvar},${submit_time},PENDING" >> "${JOBS_FILE}"
+    # Record job information including the port number
+    echo "${job_id},${taskvar},${submit_time},PENDING,${CURRENT_PORT}" >> "${JOBS_FILE}"
 
-    echo "Submitted job ${job_id} for task: ${taskvar}"
+    echo "Submitted job ${job_id} for task: ${taskvar} with port: ${CURRENT_PORT}"
 done
 
 # echo the jobs file name for reference

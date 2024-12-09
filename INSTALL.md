@@ -14,7 +14,6 @@ export CUDA_HOME=$HOME/.conda/envs/gembench # change here the path to your conda
 export CPATH=$CUDA_HOME/targets/x86_64-linux/include:$CPATH
 export LD_LIBRARY_PATH=$CUDA_HOME/targets/x86_64-linux/lib:$LD_LIBRARY_PATH
 export PATH=$CUDA_HOME/bin:$PATH
-#On CLEPS or some specific HPC clusters, you may need: export FORCE_CUDA=1
 
 # On Jean-Zay or some specific HPC clusters, you may need: `module load gcc/11.3.1` for gnu-c++ errors
 
@@ -67,12 +66,15 @@ pip install --no-cache-dir .
 cd ../..
 ```
 
-3. Install model dependencies
+3. Install model dependenciessa
 
 ```bash
 cd dependencies
 
-# If applicable (e.g on CLEPS), lease ensure to set CUDA_HOME beforehand as specified in the export const of the section 1
+# please ensure to set CUDA_HOME beforehand as specified in the export const of the section 1
+# This covers V100 (7.0), A100 (8.0), and H100 (9.0)
+export TORCH_CUDA_ARCH_LIST="7.0;8.0;9.0"
+export FORCE_CUDA=1
 git clone https://github.com/cshizhe/chamferdist.git
 cd chamferdist
 python setup.py install
@@ -88,24 +90,91 @@ cd ../..
 git clone https://github.com/cshizhe/llama3.git
 cd llama3
 pip install --no-cache-dir -e .
+# if you downloaded llama3.1, you need to modify the model.py file as follows:
+cd llama
+nano model.py; add use_scaled_rope: bool = True at line 33 #https://github.com/meta-llama/llama3/issues/291
 cd ../..
 
+# Choose where you want to store the pretrained models LLM, Encoders.. We choose data/pretrained here:
+cd data/pretrained
 # Download llama3-8B model following instructions here: https://github.com/cshizhe/llama3?tab=readme-ov-file#download, and modify the configuration path in genrobo3d/configs/rlbench/robot_pipeline.yaml
-# You may need to change the download folder of the model to point to a large memory folder by changing export LLAMA_STACK_CONFIG_DIR=
+# For Llama, you may need to change the download folder of the model to point to a large memory folder by changing 
+export LLAMA_STACK_CONFIG_DIR=...
 
-# You will also need CLIP encoder. If you plan to run the code in an offline environment, download the models beforehand:
-# You just need to load them once, and they will be cached
+# You will also need to download pretrained models
+# Hugging Face cache models on a cache directory, you can change the cache directory by setting the HF_HOME environment variable, in the terminal or in your bashrc:
+export HF_HOME=$WORK/.cache/huggingface
+mkdir -p $HF_HOME
+
 module load miniforge/24.9.0
 conda activate gembench
 python
 >>> from transformers import CLIPModel, AutoTokenizer, CLIPProcessor
+
 >>> model_name='openai/clip-vit-base-patch32'
 >>> model = CLIPModel.from_pretrained(model_name)
 >>> tokenizer = AutoTokenizer.from_pretrained(model_name)
 >>> processor = CLIPProcessor.from_pretrained(model_name)
+
 >>> model.save_pretrained("./clip-vit-base-patch32")
 >>> tokenizer.save_pretrained("./clip-vit-base-patch32")
 >>> processor.save_pretrained("./clip-vit-base-patch32")
+
+>>> from transformers import AutoModel
+>>> bert_model='sentence-transformers/all-MiniLM-L6-v2'
+>>> bert_tokenizer = AutoTokenizer.from_pretrained(bert_model)
+>>> bert_model = AutoModel.from_pretrained(bert_model)
+
+>>> bert_tokenizer.save_pretrained("./all-MiniLM-L6-v2")
+>>> bert_model.save_pretrained("./all-MiniLM-L6-v2")
+
+>>> from transformers import Owlv2Processor, Owlv2ForObjectDetection
+>>> owlv2_processor = Owlv2Processor.from_pretrained("google/owlv2-large-patch14-ensemble")
+>>> owlv2_model = Owlv2ForObjectDetection.from_pretrained("google/owlv2-large-patch14-ensemble")
+
+>>> owlv2_processor.save_pretrained("./owlv2-large-patch14-ensemble")
+>>> owlv2_model.save_pretrained("./owlv2-large-patch14-ensemble")
+
+>>> from transformers import SamProcessor, SamModel
+### TO REDO
+>>> sam_processor = SamProcessor.from_pretrained("facebook/sam-vit-huge")
+>>> sam_model = SamModel.from_pretrained("facebook/sam-vit-huge")
+
+>>> sam_processor.save_pretrained("./sam-vit-huge")
+>>> sam_model.save_pretrained("./sam-vit-huge")
+
+# If the save_pretrained command is killed, it may stem from a out of memory issue, check it using: dmesg -T| grep -E -i -B100 'killed process'
+# If it happens, you can try downloading it manually in python interactive mode:
+import torch
+from huggingface_hub import hf_hub_download
+import os
+import shutil
+
+# Create directory
+os.makedirs("sam-vit-huge", exist_ok=True)
+
+# Download configuration files
+files = ["config.json", "preprocessor_config.json"]
+for file in files:
+    hf_hub_download(
+        repo_id="facebook/sam-vit-huge",
+        filename=file,
+        local_dir="sam-vit-huge",
+        local_dir_use_symlinks=False
+    )
+
+# Download the model file separately
+model_file = hf_hub_download(
+    repo_id="facebook/sam-vit-huge",
+    filename="model.safetensors",
+    local_dir="sam-vit-huge",
+    local_dir_use_symlinks=False,
+    resume_download=True  # This will resume if download is interrupted
+)
+
+# Verify the files
+print("Downloaded files:", os.listdir("sam-vit-huge"))
+
 ```
 
 4. Running headless
