@@ -14,10 +14,15 @@
 
 ### Share things on JZ
 
-1. cd $ALL_CCFRSCRATCH
-2. mkdir -p peract_checkpoints
-3. setfacl --set=u::rwx,u:<USERNAME>:rwx,g::r-x,o::---,m::rwx .
-4. add a new user: setfacl -m u:<USERNAME>:rwx .
+1. cd $SCRATCH
+2. mkdir -p shared; cd shared
+3. mkdir -p peract_checkpoints; cd peract_checkpoints
+4. setfacl --set=u::rwx,u:uxx99yz:rwx,g::r-x,o::---,m::rwx $SCRATCH # the file system is hierarchical, i need this, but the user won't  be able to access subdirectories
+3. setfacl -R --set=u::rwx,u:uxx99yz:rwx,g::r-x,o::---,m::rwx . # this is why i need this -R command inside the shared directory. hat's why you don't want to do -R in $SCRATCH, but first -R in shared and without -R in $SCRATCH
+4. add a new user: setfacl -m u:<USERNAME>:rwx . # warning every time you run the setfacl it erases the other users, prefer adding them to update
+5. check the permission: getfacl peract_checkpoints
+
+setfacl --set=u::rwx,u:uxx99yz:rwx,g::r-x,o::---,m::rwx .
 
 
 

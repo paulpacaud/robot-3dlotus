@@ -145,6 +145,7 @@ chmod +x jz_job_scripts/eval/submit_parallel_jobs.sh; taskfile="assets/peract/ta
 > RESULTS
 ```bash
 python scripts/peract/summarize_results_peract.py data/experiments/peract/3dlotusplus/v2_mix/preds-llm_gt-og_gt_mix-runstep1/seed200/results.jsonl
+python scripts/peract/summarize_results_detailed.py data/experiments/peract/3dlotusplus/v2_mix/preds-llm_gt-og_gt_mix-runstep1/seed200/results.jsonl --ckpt_step 120000
 ```
 obsolete:
 chmod +x jz_job_scripts/eval/submit_parallel_jobs.sh; taskfile="assets/gembench/taskvars_train.csv" EVAL_TASK_SCRIPT="jz_job_scripts/eval/robot_pipeline/eval_robot_pipeline_single_taskvar_VALIDATION.sh" ./jz_job_scripts/eval/submit_parallel_jobs.sh
