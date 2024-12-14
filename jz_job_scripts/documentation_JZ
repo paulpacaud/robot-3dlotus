@@ -24,6 +24,15 @@
 
 setfacl --set=u::rwx,u:uxx99yz:rwx,g::r-x,o::---,m::rwx .
 
+### Check the GPU usage
+https://www.edari.fr/dossier/AD011015795/consommation
+sinfo  -o"%P %.16F"
+sinfo -p gpu_p1,gpu_p2,gpu_p3,gpu_p13,gpu_p4 -o"%P %.16F"
+display per node the number of GPU used and the number of GPU available
+A: Allocated (used)
+I: idle (available)
+T: total
+
 
 
 

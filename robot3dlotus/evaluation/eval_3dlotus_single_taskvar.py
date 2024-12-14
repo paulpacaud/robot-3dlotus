@@ -213,7 +213,9 @@ class EpisodeEvaluator:
         total_inference_time = 0.0
 
         while state.step_id < self.args.max_steps and not state.terminate:
-            LOGGER.info(f"Episode {episode_id} Step {state.step_id + 1}")
+            LOGGER.info(
+                f"Episode {episode_id} Step {state.step_id} [ckpt {self.args.ckpt_step}] [seed {self.args.seed}]"
+            )
             step_result = self._execute_step(episode_id, state, move)
 
             if step_result.terminate:

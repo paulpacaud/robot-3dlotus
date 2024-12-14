@@ -342,6 +342,20 @@ class GroundtruthActioner(object):
         instructions,
         cache=None,
     ):
+        """
+        returns an action [position_x, position_y, position_z, quat_w, quat_x, quat_y, quat_z, gripper_state]
+
+        #action[0:3] represents (x, y, z) coordinates for the end-effector position
+        These are rescaled from normalized values: pred_actions[:, :3] = (pred_actions[:, :3] * batch["pc_radius"]) + batch["pc_centroids"]
+        The z coordinate is constrained to be above the table: pred_actions[:, 2] = np.maximum(pred_actions[:, 2], self.vlm_pipeline.TABLE_HEIGHT + 0.005)
+
+        #action[3:7] represents rotation as a quaternion
+
+        #Gripper State (1 value):
+        action[7] represents the gripper state. It's a binary value (after sigmoid activation) where:
+        1 = Open gripper
+        0 = Closed gripper
+        """
         taskvar = f"{task_str}+{variation}"
 
         if step_id == 0:
@@ -357,7 +371,6 @@ class GroundtruthActioner(object):
             else:
                 cache.episode_outdir = None
 
-        # LOGGER.info(f'taskvar={task_str}+{variation}, step={step_id}, #cache_actions={len(self.cache.valid_actions)}')
         if len(cache.valid_actions) > 0:
             cur_action = cache.valid_actions[0][:8]
             cache.valid_actions = cache.valid_actions[1:]
@@ -380,30 +393,84 @@ class GroundtruthActioner(object):
             if self.config.llm_planner.use_groundtruth:
                 highlevel_plans = self.llm_planner(taskvar)
 
-            # LOGGER.info('plans\n', highlevel_plans)
             cache.highlevel_plans = [parse_code(x) for x in highlevel_plans]
             cache.highlevel_step_id = 0
             cache.highlevel_step_id_norelease = 0
-            # LOGGER.info(f'parsed plans {cache.highlevel_plans}')
 
-        # LOGGER.info(f'highlevel step id {cache.highlevel_step_id}, plans {cache.highlevel_plans}')
+            if self.config.save_obs_outs_dir is not None:
+                obs_dir = os.path.join(
+                    self.config.save_obs_outs_dir, f"ep_{episode_id}"
+                )
+                os.makedirs(obs_dir, exist_ok=True)
+
+                save_path = os.path.join(obs_dir, f"highlevel_plans.json")
+                json.dump(
+                    {
+                        "instructions": instructions,
+                        "instruction": instructions[0],
+                        "plans": highlevel_plans,
+                        "parsed_plans": cache.highlevel_plans,
+                    },
+                    open(save_path, "w"),
+                )
+
         if cache.highlevel_step_id >= len(cache.highlevel_plans):
             if self.config.pipeline.restart:
                 cache.highlevel_step_id = 0
                 cache.highlevel_step_id_norelease = 0
             else:
+                if self.config.save_obs_outs_dir is not None:
+                    LOGGER.info(f"Saving step obs outputs...")
+                    self._save_outputs(
+                        episode_id,
+                        step_id,
+                        None,
+                        obs_state_dict,
+                        [np.zeros((8,))],
+                        None,
+                        None,
+                        None,
+                        cache,
+                    )
                 return {"action": np.zeros((8,)), "cache": cache}
 
         plan = cache.highlevel_plans[cache.highlevel_step_id]
         if plan is None:
+            if self.config.save_obs_outs_dir is not None:
+                LOGGER.info(f"Saving step obs outputs...")
+                self._save_outputs(
+                    episode_id,
+                    step_id,
+                    None,
+                    obs_state_dict,
+                    [np.zeros((8,))],
+                    None,
+                    None,
+                    None,
+                    cache,
+                )
             return {"action": np.zeros((8,))}
 
         if plan["action"] == "release":
             action = gripper_pose
             action[7] = 1
             cache.highlevel_step_id += 1
-            LOGGER.info(f"returning release action and cache")
+
+            if self.config.save_obs_outs_dir is not None:
+                LOGGER.info(f"Saving step obs outputs...")
+                self._save_outputs(
+                    episode_id,
+                    step_id,
+                    None,
+                    obs_state_dict,
+                    [action],
+                    None,
+                    plan,
+                    None,
+                    cache,
+                )
             return {"action": action, "cache": cache}
+
         batch = self.vlm_pipeline(
             taskvar,
             cache.highlevel_step_id_norelease,
@@ -431,7 +498,7 @@ class GroundtruthActioner(object):
                 target_name = "".join([x for x in plan["target"] if not x.isdigit()])
                 target_name = target_name.replace("_", " ").strip()
                 action_name = f"{action_name} to {target_name}"
-        # LOGGER.info(action_name)
+
         action_embeds = self.clip_model(
             "text", action_name, use_prompt=False, output_hidden_states=True
         )[
@@ -446,10 +513,9 @@ class GroundtruthActioner(object):
 
         pred_actions = self.motion_planner(batch, compute_loss=False)[
             0
-        ]  # (max_action_len, 8)
+        ]  # action_length =8, 3 pos, 4 quaternions, 1 gripper state, 1 stop prob
         pred_actions[:, 7:] = torch.sigmoid(pred_actions[:, 7:])
         pred_actions = pred_actions.data.cpu().numpy()
-        # LOGGER.info(pred_actions)
 
         # rescale the predicted position
         pred_actions[:, :3] = (pred_actions[:, :3] * batch["pc_radius"]) + batch[
@@ -461,7 +527,6 @@ class GroundtruthActioner(object):
 
         valid_actions = []
         for t, pred_action in enumerate(pred_actions):
-            # if pred_action[8] >= 0.5 or self.config.pipeline.exceed_max_action:
             valid_actions.append(pred_action)
             if t + 1 >= self.config.motion_planner.run_action_step:
                 break
@@ -483,9 +548,10 @@ class GroundtruthActioner(object):
                 batch,
                 obs_state_dict,
                 valid_actions,
-                cache.highlevel_plans,
+                None,
                 plan,
                 action_name,
+                cache,
             )
 
         return out
@@ -497,35 +563,37 @@ class GroundtruthActioner(object):
         batch: Dict,
         obs_state_dict: Dict,
         valid_actions: List,
-        highlevel_plans: List,
+        extra_outs: Dict,
         plan: Dict,
         action_name: str,
+        cache: Dict,
     ) -> None:
         """Save outputs to file."""
-        if episode_id is None:
-            return
-
         obs_dir = os.path.join(
             self.config.save_obs_outs_dir, f"ep_{episode_id}", "steps"
         )
         os.makedirs(obs_dir, exist_ok=True)
 
         save_path = os.path.join(obs_dir, f"step_{step_id}.npy")
+        if batch is not None:
+            del batch["txt_embeds"], batch["txt_lens"]
 
-        del batch["txt_embeds"], batch["txt_lens"]
-        # Convert tensors to numpy arrays
-        processed_batch = {
-            k: v.data.cpu().numpy() if isinstance(v, torch.Tensor) else v
-            for k, v in batch.items()
-        }
+            # Convert tensors to numpy arrays
+            processed_batch = {
+                k: v.data.cpu().numpy() if isinstance(v, torch.Tensor) else v
+                for k, v in batch.items()
+            }
+        else:
+            processed_batch = None
 
         results = {
             "batch": processed_batch,
             "obs": obs_state_dict,
             "valid_actions": valid_actions,
-            "highlevel_plans": highlevel_plans,
+            "extra_outs": extra_outs,
             "plan": plan,
             "action_name": action_name,
+            "cache": cache,
         }
 
         np.save(

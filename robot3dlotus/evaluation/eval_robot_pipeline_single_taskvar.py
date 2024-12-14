@@ -243,7 +243,7 @@ class EpisodeEvaluator:
 
         while state.step_id < self.args.max_steps and not state.terminate:
             LOGGER.info(
-                f"Episode {episode_id} Step {state.step_id + 1} [ckpt {self.args.ckpt_step}] [seed {self.args.seed}]"
+                f"Episode {episode_id} Step {state.step_id} [ckpt {self.args.ckpt_step}] [seed {self.args.seed}]"
             )
             step_result = self._execute_step(episode_id, state, move)
 
@@ -287,6 +287,9 @@ class EpisodeEvaluator:
         action = output["action"]
         cache = output["cache"]
         if action is None:
+            LOGGER.info(
+                f"No action predicted in episode {episode_id} step {state.step_id}, terminating..."
+            )
             return self.StepResult(inference_time, terminate=True, cache=cache)
 
         # Execute action
@@ -470,6 +473,7 @@ class TaskEvaluator:
                 f"-og_gt_{self.pipeline_config.motion_planner.pc_label_type}"
             )
         pred_dirname += f"-runstep{self.pipeline_config.motion_planner.run_action_step}"
+        pred_dirname += f"-maxsteps{self.args.max_steps}"
 
         pred_dir = os.path.join(
             self.args.expr_dir, pred_dirname, f"seed{self.args.seed}"

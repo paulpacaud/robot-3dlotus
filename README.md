@@ -1,4 +1,4 @@
-# Towards Generalizable Vision-Language Robotic Manipulation: A Benchmark and LLM-guided 3D Policy
+# UNOFFICIAL REPO, USED AS A SANDBOX FOR LEARNING PURPOSES, PLEASE REFER TO THE ORIGINAL REPO FOR THE OFFICIAL CODE
 
 This repository is the official implementation of [Towards Generalizable Vision-Language Robotic Manipulation: A Benchmark and LLM-guided 3D Policy](https://arxiv.org/abs/2410.01345).
 
@@ -144,15 +144,14 @@ chmod +x jz_job_scripts/eval/submit_parallel_jobs.sh; taskfile="assets/peract/ta
 ```
 > RESULTS
 ```bash
-python scripts/peract/summarize_results_peract.py data/experiments/peract/3dlotusplus/v2_mix/preds-llm_gt-og_gt_mix-runstep1/seed200/results.jsonl
+python scripts/peract/summarize_results.py data/experiments/peract/3dlotusplus/v2_mix/preds-llm_gt-og_gt_mix-runstep1/seed200/results.jsonl
 python scripts/peract/summarize_results_detailed.py data/experiments/peract/3dlotusplus/v2_mix/preds-llm_gt-og_gt_mix-runstep1/seed200/results.jsonl --ckpt_step 120000
 ```
-obsolete:
-chmod +x jz_job_scripts/eval/submit_parallel_jobs.sh; taskfile="assets/gembench/taskvars_train.csv" EVAL_TASK_SCRIPT="jz_job_scripts/eval/robot_pipeline/eval_robot_pipeline_single_taskvar_VALIDATION.sh" ./jz_job_scripts/eval/submit_parallel_jobs.sh
 
-chmod +x jz_job_scripts/eval/submit_parallel_jobs.sh; taskfile="assets/peract/taskvars_val_peract.csv" EVAL_TASK_SCRIPT="jz_job_scripts/eval/robot_pipeline/eval_robot_pipeline_single_taskvar_VALIDATION.sh" ./jz_job_scripts/eval/submit_parallel_jobs.sh
 
-chmod +x jz_job_scripts/eval/submit_parallel_jobs.sh; taskfile="assets/peract/taskvars_test_peract.csv" EVAL_TASK_SCRIPT="jz_job_scripts/eval/robot_pipeline/eval_robot_pipeline_single_taskvar.sh" ./jz_job_scripts/eval/submit_parallel_jobs.sh
+To use the notebook:
+sshfs jz:/lustre/fsn1/projects/rech/hjx/uta42aa/data/experiments/peract/3dlotusplus/v2_mix/records ./data/experiments/peract/3dlotusplus/v2_mix/records/
+
 
 
 ## Citation

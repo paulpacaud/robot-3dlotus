@@ -307,6 +307,20 @@ class Actioner(object):
         instructions,
         cache=None,
     ):
+        """
+        returns an action [position_x, position_y, position_z, quat_w, quat_x, quat_y, quat_z, gripper_state]
+
+        #action[0:3] represents (x, y, z) coordinates for the end-effector position
+        These are rescaled from normalized values: pred_actions[:, :3] = (pred_actions[:, :3] * batch["pc_radius"]) + batch["pc_centroids"]
+        The z coordinate is constrained to be above the table: pred_actions[:, 2] = np.maximum(pred_actions[:, 2], self.vlm_pipeline.TABLE_HEIGHT + 0.005)
+
+        #action[3:7] represents rotation as a quaternion
+
+        #Gripper State (1 value):
+        action[7] represents the gripper state. It's a binary value (after sigmoid activation) where:
+        1 = Open gripper
+        0 = Closed gripper
+        """
         taskvar = f"{task_str}+{variation}"
         LOGGER.info(f"Predicting task: {taskvar}, step: {step_id}")
 
@@ -347,14 +361,19 @@ class Actioner(object):
                     cache.ret_objs[cache.grasped_obj_name],
                 )
             cache.prev_ee_pose = out["action"]
-            # if cache.episode_outdir:
-            #     np.save(
-            #         os.path.join(cache.episode_outdir, f'{step_id}.npy'),
-            #         {
-            #             'obs': obs_state_dict,
-            #             'action': cur_action
-            #         }
-            #     )
+
+            self._save_outputs(
+                episode_id,
+                step_id,
+                None,
+                obs_state_dict,
+                [cur_action],
+                None,
+                plan,
+                None,
+                cache,
+            )
+
             return out
 
         rgb_images = obs_state_dict["rgb"]
@@ -376,17 +395,21 @@ class Actioner(object):
             cache.highlevel_plans = [parse_code(x) for x in highlevel_plans]
             cache.highlevel_step_id = 0
 
-            if cache.episode_outdir is not None:
+            if self.config.save_obs_outs_dir is not None:
+                obs_dir = os.path.join(
+                    self.config.save_obs_outs_dir, f"ep_{episode_id}"
+                )
+                os.makedirs(obs_dir, exist_ok=True)
+
+                save_path = os.path.join(obs_dir, f"highlevel_plans.json")
                 json.dump(
                     {
+                        "instructions": instructions,
                         "instruction": instruction,
-                        "context": None,
-                        "plans": highlevel_plans,
+                        "highlevel_plans": highlevel_plans,
                         "parsed_plans": cache.highlevel_plans,
                     },
-                    open(
-                        os.path.join(cache.episode_outdir, "highlevel_plans.json"), "w"
-                    ),
+                    open(save_path, "w"),
                 )
 
         if cache.highlevel_step_id >= len(cache.highlevel_plans):
@@ -398,10 +421,36 @@ class Actioner(object):
                 cache.grasped_obj_name = (None,)
                 cache.prev_ee_pose = copy.deepcopy(obs_state_dict["gripper"])
             else:
+                if self.config.save_obs_outs_dir is not None:
+                    LOGGER.info(f"Saving step obs outputs...")
+                    self._save_outputs(
+                        episode_id,
+                        step_id,
+                        None,
+                        obs_state_dict,
+                        [np.zeros((8,))],
+                        None,
+                        None,
+                        None,
+                        cache,
+                    )
                 return {"action": np.zeros((8,)), "cache": cache}
 
         plan = cache.highlevel_plans[cache.highlevel_step_id]
         if plan is None:
+            if self.config.save_obs_outs_dir is not None:
+                LOGGER.info(f"Saving step obs outputs...")
+                self._save_outputs(
+                    episode_id,
+                    step_id,
+                    None,
+                    obs_state_dict,
+                    [np.zeros((8,))],
+                    None,
+                    None,
+                    None,
+                    cache,
+                )
             return {"action": np.zeros((8,)), "cache": cache}
 
         if plan["action"] == "release":
@@ -409,6 +458,20 @@ class Actioner(object):
             action[7] = 1
             cache.highlevel_step_id += 1
             cache.grasped_obj_name = None
+
+            if self.config.save_obs_outs_dir is not None:
+                LOGGER.info(f"Saving step obs outputs...")
+                self._save_outputs(
+                    episode_id,
+                    step_id,
+                    None,
+                    obs_state_dict,
+                    [action],
+                    None,
+                    plan,
+                    None,
+                    cache,
+                )
             return {"action": action, "cache": cache}
 
         vlm_results = self.vlm_pipeline.run(rgb_images, pcd_images, arm_links_info)
@@ -514,9 +577,10 @@ class Actioner(object):
                 batch,
                 obs_state_dict,
                 valid_actions,
-                cache.highlevel_plans,
+                extra_outs,
                 plan,
                 action_name,
+                cache,
             )
 
         if (
@@ -542,35 +606,36 @@ class Actioner(object):
         batch: Dict,
         obs_state_dict: Dict,
         valid_actions: List,
-        highlevel_plans: List,
+        extra_outs: Dict,
         plan: Dict,
         action_name: str,
+        cache: Dict,
     ) -> None:
         """Save outputs to file."""
-        if episode_id is None:
-            return
-
         obs_dir = os.path.join(
             self.config.save_obs_outs_dir, f"ep_{episode_id}", "steps"
         )
         os.makedirs(obs_dir, exist_ok=True)
 
         save_path = os.path.join(obs_dir, f"step_{step_id}.npy")
-
-        del batch["txt_embeds"], batch["txt_lens"]
-        # Convert tensors to numpy arrays
-        processed_batch = {
-            k: v.data.cpu().numpy() if isinstance(v, torch.Tensor) else v
-            for k, v in batch.items()
-        }
+        if batch is not None:
+            del batch["txt_embeds"], batch["txt_lens"]
+            # Convert tensors to numpy arrays
+            processed_batch = {
+                k: v.data.cpu().numpy() if isinstance(v, torch.Tensor) else v
+                for k, v in batch.items()
+            }
+        else:
+            processed_batch = None
 
         results = {
             "batch": processed_batch,
             "obs": obs_state_dict,
             "valid_actions": valid_actions,
-            "highlevel_plans": highlevel_plans,
+            "extra_outs": extra_outs,
             "plan": plan,
             "action_name": action_name,
+            "cache": cache,
         }
 
         np.save(
