@@ -458,15 +458,25 @@ class GroundtruthActioner(object):
 
             if self.config.save_obs_outs_dir is not None:
                 LOGGER.info(f"Saving step obs outputs...")
+                batch = self.vlm_pipeline(
+                    taskvar,
+                    cache.highlevel_step_id_norelease,
+                    pcd_images,
+                    sem_images,
+                    gripper_pose,
+                    arm_links_info,
+                    rgb_images=rgb_images,
+                    episode_id=episode_id,
+                )
                 self._save_outputs(
                     episode_id,
                     step_id,
-                    None,
+                    batch,
                     obs_state_dict,
                     [action],
                     None,
                     plan,
-                    None,
+                    "release",
                     cache,
                 )
             return {"action": action, "cache": cache}

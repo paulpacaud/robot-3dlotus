@@ -144,8 +144,8 @@ chmod +x jz_job_scripts/eval/submit_parallel_jobs.sh; taskfile="assets/peract/ta
 ```
 > RESULTS
 ```bash
-python scripts/peract/summarize_results.py data/experiments/peract/3dlotusplus/v2_mix/preds-llm_gt-og_gt_mix-runstep1/seed200/results.jsonl
-python scripts/peract/summarize_results_detailed.py data/experiments/peract/3dlotusplus/v2_mix/preds-llm_gt-og_gt_mix-runstep1/seed200/results.jsonl --ckpt_step 120000
+python scripts/peract/summarize_results.py data/experiments/peract/3dlotusplus/v2_mix/preds-llm_gt-og_gt_mix-runstep1-maxsteps50/seed200/results.jsonl
+python scripts/peract/summarize_results_detailed.py data/experiments/peract/3dlotusplus/v2_mix/preds-llm_gt-og_gt_mix-runstep1-maxsteps25/seed200/results.jsonl --ckpt_step 120000
 ```
 
 
