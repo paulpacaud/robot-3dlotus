@@ -37,7 +37,6 @@ class EvaluationArguments(tap.Tap):
     max_steps: int = 25
     microstep_data_dir: str = ""
     seed: int = 100
-    num_episodes: int = 20
     num_ensembles: int = 1
     best_disc_pos: str = "max"
     save_obs_outs_dir: str = None
@@ -48,6 +47,7 @@ class EvaluationArguments(tap.Tap):
     video_resolution: int = 480
     real_robot: bool = False
     enable_flashattn: bool = False
+    taskvars_instructions_file: str
 
 
 @dataclass
@@ -213,7 +213,9 @@ class EpisodeEvaluator:
         total_inference_time = 0.0
 
         while state.step_id < self.args.max_steps and not state.terminate:
-            LOGGER.info(f"Episode {episode_id} Step {state.step_id + 1}")
+            LOGGER.info(
+                f"Episode {episode_id} Step {state.step_id} [ckpt {self.args.ckpt_step}] [seed {self.args.seed}]"
+            )
             step_result = self._execute_step(episode_id, state, move)
 
             if step_result.terminate:
@@ -301,9 +303,8 @@ class EpisodeEvaluator:
     def _log_episode_results(self, episode_id: int, result: EpisodeResult) -> None:
         """Log episode evaluation results."""
         LOGGER.info(
-            f"Episode {episode_id} Step {result.step_id + 1} Reward {result.reward} "
+            f"{self.args.taskvar} | ep. {episode_id} | Nb of step {result.step_id + 1} | Reward {result.reward} "
             f"Accumulated SR: {(self.metrics.success_rate * 100):.2f} "
-            f"Estimated SR: {(self.metrics.success_rate * self.args.num_episodes / (episode_id + 1) * 100):.2f}"
         )
 
 
@@ -335,7 +336,7 @@ class TaskEvaluator:
         move = Mover(task, max_tries=self.args.max_tries)
         return env, task, move
 
-    def load_demos(self, env: RLBenchEnv) -> Optional[List]:
+    def load_demos(self, env: RLBenchEnv) -> Optional[Tuple[List, List]]:
         """Load demonstration episodes if available."""
         if not self.args.microstep_data_dir:
             return None
@@ -355,6 +356,7 @@ class TaskEvaluator:
 
         demos = []
         episode_ids = sorted(os.listdir(episodes_dir), key=lambda ep: int(ep[7:]))
+        episode_ids_non_empty = []
 
         for idx, ep in enumerate(episode_ids):
             try:
@@ -362,11 +364,15 @@ class TaskEvaluator:
                     self.args.task_str, self.args.variation, idx, load_images=False
                 )
                 demos.append(demo)
+                episode_ids_non_empty.append(int(ep[7:]))
             except Exception as e:
                 LOGGER.info(f"Problem loading demo_id: {idx} {ep}")
                 LOGGER.info(e)
 
-        return demos if demos else None
+        if len(demos) == 0:
+            return None
+
+        return demos, episode_ids_non_empty
 
     def evaluate(self) -> None:
         """Run evaluation for the task."""
@@ -374,7 +380,12 @@ class TaskEvaluator:
         env, task, move = self.setup_environment()
 
         # Load demos if available
-        demos = self.load_demos(env)
+        demos, episode_ids_non_empty = self.load_demos(env)
+        if demos is None:
+            LOGGER.info(f"{self.args.taskvar} does not need to be evaluated.")
+            env.env.shutdown()
+            return
+        self.args.num_episodes = len(demos)
 
         # Setup video recording if enabled
         video_recorder = VideoRecorder(self.args, task)
@@ -386,8 +397,10 @@ class TaskEvaluator:
         )
 
         # Run evaluation episodes
-        for episode_id in range(self.args.num_episodes):
-            LOGGER.info(f"Starting eval of episode {episode_id}")
+        for episode_id in episode_ids_non_empty:
+            LOGGER.info(
+                f"[{self.args.taskvar}] Starting eval of episode {episode_id} / {self.args.num_episodes - 1}"
+            )
             episode_evaluator.evaluate_episode(episode_id, task, move, demos, recorder)
 
         # Write results
@@ -411,15 +424,13 @@ class TaskEvaluator:
         pred_file = os.path.join(pred_dir, "results.jsonl")
 
         results = {
-            "checkpoint": os.path.join(
-                self.args.expr_dir, "ckpts", f"model_step_{self.args.ckpt_step}.pt"
-            ),
+            "checkpoint": self.args.ckpt_step,
             "task": self.args.task_str,
             "variation": self.args.variation,
-            "num_episodes": self.args.num_episodes,
+            "num_demos": self.args.num_episodes,
             "sr": round(self.metrics.success_rate, 2),
             "fps": round(self.metrics.inference_speed_fps, 2),
-            "avg_inference_time": self.metrics.avg_inference_time,
+            "avg_inference_time": round(self.metrics.avg_inference_time, 3),
         }
         write_to_file(pred_file, results)
 

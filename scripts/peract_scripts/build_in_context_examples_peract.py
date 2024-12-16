@@ -1,24 +1,29 @@
 import json
 import numpy as np
 
-set = "test"
-output_file_path = f"../../prompts/rlbench/in_context_examples_{set}_peract.txt"
+set = "train"
+if set == "train":
+    output_file_path = f"../../prompts/rlbench/in_context_examples.txt"
+else:
+    output_file_path = f"../../prompts/rlbench/in_context_examples_{set}.txt"
 
-with open(f"../../assets/taskvars_{set}_peract.json", "r") as f:
-    taskvars_val = json.load(f)
+with open(f"../../assets/peract/taskvars_{set}_peract.json", "r") as f:
+    taskvars_set = json.load(f)
 with open("../../assets/peract/taskvars_target_label_zrange_peract.json", "r") as f:
     labels = json.load(f)
 with open("../../assets/peract/taskvars_instructions_peract.json", "r") as f:
     taskvars_instr = json.load(f)
-with open(f"../../assets/objects_peract_{set}.json", "r") as f:
+with open(f"../../assets/peract/objects_peract_{set}.json", "r") as f:
     taskvar_obj = json.load(f)
 
 if set == "train":
-    with open(f"../../assets/objects_peract_val.json", "r") as f:
+    # does the same as for test but after finishing, it checks each task to see if there are any objects that are not in the training set
+    # if there are, it adds them to the object list
+    with open(f"../../assets/peract/objects_peract_val.json", "r") as f:
         taskvar_obj = json.load(f)
 
     taskvar_obj_dict = {}
-    for task in taskvars_val:
+    for task in taskvars_set:
         taskvar_obj_list = []
         for episode in taskvar_obj[task].keys():
             objs = taskvar_obj[task][episode]
@@ -29,10 +34,10 @@ if set == "train":
         taskvar_obj_list = [obj for obj in taskvar_obj_list if obj]
         taskvar_obj_dict[task] = taskvar_obj_list
 
-    with open(f"../../assets/objects_peract_test.json", "r") as f:
+    with open(f"../../assets/peract/objects_peract_test.json", "r") as f:
         taskvar_obj = json.load(f)
 
-    for task in taskvars_val:
+    for task in taskvars_set:
         if len(taskvar_obj_dict[task]) != 0:
             continue
         taskvar_obj_list = []
@@ -45,11 +50,11 @@ if set == "train":
         taskvar_obj_list = [obj for obj in taskvar_obj_list if obj]
         taskvar_obj_dict[task] = taskvar_obj_list
 else:
-    with open(f"../../assets/objects_peract_{set}.json", "r") as f:
+    with open(f"../../assets/peract/objects_peract_{set}.json", "r") as f:
         taskvar_obj = json.load(f)
 
     taskvar_obj_dict = {}
-    for task in taskvars_val:
+    for task in taskvars_set:
         taskvar_obj_list = []
         for episode in taskvar_obj[task].keys():
             objs = taskvar_obj[task][episode]
@@ -63,7 +68,7 @@ else:
 # "close_jar_peract+0": {"episode0": {"red jar": [81], "lime jar": [85], "gray lid": [87]}, "episode38": {"red jar": [81], "magenta jar": [85], "gray lid": [87]}, "episode39": {"red jar": [81], "cyan jar": [85], "gray lid": [87]}, "episode59": {"red jar": [81], "lime jar": [85], "gray lid": [87]}}, "close_jar_peract+1": {"episode7": {"white jar": [81], "maroon jar": [85], "gray lid": [87]}, "episode12": {"magenta jar": [81], "maroon jar": [85], "gray lid": [87]}, "episode51": {"gray jar": [81], "maroon jar": [85], "gray lid": [87]}, "episode77": {"green jar": [81], "maroon jar": [85], "gray lid": [87]}, "episode79": {"silver jar": [81], "maroon jar": [85], "gray lid": [87]}, "episode82": {"rose jar": [81], "maroon jar": [85], "gray lid": [87]}}, "close_jar_peract+2": {"episode2": {"lime jar": [81], "violet jar": [85], "gray lid": [87]}, "episode42": {"lime jar": [81], "orange jar": [85], "gray lid": [87]}, "episode45": {"lime jar": [81], "silver jar": [85], "gray lid": [87]}, "episode58": {"lime jar": [81], "black jar": [85], "gray lid": [87]}, "episode73": {"lime jar": [81], "maroon jar": [85], "gray lid": [87]}, "episode74": {"lime jar": [81], "silver jar": [85], "gray lid": [87]}, "episode97": {"lime jar": [81], "blue jar": [85], "gray lid": [87]}}, "close_jar_peract+3": {"episode1": {"violet jar": [81], "green jar": [85], "gray lid": [87]}, "episode11": {"silver jar": [81], "green jar": [85], "gray lid": [87]}, "episode49": {"lime jar": [81], "green jar": [85], "gray lid": [87]}, "episode71": {"blue jar": [81], "green jar": [85], "gray lid": [87]}, "episode72": {"yellow jar": [81], "green jar": [85], "gray lid": [87]}, "episode85": {"lime jar": [81], "green jar": [85], "gray lid": [87]}}, "close_jar_peract+4": {"episode64": {"blue jar": [81], "orange jar": [85], "gray lid": [87]}, "episode78": {"blue jar": [81], "olive jar": [85], "gray lid": [87]}}, "close_jar_peract+5": {"episode17": {"violet jar": [81], "navy jar": [85], "gray lid": [87]}, "episode24": {"maroon jar": [81], "navy jar": [85], "gray lid": [87]}, "episode66": {"red jar": [81], "navy jar": [85], "gray lid": [87]}, "episode88": {"magenta jar": [81], "navy jar": [85], "gray lid": [87]}, "episode93": {"green jar": [81], "navy jar": [85], "gray lid": [87]}}, "close_jar_peract+6": {"episode16": {"yellow jar": [81], "purple jar": [85], "gray lid": [87]}, "episode63": {"yellow jar": [81], "azure jar": [85], "gray lid": [87]}}, "close_jar_peract+7": {"episode5": {"silver jar": [81], "cyan jar": [85], "gray lid": [87]}, "episode13": {"azure jar": [81], "cyan jar": [85], "gray lid": [87]}}, "close_jar_peract+8": {"episode6": {"magenta jar": [81], "silver jar": [85], "gray lid": [87]}, "episode29": {"magenta jar": [81], "black jar": [85], "gray lid": [87]}, "episode68": {"magenta jar": [81], "lime jar": [85], "gray lid": [87]}}, "close_jar_peract+9": {"episode50": {"red jar": [81], "silver jar": [85], "gray lid": [87]}, "episode55": {"blue jar": [81], "silver jar": [85], "gray lid": [87]}, "episode81": {"white jar": [81], "silver jar": [85], "gray lid": [87]}, "episode84": {"orange jar": [81], "silver jar": [85], "gray lid": [87]}}
 task_plan = {}
 task_obj = {}
-for task in taskvars_val:
+for task in taskvars_set:
     for episode in labels[task].keys():
         plans = labels[task][episode]
         task_plan[task] = plans

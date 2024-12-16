@@ -1,0 +1,39 @@
+## v100:
+- qos_gpu-t3 (défaut) [20h]
+- qos_gpu-t4 [100h]
+- qos_gpu-dev [2h]
+
+## a100:
+- qos_gpu_a100-t3 (défaut) [20h]
+- qos_gpu_a100-dev [2h]
+
+## h100:
+- qos_gpu_h100-t3 (défaut) [20h]
+- qos_gpu_h100-dev [2h]
+- qos_gpu_h100-t4 [100h]
+
+### Share things on JZ
+
+1. cd $SCRATCH
+2. mkdir -p shared; cd shared
+3. mkdir -p peract_checkpoints; cd peract_checkpoints
+4. setfacl --set=u::rwx,u:uxx99yz:rwx,g::r-x,o::---,m::rwx $SCRATCH # the file system is hierarchical, i need this, but the user won't  be able to access subdirectories
+3. setfacl -R --set=u::rwx,u:uxx99yz:rwx,g::r-x,o::---,m::rwx . # this is why i need this -R command inside the shared directory. hat's why you don't want to do -R in $SCRATCH, but first -R in shared and without -R in $SCRATCH
+4. add a new user: setfacl -m u:<USERNAME>:rwx . # warning every time you run the setfacl it erases the other users, prefer adding them to update
+5. check the permission: getfacl peract_checkpoints
+
+setfacl --set=u::rwx,u:uxx99yz:rwx,g::r-x,o::---,m::rwx .
+
+### Check the GPU usage
+https://www.edari.fr/dossier/AD011015795/consommation
+sinfo  -o"%P %.16F"
+sinfo -p gpu_p1,gpu_p2,gpu_p3,gpu_p13,gpu_p4 -o"%P %.16F"
+display per node the number of GPU used and the number of GPU available
+A: Allocated (used)
+I: idle (available)
+T: total
+
+
+
+
+

@@ -1,4 +1,4 @@
-# Towards Generalizable Vision-Language Robotic Manipulation: A Benchmark and LLM-guided 3D Policy
+# UNOFFICIAL REPO, USED AS A SANDBOX FOR LEARNING PURPOSES, PLEASE REFER TO THE ORIGINAL REPO FOR THE OFFICIAL CODE
 
 This repository is the official implementation of [Towards Generalizable Vision-Language Robotic Manipulation: A Benchmark and LLM-guided 3D Policy](https://arxiv.org/abs/2410.01345).
 
@@ -101,7 +101,7 @@ sbatch job_scripts/eval_3dlotusplus_policy.sh
 
 We use the validation set to select the best checkpoint. The following script summarizes results on the validation split.
 ```bash
-python scripts/summarize_val_results.py data/experiments/gembench/3dlotusplus/v1/preds-llm_gt-og_gt_fine/seed100/results.jsonl
+python scripts/summarize_val_results.py data/experiments/gembench/3dlotusplus/v1_shizhe/preds-llm_gt-og_gt_mix-runstep5/seed100/results.jsonl
 ```
 
 The following script summarizes results on the test splits of four generalization levels, for the three evaluation modes:
@@ -110,6 +110,49 @@ python scripts/summarize_tst_results.py data/experiments/gembench/3dlotusplus/v1
 python scripts/summarize_tst_results.py data/experiments/gembench/3dlotusplus/v1/preds-llm_gt-runstep5 140000
 python scripts/summarize_tst_results.py data/experiments/gembench/3dlotusplus/v1/preds-runstep5 140000
 ```
+
+### To Launch the evals:
+#### Single taskvar
+```bash
+sbatch jz_job_scripts/eval/simple_policy/eval_3dlotus_single_taskvar.sh
+sbatch jz_job_scripts/eval/robot_pipeline/eval_robot_pipeline_single_taskvar.sh
+````
+#### Multi taskvar
+```bash
+chmod +x jz_job_scripts/eval/submit_parallel_jobs.sh; taskfile="assets/peract/taskvars_test_peract.csv" MODEL="3dlotus" ./jz_job_scripts/eval/submit_parallel_jobs.sh
+
+chmod +x jz_job_scripts/eval/submit_parallel_jobs.sh; taskfile="assets/peract/taskvars_val_peract.csv" MODEL="robot_pipeline" ./jz_job_scripts/eval/submit_parallel_jobs.sh
+chmod +x jz_job_scripts/eval/submit_parallel_jobs.sh; taskfile="assets/peract/taskvars_test_peract.csv" MODEL="robot_pipeline" ./jz_job_scripts/eval/submit_parallel_jobs.sh
+
+chmod +x ./jz_job_scripts/eval/check_jobs.sh; ./jz_job_scripts/eval/check_jobs.sh <JOBS_FILE_ID>
+```
+
+VAL
+> RUN
+```bash
+chmod +x jz_job_scripts/eval/submit_parallel_jobs.sh; taskfile="assets/peract/taskvars_val_peract.csv" MODEL="robot_pipeline" ./jz_job_scripts/eval/submit_parallel_jobs.sh
+```
+> RESULTS
+```bash
+python scripts/peract/summarize_results_peract.py data/experiments/peract/3dlotusplus/v2_fine/preds-llm_gt-og_gt_fine-runstep1/seed100/results.jsonl
+```
+
+TEST
+> RUN
+```bash
+chmod +x jz_job_scripts/eval/submit_parallel_jobs.sh; taskfile="assets/peract/taskvars_test_peract.csv" MODEL="robot_pipeline" ./jz_job_scripts/eval/submit_parallel_jobs.sh
+```
+> RESULTS
+```bash
+python scripts/peract/summarize_results.py data/experiments/peract/3dlotusplus/v2_mix/preds-llm_gt-og_gt_mix-runstep1-maxsteps50/seed200/results.jsonl
+python scripts/peract/summarize_results_detailed.py data/experiments/peract/3dlotusplus/v2_mix/preds-llm_gt-og_gt_mix-runstep1-maxsteps25/seed200/results.jsonl --ckpt_step 120000
+```
+
+
+To use the notebook:
+sshfs jz:/lustre/fsn1/projects/rech/hjx/uta42aa/data/experiments/peract/3dlotusplus/v2_mix/records ./data/experiments/peract/3dlotusplus/v2_mix/records/
+
+
 
 ## Citation
 If you use our GemBench benchmark or find our code helpful, please kindly cite our work:
