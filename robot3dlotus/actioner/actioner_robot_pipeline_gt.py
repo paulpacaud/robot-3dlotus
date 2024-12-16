@@ -421,10 +421,20 @@ class GroundtruthActioner(object):
             else:
                 if self.config.save_obs_outs_dir is not None:
                     LOGGER.info(f"Saving step obs outputs...")
+                    batch = self.vlm_pipeline(
+                        taskvar,
+                        cache.highlevel_step_id_norelease,
+                        pcd_images,
+                        sem_images,
+                        gripper_pose,
+                        arm_links_info,
+                        rgb_images=rgb_images,
+                        episode_id=episode_id,
+                    )
                     self._save_outputs(
                         episode_id,
                         step_id,
-                        None,
+                        batch,
                         obs_state_dict,
                         [np.zeros((8,))],
                         None,
@@ -438,10 +448,20 @@ class GroundtruthActioner(object):
         if plan is None:
             if self.config.save_obs_outs_dir is not None:
                 LOGGER.info(f"Saving step obs outputs...")
+                batch = self.vlm_pipeline(
+                    taskvar,
+                    cache.highlevel_step_id_norelease,
+                    pcd_images,
+                    sem_images,
+                    gripper_pose,
+                    arm_links_info,
+                    rgb_images=rgb_images,
+                    episode_id=episode_id,
+                )
                 self._save_outputs(
                     episode_id,
                     step_id,
-                    None,
+                    batch,
                     obs_state_dict,
                     [np.zeros((8,))],
                     None,
@@ -523,7 +543,7 @@ class GroundtruthActioner(object):
 
         pred_actions = self.motion_planner(batch, compute_loss=False)[
             0
-        ]  # action_length =8, 3 pos, 4 quaternions, 1 gripper state, 1 stop prob
+        ]  # action_length =8, 3 pos, 4 quaternions, 1 gripper state, 1 stop prob (should the robot stop the current highlevel plan and move to the next one? 1: Yes, 0: No)
         pred_actions[:, 7:] = torch.sigmoid(pred_actions[:, 7:])
         pred_actions = pred_actions.data.cpu().numpy()
 
