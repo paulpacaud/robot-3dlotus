@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=evRP
-#SBATCH -A hjx@h100
-#SBATCH -C h100
-#SBATCH --qos=qos_gpu_h100-t3
+#SBATCH -A hjx@a100
+#SBATCH -C a100
+#SBATCH --qos=qos_gpu_a100-t3
 #SBATCH --nodes 1
 #SBATCH --ntasks-per-node 1
 #SBATCH --gres=gpu:1
@@ -78,7 +78,7 @@ case "$dataset" in
                 --microstep_data_dir "data/${benchmark}/${dataset}_dataset/microsteps/seed${seed}" \
                 --full_gt \
                 --pipeline_config_file "genrobo3d/configs/rlbench/robot_pipeline_gt.yaml" \
-                --gt_og_label_file "assets/${benchmark}/taskvars_target_label_zrange_${benchmark}.json" \
+                --gt_og_label_file "assets/${benchmark}/taskvars_target_label_zrange_${benchmark}_${dataset}.json" \
                 --gt_plan_file "prompts/rlbench/${benchmark}/in_context_examples_${dataset}.txt" \
                 --pc_label_type "${pc_label_type}" --run_action_step "${run_step}"
         done
@@ -97,7 +97,7 @@ case "$dataset" in
                     --microstep_data_dir "data/${benchmark}/${dataset}_dataset/microsteps/seed${seed}" \
                     --full_gt \
                     --pipeline_config_file "genrobo3d/configs/rlbench/robot_pipeline_gt.yaml" \
-                    --gt_og_label_file "assets/${benchmark}/taskvars_target_label_zrange_${benchmark}.json" \
+                    --gt_og_label_file "assets/${benchmark}/taskvars_target_label_zrange_${benchmark}_${dataset}.json" \
                     --gt_plan_file "prompts/rlbench/${benchmark}/in_context_examples_${dataset}.txt" \
                     --pc_label_type "${pc_label_type}" --run_action_step "${run_step}" \
                     --max_steps "${max_steps}" --enable_flashattn  \

@@ -10,6 +10,7 @@ conda activate gembench
 #On CLEPS or some specific HPC clusters, you may need: `module load gnu12/12.2.0` 
 conda install nvidia/label/cuda-12.1.0::cuda
 
+# on HPC Cluster (like JZ), replace $HOME by $WORK
 export CUDA_HOME=$HOME/.conda/envs/gembench # change here the path to your conda environment
 export CPATH=$CUDA_HOME/targets/x86_64-linux/include:$CPATH
 export LD_LIBRARY_PATH=$CUDA_HOME/targets/x86_64-linux/lib:$LD_LIBRARY_PATH
@@ -18,6 +19,7 @@ export PATH=$CUDA_HOME/bin:$PATH
 # On Jean-Zay or some specific HPC clusters, you may need: `module load gcc/11.3.1` for gnu-c++ errors
 
 # some people report issues with conda-forge when installing torch related packages, due to the crypt.h file missing. Refer to this thread for help: https://github.com/stanford-futuredata/ColBERT/issues/309
+# takeaway: if problem finding crypt.h file, it is likely because you need to cp it from /usr/include to $HOME/.conda/envs/gembench/include/python3.10
 
 ### Everywhere
 pip install --no-cache-dir torch==2.3.0 torchvision==0.18.0 torchaudio==2.3.0 --index-url https://download.pytorch.org/whl/cu121

@@ -9,7 +9,9 @@ else:
 
 with open(f"../../assets/peract/taskvars_{set}_peract.json", "r") as f:
     taskvars_set = json.load(f)
-with open("../../assets/peract/taskvars_target_label_zrange_peract.json", "r") as f:
+with open(
+    "../../assets/peract/taskvars_target_label_zrange_peract_train.json", "r"
+) as f:
     labels = json.load(f)
 with open("../../assets/peract/taskvars_instructions_peract.json", "r") as f:
     taskvars_instr = json.load(f)
