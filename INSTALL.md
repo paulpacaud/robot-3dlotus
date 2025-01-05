@@ -20,6 +20,7 @@ export PATH=$CUDA_HOME/bin:$PATH
 
 # some people report issues with conda-forge when installing torch related packages, due to the crypt.h file missing. Refer to this thread for help: https://github.com/stanford-futuredata/ColBERT/issues/309
 # takeaway: if problem finding crypt.h file, it is likely because you need to cp it from /usr/include to $HOME/.conda/envs/gembench/include/python3.10
+# a proper way to do so is to run: export CPATH=/usr/include:$CPATH (Set CPATH temporarily for specific commands instead of globally !)
 
 ### Everywhere
 pip install --no-cache-dir torch==2.3.0 torchvision==0.18.0 torchaudio==2.3.0 --index-url https://download.pytorch.org/whl/cu121

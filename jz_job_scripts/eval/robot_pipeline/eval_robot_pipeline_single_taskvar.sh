@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=evRP
-#SBATCH -A hjx@a100
-#SBATCH -C a100
-#SBATCH --qos=qos_gpu_a100-t3
+#SBATCH -A hjx@v100
+#SBATCH -C v100
+#SBATCH --qos=qos_gpu-t3
 #SBATCH --nodes 1
 #SBATCH --ntasks-per-node 1
 #SBATCH --gres=gpu:1
@@ -47,7 +47,7 @@ ckpt_step=120000
 SEEDS="200 200 200"  #SEEDS="200 300 400"
 dataset="test"
 run_step=1
-max_steps=50
+max_steps=25
 mode="LLM-gt_OG-gt" #LLM-gt_OG-gt, LLM-gt_OG-auto, auto
 
 # --------------------------------------------------------------------------
@@ -100,8 +100,9 @@ case "$dataset" in
                     --gt_og_label_file "assets/${benchmark}/taskvars_target_label_zrange_${benchmark}_${dataset}.json" \
                     --gt_plan_file "prompts/rlbench/${benchmark}/in_context_examples_${dataset}.txt" \
                     --pc_label_type "${pc_label_type}" --run_action_step "${run_step}" \
-                    --max_steps "${max_steps}" --enable_flashattn  \
+                    --max_steps "${max_steps}"  \
                     "${recording_opts}"
+                    #  --enable_flashattn
                 ;;
               "LLM-gt_OG-auto")
                 singularity exec --bind "$HOME:$HOME,$WORK:$WORK,$SCRATCH:$SCRATCH" --nv "${sif_image}" \
