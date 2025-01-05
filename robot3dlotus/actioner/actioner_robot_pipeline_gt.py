@@ -557,6 +557,10 @@ class GroundtruthActioner(object):
 
         valid_actions = []
         for t, pred_action in enumerate(pred_actions):
+            if pred_action[-1] > 0.5 and action_name == "grasp":
+                # it is the last action of the current high level plan of "grasping", we enforce the robot to close the gripper
+                pred_action[-2] = 0
+
             valid_actions.append(pred_action)
             if t + 1 >= self.config.motion_planner.run_action_step:
                 break

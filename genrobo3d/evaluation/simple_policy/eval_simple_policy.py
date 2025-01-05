@@ -277,6 +277,20 @@ class Actioner(object):
         return pc_ft, centroid, radius, ee_pose
 
     def preprocess_obs(self, taskvar, step_id, obs):
+        """
+        Returns:
+            batch: {
+                pc_fts: (N, 6) i.e [xyz,rgb,height]
+                pc_centroids: (3,) i.e [xyz]
+                pc_radius: float
+                ee_poses: (1, 8) [pos,quat, gripper_state]
+                step_ids: (1,int)
+                txt_embeds: (L, ?)
+                txt_lens: [L]
+                npoints_in_batch: [N]
+                offset: (1,) # useful in case of several point clouds to know the offset of each point cloud in the batch
+            }
+        """
         rgb = np.stack(obs["rgb"], 0)  # (N, H, W, C)
         xyz = np.stack(obs["pc"], 0)  # (N, H, W, C)
         if "gt_mask" in obs:

@@ -122,6 +122,7 @@ class RobotPipeline(object):
             if plan[query_key] is not None:
                 query = plan[query_key]
                 # coarse-grained object grounding
+                # This is the semantic similary computation
                 best_obj_id, _, pred_sim = self.vlm_pipeline.ground_object_with_query(
                     query, objects=vlm_results.objects, debug=False, return_sims=True
                 )
@@ -145,6 +146,7 @@ class RobotPipeline(object):
                                 .to(self.device)
                                 .unsqueeze(0)
                             )
+                            # This is the 3D PCD similarity computation
                             obj_target_var_dists = [
                                 self.vlm_pipeline.chamfer_dist_fn(
                                     target_var_xyz,
